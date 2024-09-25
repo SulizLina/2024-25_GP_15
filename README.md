@@ -22,3 +22,21 @@ Database: Utilizes Firebase Firestore for real-time data storage and management.
 Maps Integration: Leverages the Google Maps API for interactive, location-based features, including mapping and tracking.
 
 ## Launching Instructions
+### Launching Instructions for SAIR Mobile Application 
+
+To get started with SAIR:
+
+1. Clone this repository to your local machine.
+2. Use Flutter to install the necessary dependencies for the mobile application:
+   
+   - Install Dependencies: `flutter pub get`
+   - Open Android Simulator.
+   - Run the App: `flutter run`
+   
+### Launching Instructions for SAIR Web Application 
+To get started with SAIR:
+1. Clone this repository to your local machine.
+2. Use Vite to install the necessary dependencies for the web application.
+   - Run `npm install`
+   - Execute `npm run dev`
+
