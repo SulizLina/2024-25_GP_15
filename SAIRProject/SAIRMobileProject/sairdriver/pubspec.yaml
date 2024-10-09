@@ -15,4 +15,10 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
-  google_fo
+  google_fonts: ^6.2.1
+
+flutter:
+  uses-material-design: true
+  asstes:
+    - assets/icons/
+    - assets/image/
