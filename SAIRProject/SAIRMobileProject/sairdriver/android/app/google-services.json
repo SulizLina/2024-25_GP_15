@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "164888056761",
+    "project_id": "sair-7310d",
+    "storage_bucket": "sair-7310d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:164888056761:android:db340cb68b9b6757871c68",
+        "android_client_info": {
+          "package_name": "com.example.sairdriver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxnp1ZBsVevcFcIo1s2jbLZNc_8k2FPJE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
