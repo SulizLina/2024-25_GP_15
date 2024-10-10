@@ -22,14 +22,14 @@ class _LoginState extends State<Login> {
               Center(  // Center the logo
                 child: Image.asset(
                   'assets/image/SAIRLogo.png', //new logo
-                  height: 100, 
+                  height: 200, 
                 ),
               ),
               SizedBox(
                 height: 20.0,
               ),
               Text(
-                "Welcome to SAIR, Glad to see you again!",
+                "Welcome to SAIR, Glad to see you again!", //chande the size
                 style: GoogleFonts.poppins(
                   color: Color.fromARGB(202, 3, 152, 85),
                   fontSize: 24,
@@ -41,13 +41,14 @@ class _LoginState extends State<Login> {
                 height: 44.0,
               ),
               TextField(
-                keyboardType: TextInputType.numberWithOptions(),
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  hintText: "User ID",
+                  hintText: "User ID / Residency number",
                   prefixIcon: Icon(
                     Icons.person,
                     color: Color.fromARGB(202, 3, 152, 85),
                   ),
+                  contentPadding: EdgeInsets.symmetric(vertical: 20.0), // Align text and icon
                 ),
               ),
               SizedBox(
@@ -61,6 +62,7 @@ class _LoginState extends State<Login> {
                     Icons.lock,
                     color: Color.fromARGB(202, 3, 152, 85),
                   ),
+                  contentPadding: EdgeInsets.symmetric(vertical: 20.0), // Align text and icon
                 ),
               ),
               SizedBox(
