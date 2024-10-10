@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'package:sairdriver/Splash_Screen.dart';
+import 'package:sairdriver/models/user.dart';
 import 'package:sairdriver/screens/ViolationsList.dart';
 import 'package:sairdriver/screens/login.dart';
-void main() {
-  Firebase.initializeApp();
-runApp(const MainApp());
+import 'package:sairdriver/services/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+void main() async {
+  // Ensure that Firebase is initialized before running the app
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(const MainApp());
 }
 
 class MainApp extends StatelessWidget {
@@ -13,9 +19,13 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   return MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: Violationslist(), 
-   ) ;
+    return StreamProvider<User?>.value(
+      value: AuthService().user,
+      initialData: null, // Set initial data to null
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Login(),
+      ),
+    );
   }
 }

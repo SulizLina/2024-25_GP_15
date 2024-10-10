@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sairdriver/models/user.dart';
+import 'package:sairdriver/services/auth.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -9,6 +11,11 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+final AuthService _auth = AuthService(); 
+
+//text field state
+String id=''; 
+String password= ''; 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -41,6 +48,11 @@ class _LoginState extends State<Login> {
                 height: 44.0,
               ),
               TextField(
+                onChanged:(val){
+                  setState(() => id =val);
+                    
+                
+                } ,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   hintText: "User ID / Residency number",
@@ -55,6 +67,9 @@ class _LoginState extends State<Login> {
                 height: 26.0,
               ),
               TextField(
+                onChanged:(val){
+                  setState(() => password  =val); 
+                } ,
                 obscureText: true,
                 decoration: InputDecoration(
                   hintText: "User Password",
@@ -87,7 +102,10 @@ class _LoginState extends State<Login> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.0),
                   ),
-                  onPressed: () {},
+                  onPressed: () async{
+                    print(id); 
+                      print(password);
+                  },
                   child: Text(
                     "Login",
                     style: GoogleFonts.poppins(
