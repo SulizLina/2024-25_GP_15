@@ -3,9 +3,12 @@
 //LOG-In ....
 
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/screens/ViolationDetail.dart';
+
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Violationslist extends StatefulWidget {
   const Violationslist({super.key});
@@ -15,6 +18,27 @@ class Violationslist extends StatefulWidget {
 }
 
 class _ViolationslistState extends State<Violationslist> {
+  //firestore Driver stream
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  //Stream driverStream = FirebaseFirestore.instance.collection('Violation').snapshots();
+
+  //violations doc IDs
+   List<String> violations = [];
+
+  //get docIDs
+  Future getDocId() async{
+    await FirebaseFirestore.instance.collection('Violation').get().then(
+      (snapshot) => snapshot.docs.forEach((element){
+        print(element.reference);
+      }),
+    );
+  }
+
+  void initState(){
+    getDocId();
+    super.initState();
+  }
+
   final List<bool> isHoveredList = List.generate(10, (index) => false); // List to track hover state for each item
   late DateTime _dateTime = DateTime.now();
 
@@ -50,24 +74,14 @@ void getDatePicker() {
   });
 }
 
-  //late String driverID = ''; //From DB
-  
-  //final driverStream = FirebaseFirestore.instance.collection('drivers').snapshots(); //drivers//
-  List<DocumentSnapshot> violations = []; // List to hold violation documents
 /*
-    @override
-  void initState() {
-    super.initState();
-    fetchViolations();
-  }
-
   Future<void> fetchViolations() async { ///////////////!!
     try {
       String? userId = FirebaseAuth.instance.currentUser?.uid; // Get the current user's ID
       if (userId != null) {
         QuerySnapshot snapshot = await FirebaseFirestore.instance
-            .collection('violations') // Replace with your collection name
-            .where('driverID', isEqualTo: userId) // Query based on driverID
+            .collection('Violation') // Replace with your collection name
+            .where('DriverID ', isEqualTo: userId) // Query based on driverID
             .get();
 
         setState(() {
@@ -87,7 +101,7 @@ void getDatePicker() {
   @override
   Widget build(BuildContext context) {
         return Scaffold(
-          backgroundColor: Colors.white, // Set the background color to white
+          //backgroundColor: Colors.white, // Set the background color to white
       appBar: AppBar(
       automaticallyImplyLeading: false,
       elevation: 0,
@@ -171,56 +185,28 @@ void getDatePicker() {
       ),
 
 ///////////////////////////////Violations List for this driver/////////////////////////////////////////////////
-      body: Padding(
-  padding: EdgeInsets.symmetric(vertical: 20),
-  child: violations.isEmpty // Check if there are no violations
-      ? Center(
-          child: Text(
-            "You don't have any violations, ride safe :)",
-            style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
-          ),
+      body: Container(
+
+      ),
+      /* StreamBuilder(
+        
+        stream: driverStream,
+        builder: (context, snapshot){
+          if(snapshot.hasError){
+            return Text('connection error');
+          }
+
+          if(snapshot.connectionState == ConnectionState.waiting){
+            //connected but data not coming yet!
+            return const Text('Loading...'); //or image same like in Absher
+          }
+
+          var drivers = snapshot.data!.docs;
+          return Text('${drivers.length}');
+        },
         )
-      : ListView.separated(
-          itemBuilder: (BuildContext context, int index) {
-            return MouseRegion(
-              onEnter: (_) => setState(() => isHoveredList[index] = true),
-              onExit: (_) => setState(() => isHoveredList[index] = false),
-              child: Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isHoveredList[index] ? Colors.grey[300] : Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: isHoveredList[index]
-                      ? [BoxShadow(color: Colors.black26, blurRadius: 5)]
-                      : [],
-                ),
-                child: InkWell(
-                  onTap: () {
-                    // Navigate to ViolationDetail
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Violationdetail(), //ViolationDetail(violationId: violations[index]['violationID']); 
-                      ),
-                    );
-                  },
-                  child: ListTile(
-                    title: Text(
-                      'V#${violations[index]['violationID']}', // From DB
-                      style: GoogleFonts.poppins(fontSize: 22),
-                    ),
-                    trailing: Icon(Icons.arrow_forward, color: Colors.green, size: 20),
-                  ),
-                ),
-              ),
-            );
-          },
-          separatorBuilder: (BuildContext context, int index) {
-            return Divider(color: Colors.grey[200]);
-          },
-          itemCount: violations.length, // Number of violations
-        ),
-),
+        */
+        );
       
       
 
@@ -251,7 +237,6 @@ body: Padding(
       ),
 
       */
-    );
   
   }
 }
