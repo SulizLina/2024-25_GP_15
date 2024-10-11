@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Crasheslist extends StatefulWidget {
+  const Crasheslist({super.key});
+
   @override
   State<Crasheslist> createState() => _CrasheslistState();
 }

@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
+import 'package:sairdriver/screens/CrashesList.dart';
+import 'package:sairdriver/screens/RaiseCompliants.dart';
+import 'package:sairdriver/screens/ViewComplaints.dart';
+import 'package:sairdriver/screens/ViolationDetail.dart';
+import 'package:sairdriver/screens/ViolationsList.dart';
+import 'package:sairdriver/screens/home.dart';
+import 'package:sairdriver/screens/profilepage.dart';
 
-class MyBottomNav extends StatefulWidget {
-  const MyBottomNav({super.key});
+class BottomNavBar extends StatefulWidget {
+  const BottomNavBar({super.key});
 
   @override
-  State<MyBottomNav> createState() => _MyBottomNavState();
+  State<BottomNavBar> createState() => _MyBottomNavState();
 }
 
-class _MyBottomNavState extends State<MyBottomNav> {
+class _MyBottomNavState extends State<BottomNavBar> {
   final PersistentTabController _controller =
       PersistentTabController(initialIndex: 2);
 
@@ -83,10 +90,10 @@ List<PersistentBottomNavBarItem> _navbarItem() {
 // list of screen pages
 List<Widget> _buildScreen() {
   return const [
-    Center(child: Text('Crashes')),
-    Center(child: Text('Violations')),
-    Center(child: Text('Home')),
-    Center(child: Text('Complaints')),
-    Center(child: Text('Profile')),
+    Crasheslist(),
+    Violationslist(),
+    Home(),
+    Viewcomplaints(),
+    Profilepage(),
   ];
 }

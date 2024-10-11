@@ -2,10 +2,10 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        jcenter() // you can remove this if not needed
+        jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.0.0' // adjust version as needed
+        classpath 'com.android.tools.build:gradle:8.0.0'
         classpath 'com.google.gms:google-services:4.4.2'
     }
 }

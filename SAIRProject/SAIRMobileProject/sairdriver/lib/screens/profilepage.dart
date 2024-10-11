@@ -3,8 +3,7 @@ import 'editpasswordpage.dart';
 import 'edit_phone_page.dart'; // Page for editing phone number
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-
+import 'bottom_nav_bar.dart';
 class Profilepage extends StatefulWidget {
   const Profilepage({super.key});
 

@@ -9,8 +9,7 @@ import 'package:sairdriver/screens/login.dart';
 import 'package:sairdriver/screens/profilepage.dart';
 import 'package:sairdriver/services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth; // Alias firebase's User
-//import 'package:flutter_nav/bottom_nav/my_bottom_nav.dart';
-
+import 'screens/bottom_nav_bar.dart';
 void main() async {
   // Ensure that Firebase is initialized before running the app
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +24,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
     debugShowCheckedModeBanner: false,
-   home: Violationslist(), 
+   home: BottomNavBar(), 
    ) ;
   }
 
