@@ -18,14 +18,17 @@ class Violationslist extends StatefulWidget {
 }
 
 class _ViolationslistState extends State<Violationslist> {
+  final _violationStream = FirebaseFirestore.instance.collection('Violation').snapshots();
+
   //firestore Driver stream
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  //FirebaseFirestore firestore = FirebaseFirestore.instance;
   //Stream driverStream = FirebaseFirestore.instance.collection('Violation').snapshots();
 
   //violations doc IDs
-   List<String> violations = [];
+  //List<String> violations = [];
 
   //get docIDs
+  /*
   Future getDocId() async{
     await FirebaseFirestore.instance.collection('Violation').get().then(
       (snapshot) => snapshot.docs.forEach((element){
@@ -38,6 +41,7 @@ class _ViolationslistState extends State<Violationslist> {
     getDocId();
     super.initState();
   }
+  */
 
   final List<bool> isHoveredList = List.generate(10, (index) => false); // List to track hover state for each item
   late DateTime _dateTime = DateTime.now();
@@ -185,8 +189,29 @@ void getDatePicker() {
       ),
 
 ///////////////////////////////Violations List for this driver/////////////////////////////////////////////////
-      body: Container(
+      body: StreamBuilder(
+        stream: _violationStream,
+        builder: (context, snapshot){
+          if(snapshot.hasError){
+            return Text('connection error');
+          }
 
+          if(snapshot.connectionState == ConnectionState.waiting){
+            return const Text('Loading...');
+          }
+          var docs = snapshot.data!.docs; 
+          //return Text('${docs.length}'); //should return 1
+          return ListView.builder(
+            itemCount: docs.length,
+            itemBuilder : (context, index) {
+              return ListTile(
+                leading: const Icon(Icons.person),
+                title: Text(docs[index]['DriverID']),
+              );
+            }
+          );
+
+        },
       ),
       /* StreamBuilder(
         
