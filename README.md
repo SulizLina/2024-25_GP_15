@@ -2,8 +2,8 @@
 ## SAIR - Motorcycle Traffic Management System
 
 
-![SAIRLogo](https://github.com/user-attachments/assets/c8280be9-c2f9-4a26-9f26-02c8c200b967)
 
+![SAIRLogo 2](https://github.com/user-attachments/assets/4f61321d-b06c-490d-a4e6-30468f63fa6c)
 
 
 
