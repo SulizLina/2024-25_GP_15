@@ -312,4 +312,12 @@ class _Profilepage extends State<Profilepage> {
                 ),
               ),
               style: GoogleFonts.poppins(color: Color(0xFF211D1D)),
-     
+              obscureText: true,
+              readOnly: true,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
