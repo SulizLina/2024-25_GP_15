@@ -1,4 +1,4 @@
-/*import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class MyBottomNav extends StatefulWidget {
@@ -48,13 +48,13 @@ List<PersistentBottomNavBarItem> _navbarItem() {
     PersistentBottomNavBarItem(
       icon: const Icon(Icons.motorcycle),
       title: 'Crashes',
-      activeColorPrimary: Colors.green,
+      activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
     ),
     PersistentBottomNavBarItem(
       icon: const Icon(Icons.warning),
       title: 'Violations',
-      activeColorPrimary: Colors.green,
+      activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
     ),
     PersistentBottomNavBarItem(
@@ -62,19 +62,19 @@ List<PersistentBottomNavBarItem> _navbarItem() {
         Icons.home,
         color: Colors.white,
       ),
-      activeColorPrimary: Colors.green,
+      activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
     ),
     PersistentBottomNavBarItem(
       icon: const Icon(Icons.report),
       title: 'Complaints',
-      activeColorPrimary: Colors.green,
+      activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
     ),
     PersistentBottomNavBarItem(
       icon: const Icon(Icons.person),
       title: 'Profile',
-      activeColorPrimary: Colors.green,
+      activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
     ),
   ];
@@ -90,4 +90,3 @@ List<Widget> _buildScreen() {
     Center(child: Text('Profile')),
   ];
 }
-*/
