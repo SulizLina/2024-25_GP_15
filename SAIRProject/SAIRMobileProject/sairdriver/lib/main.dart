@@ -3,8 +3,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:sairdriver/Splash_Screen.dart';
 import 'package:sairdriver/models/user.dart'; // Your custom User class
+import 'package:sairdriver/screens/ViewComplaints.dart';
 import 'package:sairdriver/screens/ViolationsList.dart';
 import 'package:sairdriver/screens/login.dart';
+import 'package:sairdriver/screens/profilepage.dart';
 import 'package:sairdriver/services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth; // Alias firebase's User
 //import 'package:flutter_nav/bottom_nav/my_bottom_nav.dart';
@@ -12,7 +14,7 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth; // Alias fir
 void main() async {
   // Ensure that Firebase is initialized before running the app
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+   await Firebase.initializeApp();
   runApp(const MainApp());
 }
 
@@ -23,7 +25,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: Violationslist(), 
+   home: Violationslist(), 
    ) ;
   }
 

@@ -121,7 +121,7 @@ class _LoginState extends State<Login> {
                         phoneNumber: phoneController.text,
                         verificationCompleted: (verificationCompleted) {},
                         verificationFailed: (error) {
-                          log(error.toString());
+                         // log(error.toString());
                         },
                         codeSent: (verificationId, forceResendingToken) {
                           Navigator.push(
@@ -134,7 +134,7 @@ class _LoginState extends State<Login> {
                           );
                         },
                         codeAutoRetrievalTimeout: (verificationId) {
-                          log("Auto Retireval timeout");
+                          //log("Auto Retireval timeout");
                         });
                   },
                   child: Text(

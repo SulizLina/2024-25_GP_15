@@ -71,7 +71,7 @@ class _OtppageState extends State<Otppage> {
           const SizedBox(height: 30),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              primary: Color.fromARGB(202, 3, 152, 85),
+             // primary: Color.fromARGB(202, 3, 152, 85),
               padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -89,7 +89,7 @@ class _OtppageState extends State<Otppage> {
                 Navigator.push(
                     context, MaterialPageRoute(builder: (context) => Home()));
               } catch (e) {
-                log(e.toString());
+               // log(e.toString());
               }
             } else {
                 // Show an error to the user.
