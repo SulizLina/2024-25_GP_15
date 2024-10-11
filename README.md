@@ -1,8 +1,9 @@
 # 2024-25_GP_15
 ## SAIR - Motorcycle Traffic Management System
 
-<img width="457" alt="SAIR" src="https://github.com/user-attachments/assets/b4aa1a86-434a-41f6-acc3-9f93b693c128">
 
+
+![SAIRLogo 2](https://github.com/user-attachments/assets/4f61321d-b06c-490d-a4e6-30468f63fa6c)
 
 
 
