@@ -46,7 +46,7 @@ class _ViolationslistState extends State<Violationslist> {
   final List<bool> isHoveredList = List.generate(
       10, (index) => false); // List to track hover state for each item
   late DateTime _dateTime = DateTime.now();
-Future<void> fetchDocuments() async {
+  Future<void> fetchDocuments() async {
     try {
       QuerySnapshot querySnapshot =
           await FirebaseFirestore.instance.collection('Violation').get();
@@ -55,6 +55,7 @@ Future<void> fetchDocuments() async {
       print("Error fetching documents: $e");
     }
   }
+
   void getDatePicker() {
     showDatePicker(
       context: context,
@@ -205,11 +206,10 @@ Future<void> fetchDocuments() async {
 
 ///////////////////////////////Violations List for this driver/////////////////////////////////////////////////
       body: StreamBuilder<QuerySnapshot>(
-  
         stream: FirebaseFirestore.instance.collection('Violation').snapshots(),
-        builder: (context, snapshot)  {
-  fetchDocuments();
-  //}
+        builder: (context, snapshot) {
+          fetchDocuments();
+          //}
           if (snapshot.hasError) {
             return Text('connection error');
           }
@@ -217,21 +217,22 @@ Future<void> fetchDocuments() async {
             return const Text('Loading...');
           }
           if (snapshot.connectionState == ConnectionState.none) {
-      return Center(child: Text('No stream connection.'));
-    }
-    
-    if (snapshot.connectionState == ConnectionState.waiting) {
-      return Center(child: CircularProgressIndicator());
-    }
-    
-    /*if (snapshot.connectionState == ConnectionState.active) {
+            return Center(child: Text('No stream connection.'));
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          /*if (snapshot.connectionState == ConnectionState.active) {
       return Center(child: Text('active connection.'));
     }
     */
-    if (snapshot.connectionState == ConnectionState.done) {
-      return Center(child: Text('Stream is closed.'));}
+          if (snapshot.connectionState == ConnectionState.done) {
+            return Center(child: Text('Stream is closed.'));
+          }
           var docs = snapshot.data!.docs;
-    //      return Text('${docs.length}'); //should return 1
+          //      return Text('${docs.length}'); //should return 1
           return SizedBox(
             height: 200,
             child: ListView.builder(

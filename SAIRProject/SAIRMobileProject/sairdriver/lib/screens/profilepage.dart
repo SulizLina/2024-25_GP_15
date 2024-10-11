@@ -4,6 +4,7 @@ import 'edit_phone_page.dart'; // Page for editing phone number
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'bottom_nav_bar.dart';
+import 'package:sairdriver/models/Driver.dart';
 class Profilepage extends StatefulWidget {
   const Profilepage({super.key});
 
@@ -22,12 +23,14 @@ class _Profilepage extends State<Profilepage> {
   String password = "******"; // Hidden by default
 
   // Fetch user data from Firebase
-  Future<void> fetchUserData() async {
+    final _driverStream =
+      FirebaseFirestore.instance.collection('Driver').snapshots();
+      /*
+ Future<void> fetchUserData() async {
     DocumentSnapshot snapshot = await FirebaseFirestore.instance
-        .collection('users')
+        .collection('Driver')
         .doc('document-id') // Replace with actual document ID
         .get();
-
     setState(() {
       firstName = snapshot['firstName'];
       lastName = snapshot['lastName'];
@@ -43,7 +46,7 @@ class _Profilepage extends State<Profilepage> {
     super.initState();
     fetchUserData();
   }
-
+*/
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,7 +56,7 @@ class _Profilepage extends State<Profilepage> {
         elevation: 0,
         backgroundColor: Color.fromARGB(202, 3, 152, 85),
         shape: RoundedRectangleBorder(),
-        toolbarHeight: 120, // Adjust the toolbar height
+        toolbarHeight: 120,
         iconTheme: IconThemeData(color: Color(0xFF211D1D)),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -64,7 +67,7 @@ class _Profilepage extends State<Profilepage> {
                   padding: const EdgeInsets.only(left: 7),
                 ),
                 Transform.translate(
-                  offset: Offset(0, 10), // Move the text down by 10 pixels to match the home page
+                  offset: Offset(0, 10),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 5),
                     child: Text(
@@ -80,7 +83,7 @@ class _Profilepage extends State<Profilepage> {
                 ),
               ],
             ),
-            // Logout Icon aligned with text
+           
             IconButton(
               icon: Icon(
                 Icons.exit_to_app,
@@ -108,7 +111,7 @@ class _Profilepage extends State<Profilepage> {
               decoration: InputDecoration(
                 labelText: 'First name',
                 labelStyle: GoogleFonts.poppins(
-                    color: Color(0xFF211D1D)), // Changed label text color
+                    color: Color(0xFF211D1D)),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     color: Color.fromARGB(202, 3, 152, 85),
@@ -125,7 +128,7 @@ class _Profilepage extends State<Profilepage> {
                 ),
               ),
               style: GoogleFonts.poppins(
-                  color: Color(0xFF211D1D)), 
+                  color: Color(0xFF211D1D)),
               readOnly: true,
             ),
             SizedBox(height: 16),
@@ -309,12 +312,4 @@ class _Profilepage extends State<Profilepage> {
                 ),
               ),
               style: GoogleFonts.poppins(color: Color(0xFF211D1D)),
-              obscureText: true,
-              readOnly: true,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+     
