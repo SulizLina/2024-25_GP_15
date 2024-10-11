@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -49,6 +47,8 @@ class _OtppageState extends State<Otppage> {
                   width: 64,
                   child: TextFormField(
                     controller: otpController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(1)],
                     onChanged: (value) {
                       if (value.length == 1) {
                         FocusScope.of(context).nextFocus();
@@ -58,16 +58,11 @@ class _OtppageState extends State<Otppage> {
                       filled: true,
                       fillColor: Colors.grey.shade200,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    style: Theme.of(context).textTheme.headlineMedium,
-                    keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(1),
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
+                    style: GoogleFonts.poppins(fontSize: 20),
                   ),
                 );
               }),
@@ -75,7 +70,16 @@ class _OtppageState extends State<Otppage> {
           ),
           const SizedBox(height: 30),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Color.fromARGB(202, 3, 152, 85),
+              padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
             onPressed: () async {
+              String otpCode = otpController.text;
+              if (otpCode.length == 6) {
               try {
                 final cred = PhoneAuthProvider.credential(
                     verificationId: widget.verificationId,
@@ -87,33 +91,18 @@ class _OtppageState extends State<Otppage> {
               } catch (e) {
                 log(e.toString());
               }
+            } else {
+                // Show an error to the user.
+              }
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromARGB(202, 3, 152, 85),
-              padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
             child: Text(
               "Verify",
-              style: GoogleFonts.poppins(fontSize: 18),
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: 16,
+              ),
             ),
           ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text("Didn’t receive any code?"),
-              const SizedBox(width: 5),
-              Text(
-                "Resend Again",
-                style:
-                    GoogleFonts.poppins(color: Color.fromARGB(202, 3, 152, 85)),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
         ],
       ),
     );
