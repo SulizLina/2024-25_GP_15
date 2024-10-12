@@ -62,7 +62,7 @@ class _ProfilepageState extends State<Profilepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(201, 4, 126, 71),
+      backgroundColor: Color.fromARGB(201, 3, 152, 85),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
@@ -95,8 +95,8 @@ class _ProfilepageState extends State<Profilepage> {
               ),
               tooltip: 'Log Out',
               onPressed: () {
-                // Handle log out logic
                 FirebaseAuth.instance.signOut();
+                Navigator.pushNamed(context, 'Login');
               },
             ),
           ],
@@ -327,7 +327,7 @@ class _ProfilepageState extends State<Profilepage> {
                 obscureText: true,
                 readOnly: true,
               ),
-              const SizedBox(height: 95), 
+              const SizedBox(height: 95),
             ],
           ),
         ),
