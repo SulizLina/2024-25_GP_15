@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/models/violation.dart';
 import 'package:sairdriver/services/Violations_database.dart';
 import 'package:sairdriver/screens/RaiseCompliants.dart';
-//import 'package:google_maps_flutter/google_maps_flutter.dart'; // Import Google Maps
+import 'package:google_maps_flutter/google_maps_flutter.dart'; // Import Google Maps
 
 class Violationdetail extends StatefulWidget {
   @override
@@ -30,9 +30,13 @@ class _ViolationdetailState extends State<Violationdetail> {
   @override
   Widget build(BuildContext context) {
     //Violation violation = violations[0]; // Use the first violation for display////////
+    
     // Extract latitude and longitude from GeoPoint
     double latitude = violation!.location?.latitude ?? 0.0;
     double longitude = violation!.location?.longitude ?? 0.0;
+    //to display it in a map
+    LatLng violationLocation = LatLng(latitude, longitude);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -93,24 +97,24 @@ class _ViolationdetailState extends State<Violationdetail> {
                 Text('Lat: $latitude, Lon: $longitude', style:  GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))),
                 
                 const SizedBox(height: 20),
-                /*
+                
                 // Google Map Widget
                 Container(
                   height: 200,
                   child: GoogleMap(
                     initialCameraPosition: CameraPosition(
                       target: violationLocation, // Set the map's location to the violation coordinates
-                      zoom: 14.0, // Set the zoom level
+                      zoom: 15, // Set the zoom level
                     ),
                     markers: {
-                      Marker(
-                        markerId: MarkerId('violationLocation'),
+                      Marker( 
+                        markerId: MarkerId('violationLocationPin'), icon: BitmapDescriptor.defaultMarker,
                         position: violationLocation,
                       ),
                     },
                   ),
                 ),
-                */
+                
                 
                 const SizedBox(height: 20),
                 ElevatedButton(
