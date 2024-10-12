@@ -1,23 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sairdriver/models/violation.dart';
+import 'package:sairdriver/services/Violations_database.dart';
 import 'package:sairdriver/screens/RaiseCompliants.dart';
 //import 'package:google_maps_flutter/google_maps_flutter.dart'; // Import Google Maps
 
-class Violationdetail extends StatefulWidget {
-  @override
-  State<Violationdetail> createState() => _ViolationdetailState();
-}
 
-class _ViolationdetailState extends State<Violationdetail> {
-  String VType = 'Speed';
-  String VDateTime = '12:12';
-  String DSpeed = '200 Km'; 
-  String StreetSpeed = '150 km'; 
-  String VLocation = 'AlQirawan';
-  String VPrice = '100';
+class ViolationDetail extends StatelessWidget {
+  final Violation violation;
 
-  // Location coordinates for the map
- // final LatLng violationLocation = LatLng(24.7223622222, 46.63624); // Updated coordinates
+  const ViolationDetail({Key? key, required this.violation}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,16 +19,15 @@ class _ViolationdetailState extends State<Violationdetail> {
         elevation: 0,
         iconTheme: IconThemeData(color: Color(0xFF211D1D)), // Back arrow color changed
       ),
-      body: SingleChildScrollView( // Make the body scrollable
+      body: SingleChildScrollView(
         child: Center(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'V#111', //update later from DB
+                  'V#${violation.id}',
                   style: GoogleFonts.poppins(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -45,40 +36,46 @@ class _ViolationdetailState extends State<Violationdetail> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Violation Type: ',
-                  style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF211D1D)),
-                ),
-                Text('$VType', style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))),
-                const Divider(color: Colors.grey),
-                Text(
-                  'Date and Time: ',
+                  'Driver ID:',
                   style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF211D1D)), 
                 ),
-                Text('$VDateTime', style:  GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))), 
+                Text('${violation.driverId}', style:  GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))), 
                 const Divider(color: Colors.grey),
                 Text(
-                  'Motorcycle Speed: ',
+                  'GPS Number:',
                   style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF211D1D)),
                 ),
-                Text('$DSpeed', style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))), 
+                Text('${violation.gspNumber}', style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))), 
+                const Divider(color: Colors.grey),
+                Text(
+                  'Violation Date:',
+                  style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF211D1D)), 
+                ),
+                Text('${violation.dateTime?.toDate().toString() ?? 'N/A'}', style:  GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))),
+                const Divider(color: Colors.grey),
+                Text(
+                  'Spreed: ',
+                  style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF211D1D)),
+                ),
+                Text('${violation.speed} Km/h', style:  GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))), 
                 const Divider(color: Colors.grey),
                 Text(
                   'Street Speed: ',
-                  style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF211D1D)), 
-                ),
-                Text('$StreetSpeed', style:  GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))),
-                const Divider(color: Colors.grey),
-                Text(
-                  'Price: ',
-                  style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF211D1D)),
-                ),
-                Text('$VPrice SAR', style:  GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))), 
-                const Divider(color: Colors.grey),
-                Text(
-                  'Location: ',
                   style:  GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF211D1D)), 
                 ),
-                Text('$VLocation', style:  GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))),
+                Text('${violation.Maxspeed} Km/h', style:  GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))),
+                const Divider(color: Colors.grey),
+                Text(
+                  'Price:',
+                  style:  GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF211D1D)), 
+                ),
+                Text('${violation.price} SAR', style:  GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))),
+                const Divider(color: Colors.grey),
+                Text(
+                  'Location:',
+                  style:  GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF211D1D)), 
+                ),
+                Text('${violation.location != null ? 'Lat: ${violation.location!.latitude}, Lon: ${violation.location!.longitude}' : 'N/A'}', style:  GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))),
                 
                 const SizedBox(height: 20),
                 /*
@@ -105,7 +102,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const Raisecomplaint()),
+                      MaterialPageRoute(builder: (context) => const Raisecomplaint()), //////////////////for this violation
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -123,6 +120,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                 ),
                 const SizedBox(height: 20),
               ],
+            
             ),
           ),
         ),

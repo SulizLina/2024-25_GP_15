@@ -8,8 +8,9 @@ class Violation {
   String? gspNumber;
   GeoPoint? location;
   Timestamp? dateTime;
-  int? speed;
-  int? limit;
+  String? Maxspeed;
+  String? speed;
+  String? price;
 
   Violation({
     required this.id,
@@ -17,8 +18,9 @@ class Violation {
     required this.gspNumber,
     required this.location,
     required this.dateTime,
+    required this.Maxspeed,
     required this.speed,
-    required this.limit,
+    required this.price,
   });
 
 // Factory constructor to create a Violation from Firestore document
@@ -29,14 +31,15 @@ class Violation {
     return Violation(
       id: id,
       driverId: parsedJSON['DriverID'].toString(),
-      gspNumber: parsedJSON['GSPNUMBER'].toString(),
+      gspNumber: parsedJSON['GPSNumber'].toString(),
       location: GeoPoint(
         parsedJSON['Location'].latitude,
         parsedJSON['Location'].longitude,
       ),
       dateTime: parsedJSON['DateTime'] as Timestamp?,
-      speed: parsedJSON['Speed'] as int?,
-      limit: parsedJSON['Limit'] as int?,
+      speed: parsedJSON['Speed'] as String?,
+      Maxspeed: parsedJSON['MaxSpeed'] as String?,
+      price: parsedJSON['Price'] as String?,
     );
   }
 }
