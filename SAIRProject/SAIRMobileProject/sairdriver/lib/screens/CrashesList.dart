@@ -12,28 +12,29 @@ class _CrasheslistState extends State<Crasheslist> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor:  Color.fromARGB(255, 3, 152, 85), 
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
-        backgroundColor: Color.fromARGB(202, 3, 152, 85),
-        shape: RoundedRectangleBorder(),
+        backgroundColor: Color.fromARGB(255, 3, 152, 85), 
+        shape: const RoundedRectangleBorder(),
         toolbarHeight: 120, // Adjust the toolbar height
-        iconTheme: IconThemeData(color: Color(0xFF211D1D)),
+        iconTheme: const IconThemeData(color: Color(0xFF211D1D)),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 7),
+                const Padding(
+                  padding: EdgeInsets.only(left: 7),
                 ),
                 Transform.translate(
-                  offset: Offset(0, 10), // Move the text down by 10 pixels to match the home page
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 5),
+                  offset: const Offset(0, 10), // Move the text down by 10 pixels to match the home page
+                  child: const Padding(
+                    padding: EdgeInsets.only(left: 5),
                     child: Text(
                       "My Crashes",
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
                         fontSize: 24.0,
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -44,18 +45,28 @@ class _CrasheslistState extends State<Crasheslist> {
                 ),
               ],
             ),
-            // Logout Icon aligned with text 
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(left: 16.0), // Add left padding here
-        child: Center(
-        child: Text(
-          'This is a View crashes page. Will be done in Sprint 2',
-          style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
-          textAlign: TextAlign.center,
+      body: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.only(top: 16.0),
+        decoration: const BoxDecoration(
+          color: Colors.white, // White background for the content
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30), // Rounded top-left corner
+            topRight: Radius.circular(30), // Rounded top-right corner
+          ),
         ),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 16.0), // Add left padding here
+          child: Center(
+            child: Text(
+              'This is a View crashes page. Will be done in Sprint 2',
+              style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+          ),
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sairdriver/screens/login.dart';
 import 'editpasswordpage.dart';
 import 'edit_phone_page.dart'; // Page for editing phone number
 import 'package:google_fonts/google_fonts.dart';
@@ -62,11 +63,11 @@ class _ProfilepageState extends State<Profilepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(201, 3, 152, 85),
+      backgroundColor: Color.fromARGB(255, 3, 152, 85), 
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
-        backgroundColor: Color.fromARGB(201, 3, 152, 85),
+        backgroundColor: Color.fromARGB(255, 3, 152, 85), 
         toolbarHeight: 120,
         iconTheme: const IconThemeData(color: Colors.white),
         title: Row(
@@ -96,7 +97,10 @@ class _ProfilepageState extends State<Profilepage> {
               tooltip: 'Log Out',
               onPressed: () {
                 FirebaseAuth.instance.signOut();
-                Navigator.pushNamed(context, 'Login');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Login()),
+                );
               },
             ),
           ],

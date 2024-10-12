@@ -91,7 +91,7 @@ List<PersistentBottomNavBarItem> _navbarItem() {
 List<Widget> _buildScreen() {
   return [
     const Crasheslist(),
-    Violationdetail(),
+    Violationslist(),
     const Home(),
     const Viewcomplaints(),
     const Profilepage(),
