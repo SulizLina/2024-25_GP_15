@@ -32,8 +32,8 @@ class _ViolationdetailState extends State<Violationdetail> {
     //Violation violation = violations[0]; // Use the first violation for display////////
     
     // Extract latitude and longitude from GeoPoint
-    double latitude = violation!.location?.latitude ?? 0.0;
-    double longitude = violation!.location?.longitude ?? 0.0;
+    double latitude = 24.8348509; //violation!.location?.latitude ?? 0.0;
+    double longitude = 46.5882190; //violation!.location?.longitude ?? 0.0;
     //to display it in a map
     LatLng violationLocation = LatLng(latitude, longitude);
 
