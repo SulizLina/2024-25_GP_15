@@ -31,9 +31,10 @@ class _ViolationslistState extends State<Violationslist> {
 
       // Query Firestore for violations where driverID matches 1111111111
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('Violation') 
-          .where('DriverID ', isEqualTo: driverID) // Filter by driverID
+          .collection('Violation')
+          .where('DriverID', isEqualTo: driverID) // Removed extra spaces
           .get();
+
 
       setState(() {
         violations = snapshot.docs; // Store the retrieved documents
