@@ -21,6 +21,7 @@ class Violation {
     required this.limit,
   });
 
+// Factory constructor to create a Violation from Firestore document
   factory Violation.fromJson(DocumentSnapshot document) {
     String id = document.id;
     Map<String, dynamic> parsedJSON = document.data() as Map<String, dynamic>;
