@@ -3,10 +3,9 @@ import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sairdriver/models/user.dart';
+import 'package:sairdriver/auth/controller/auth_controller.dart';
 import 'package:sairdriver/screens/Forgotpass.dart';
 import 'package:sairdriver/screens/otppage.dart';
-import 'package:sairdriver/services/auth.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -16,11 +15,21 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-//final AuthService _auth = AuthService();
-  final phoneController = TextEditingController();
-//text field state
-  String phone = '';
-  String password = '';
+late final TextEditingController phoneController;
+  late final TextEditingController passwordController;
+  @override
+  void initState() {
+    phoneController = TextEditingController();
+    passwordController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    phoneController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -54,11 +63,11 @@ class _LoginState extends State<Login> {
                 height: 44.0,
               ),
               TextField(
-                /* onChanged:(val){
-                  setState(() => phone =val);
-                } ,*/
-                keyboardType: TextInputType.phone,
-                controller: phoneController,
+                  onTapOutside: (event) =>
+                FocusManager.instance.primaryFocus?.unfocus(),
+            controller: phoneController,
+            keyboardType: TextInputType.phone,
+               
                 decoration: InputDecoration(
                   hintText: "Enter Your Phone Number",
                   prefixIcon: Icon(
@@ -72,21 +81,23 @@ class _LoginState extends State<Login> {
               SizedBox(
                 height: 26.0,
               ),
-              /*
+              
               TextField(
-                onChanged:(val){
-                  setState(() => password  =val);
-                } ,
+                 onTapOutside: (event) =>
+                FocusManager.instance.primaryFocus?.unfocus(),
+            controller: passwordController,
+            keyboardType: TextInputType.visiblePassword,
                 obscureText: true,
                 decoration: InputDecoration(
                   hintText: "Enter Your Password",
+                  
                   prefixIcon: Icon(
                     Icons.lock,
                     color: Color.fromARGB(202, 3, 152, 85),
                   ),
                   contentPadding: EdgeInsets.symmetric(vertical: 20.0), // Align text and icon
                 ),
-              ),*/
+              ),
               SizedBox(
                 height: 12.0,
               ),
@@ -115,28 +126,11 @@ class _LoginState extends State<Login> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.0),
                   ),
-                  onPressed: () async {
-                    //Login with phone
-                    FirebaseAuth.instance.verifyPhoneNumber(
-                        phoneNumber: phoneController.text,
-                        verificationCompleted: (verificationCompleted) {},
-                        verificationFailed: (error) {
-                         // log(error.toString());
-                        },
-                        codeSent: (verificationId, forceResendingToken) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Otppage(
-                                  verificationId:
-                                      verificationId),
-                            ),
-                          );
-                        },
-                        codeAutoRetrievalTimeout: (verificationId) {
-                          //log("Auto Retireval timeout");
-                        });
-                  },
+                 onPressed: () async {
+                //await ref.read(authStateProvider.notifier).sendOtp(context,
+                   // phone: phoneController.text,
+                   // password: passwordController.text);
+             },
                   child: Text(
                     "Login",
                     style: GoogleFonts.poppins(

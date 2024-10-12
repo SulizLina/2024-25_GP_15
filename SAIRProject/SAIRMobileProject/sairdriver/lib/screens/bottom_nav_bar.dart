@@ -89,11 +89,11 @@ List<PersistentBottomNavBarItem> _navbarItem() {
 
 // list of screen pages
 List<Widget> _buildScreen() {
-  return const [
-    Crasheslist(),
-    Violationslist(),
-    Home(),
-    Viewcomplaints(),
-    Profilepage(),
+  return [
+    const Crasheslist(),
+    Violationdetail(),
+    const Home(),
+    const Viewcomplaints(),
+    const Profilepage(),
   ];
 }

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'package:sairdriver/models/user.dart'; // Your custom User class
+
 import 'package:sairdriver/screens/ViewComplaints.dart';
 import 'package:sairdriver/screens/ViolationsList.dart';
 import 'package:sairdriver/screens/login.dart';
 import 'package:sairdriver/screens/profilepage.dart';
-import 'package:sairdriver/services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth; // Alias firebase's User
 import 'screens/bottom_nav_bar.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
@@ -25,7 +24,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
     debugShowCheckedModeBanner: false,
-   home: Profilepage() /*AnimatedSplashScreen(
+   home: BottomNavBar() /*AnimatedSplashScreen(
             duration: 3000,
             splashIconSize: 160, // size of logo
             splash:Image.asset('assets/image/SAIRLogo.png',
