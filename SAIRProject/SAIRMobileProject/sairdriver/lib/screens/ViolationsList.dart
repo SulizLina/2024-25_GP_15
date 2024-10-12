@@ -22,6 +22,7 @@ class _ViolationslistState extends State<Violationslist> {
 
   Future<void> fetchViolations() async {
     String driverID = "1111111111"; // Static driverID for now
+    
     // Fetch violations from the data layer
     List<Violation> fetchedViolations = await ViolationsDatabase().getViolations(driverID);
     
