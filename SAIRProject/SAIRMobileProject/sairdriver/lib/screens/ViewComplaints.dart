@@ -12,23 +12,24 @@ class _ViewcomplaintsState extends State<Viewcomplaints> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 3, 152, 85),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
-        backgroundColor: Color.fromARGB(202, 3, 152, 85),
-        shape: RoundedRectangleBorder(),
+        backgroundColor: const Color.fromARGB(255, 3, 152, 85), 
+        shape: const RoundedRectangleBorder(),
         toolbarHeight: 120, // Adjust the toolbar height
-        iconTheme: IconThemeData(color: Color(0xFF211D1D)),
+        iconTheme: const IconThemeData(color: Color(0xFF211D1D)),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 7),
+                const Padding(
+                  padding: EdgeInsets.only(left: 7),
                 ),
                 Transform.translate(
-                  offset: Offset(0, 10), // Move the text down by 10 pixels to match the home page
+                  offset: const Offset(0, 10), // Move the text down by 10 pixels to match the home page
                   child: Padding(
                     padding: const EdgeInsets.only(left: 5),
                     child: Text(
@@ -44,15 +45,28 @@ class _ViewcomplaintsState extends State<Viewcomplaints> {
                 ),
               ],
             ),
-            // Logout Icon aligned with text 
           ],
         ),
       ),
-      body: Center(
-        child: Text(
-          'This is a View complaint page. Will be done in Sprint 2',
-          style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
-          textAlign: TextAlign.center,
+      body: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.only(top: 16.0),
+        decoration: const BoxDecoration(
+          color: Colors.white, // White background for the content
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30), // Rounded top-left corner
+            topRight: Radius.circular(30), // Rounded top-right corner
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 16.0), // Add left padding here
+          child: Center(
+            child: Text(
+              'This is a View complaints page. Will be done in Sprint 2',
+              style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+          ),
         ),
       ),
     );

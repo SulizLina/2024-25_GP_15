@@ -33,33 +33,43 @@ class _MyBottomNavState extends State<BottomNavBar> {
       screens: _buildScreen(),
       items: _navbarItem(),
       navBarStyle: NavBarStyle.style15,
-      animationSettings: const NavBarAnimationSettings(
-          navBarItemAnimation: ItemAnimationSettings(
-            // Navigation Bar's items animation properties.
-            duration: Duration(milliseconds: 400),
-            curve: Curves.ease,
+      backgroundColor: Colors.white,
+      decoration: NavBarDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1), // Color for shadow
+            blurRadius: 10, // Spread of the shadow
+            offset: const Offset(0, -3), // Position of shadow (above nav bar)
           ),
-          screenTransitionAnimation: ScreenTransitionAnimationSettings(
-            // Screen transition animation on change of selected tab.
-            animateTabTransition: true,
-            duration: Duration(milliseconds: 500),
-            screenTransitionAnimationType: ScreenTransitionAnimationType.slide,
-          )),
+        ],
+      ),
+      navBarHeight: 55, // Reduced height to make navbar more compact
+      animationSettings: const NavBarAnimationSettings(
+        navBarItemAnimation: ItemAnimationSettings(
+          duration: Duration(milliseconds: 400),
+          curve: Curves.ease,
+        ),
+        screenTransitionAnimation: ScreenTransitionAnimationSettings(
+          animateTabTransition: true,
+          duration: Duration(milliseconds: 500),
+          screenTransitionAnimationType: ScreenTransitionAnimationType.slide,
+        ),
+      ),
     );
   }
 }
 
-// bottom items
+// Bottom NavBar Items
 List<PersistentBottomNavBarItem> _navbarItem() {
   return [
     PersistentBottomNavBarItem(
-      icon: const Icon(Icons.motorcycle),
+      icon: const Icon(Icons.motorcycle, size: 31), // Smaller icon size
       title: 'Crashes',
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
     ),
     PersistentBottomNavBarItem(
-      icon: const Icon(Icons.warning),
+      icon: const Icon(Icons.warning, size: 31), // Smaller icon size
       title: 'Violations',
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
@@ -68,18 +78,19 @@ List<PersistentBottomNavBarItem> _navbarItem() {
       icon: const Icon(
         Icons.home,
         color: Colors.white,
+        size: 28, // Home icon remains larger and unchanged
       ),
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
     ),
     PersistentBottomNavBarItem(
-      icon: const Icon(Icons.report),
+      icon: const Icon(Icons.report, size: 31), // Smaller icon size
       title: 'Complaints',
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
     ),
     PersistentBottomNavBarItem(
-      icon: const Icon(Icons.person),
+      icon: const Icon(Icons.person, size: 31), // Smaller icon size
       title: 'Profile',
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
@@ -87,11 +98,11 @@ List<PersistentBottomNavBarItem> _navbarItem() {
   ];
 }
 
-// list of screen pages
+// List of Screens for Bottom NavBar
 List<Widget> _buildScreen() {
   return [
     const Crasheslist(),
-    Violationdetail(),
+    Violationslist(),
     const Home(),
     const Viewcomplaints(),
     const Profilepage(),
