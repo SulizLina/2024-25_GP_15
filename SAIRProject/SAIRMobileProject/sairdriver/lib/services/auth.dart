@@ -14,7 +14,7 @@ class AuthService {
   Stream<User?> get user {
     return _auth.authStateChanges().map(_userFromFirebaseUser);
   }
-
+/*
   // Sign in anonymously
   Future<User?> signinAnon() async {
     try {
@@ -25,5 +25,5 @@ class AuthService {
       print(e.toString());
       return null;
     }
-  }
+  }*/
 }
