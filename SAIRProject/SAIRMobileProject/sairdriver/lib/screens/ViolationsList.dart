@@ -21,8 +21,8 @@ class _ViolationslistState extends State<Violationslist> {
   }
 
   Future<void> fetchViolations() async {
-    String driverID = "1111111111"; // Static driverID for now /////////////////////////
-
+    String driverID = "1111111111"; // Static driverID for now
+    
     // Fetch violations from the data layer
     List<Violation> fetchedViolations = await ViolationsDatabase().getViolations(driverID);
     
@@ -145,7 +145,7 @@ class _ViolationslistState extends State<Violationslist> {
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(vertical: 20),
-        child: violations.isEmpty // Check if there are no violations
+        child: violations.isEmpty
             ? Center(
                 child: Text(
                   "You don't have any violations, ride safe :)",
@@ -171,14 +171,14 @@ class _ViolationslistState extends State<Violationslist> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ViolationDetail(violation: violations[index]), //ViolationDetail(violationId: violations[index].id)
+                              builder: (context) => Violationdetail(),
                             ),
                           );
                         },
                         child: ListTile(
-                          title: Text( 
+                          title: Text(
                             'V#${violations[index].id}', // Use violation model
-                            style: GoogleFonts.poppins(fontSize: 10),
+                            style: GoogleFonts.poppins(fontSize: 22),
                           ),
                           trailing: Icon(Icons.arrow_forward,
                               color: Colors.green, size: 20),

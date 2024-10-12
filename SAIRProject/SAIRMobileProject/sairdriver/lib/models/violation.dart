@@ -32,10 +32,7 @@ class Violation {
       id: id,
       driverId: parsedJSON['DriverID'].toString(),
       gspNumber: parsedJSON['GPSNumber'].toString(),
-      location: GeoPoint(
-        parsedJSON['Location'].latitude,
-        parsedJSON['Location'].longitude,
-      ),
+      location: parsedJSON['Location'] as GeoPoint?,
       dateTime: parsedJSON['DateTime'] as Timestamp?,
       speed: parsedJSON['Speed'] as String?,
       Maxspeed: parsedJSON['MaxSpeed'] as String?,
