@@ -11,6 +11,8 @@ class Violationdetail extends StatefulWidget {
 }
 
 class _ViolationdetailState extends State<Violationdetail> {
+  static const LatLng Loc = LatLng(24.8348509, -46.5882190);
+
   Violation? violation; // Use a single Violation object
   //List<Violation> violations = [];
   //final String driverID = "1111111111"; // Set the driver ID here////////////
@@ -33,9 +35,9 @@ class _ViolationdetailState extends State<Violationdetail> {
     
     // Extract latitude and longitude from GeoPoint
     double latitude = 24.8348509; //violation!.location?.latitude ?? 0.0;
-    double longitude = 46.5882190; //violation!.location?.longitude ?? 0.0;
+    double longitude = -46.5882190; //violation!.location?.longitude ?? 0.0;
     //to display it in a map
-    LatLng violationLocation = LatLng(latitude, longitude);
+    //LatLng violationLocation = LatLng(latitude, longitude);
 
     return Scaffold(
       appBar: AppBar(
@@ -103,15 +105,17 @@ class _ViolationdetailState extends State<Violationdetail> {
                   height: 200,
                   child: GoogleMap(
                     initialCameraPosition: CameraPosition(
-                      target: violationLocation, // Set the map's location to the violation coordinates
-                      zoom: 15, // Set the zoom level
+                      target: Loc, // Set the map's location to the violation coordinates
+                      zoom: 13, // Set the zoom level
                     ),
+                    /*
                     markers: {
                       Marker( 
                         markerId: MarkerId('violationLocationPin'), icon: BitmapDescriptor.defaultMarker,
-                        position: violationLocation,
+                        position: Loc,
                       ),
                     },
+                    */
                   ),
                 ),
                 
