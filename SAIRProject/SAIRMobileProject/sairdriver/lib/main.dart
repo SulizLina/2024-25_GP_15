@@ -7,6 +7,7 @@ import 'package:sairdriver/screens/ViolationsList.dart';
 import 'package:sairdriver/screens/login.dart';
 import 'package:sairdriver/screens/profilepage.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth; // Alias firebase's User
+import 'package:sairdriver/screens/welcomepage.dart';
 import 'screens/bottom_nav_bar.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 
@@ -24,14 +25,14 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
     debugShowCheckedModeBanner: false,
-   home: BottomNavBar() /*AnimatedSplashScreen(
+   home: AnimatedSplashScreen(
             duration: 3000,
             splashIconSize: 160, // size of logo
             splash:Image.asset('assets/image/SAIRLogo.png',
             ),
-            nextScreen: Login(),// navigate to this screen
+            nextScreen: Welcomepage(),// navigate to this screen
             splashTransition: SplashTransition.scaleTransition, // the way of transition
-            )*/
+            )
   );
   
   }
