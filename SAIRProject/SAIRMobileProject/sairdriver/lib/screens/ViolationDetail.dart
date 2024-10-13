@@ -25,7 +25,7 @@ class _ViolationdetailState extends State<Violationdetail> {
 
   Future<void> fetchViolation() async {
     ViolationsDatabase db = ViolationsDatabase();
-    violation = await db.getViolationById('eCf3oBckySvFeeLqzgby'); // Fetch by document ID
+    //violation = await db.getViolationById('eCf3oBckySvFeeLqzgby'); // Fetch by document ID
     setState(() {});
   }
 
@@ -84,13 +84,13 @@ class _ViolationdetailState extends State<Violationdetail> {
                   'Street Speed: ',
                   style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF211D1D)), 
                 ),
-                Text('${violation!.Maxspeed}', style:  GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))),
+                //Text('${violation!.Maxspeed}', style:  GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))),
                 const Divider(color: Colors.grey),
                 Text(
                   'Price: ',
                   style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF211D1D)),
                 ),
-                Text('${violation!.price} SAR', style:  GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))), 
+                //Text('${violation!.price} SAR', style:  GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))), 
                 const Divider(color: Colors.grey),
                 Text(
                   'Location: ',
