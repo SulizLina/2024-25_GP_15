@@ -33,6 +33,8 @@ class DriverDatabase {
       return null; // Return null on error
     }
   }
+
+  
   /*final CollectionReference motorcycleCollection =
       FirebaseFirestore.instance.collection('Motorcycle');
 
