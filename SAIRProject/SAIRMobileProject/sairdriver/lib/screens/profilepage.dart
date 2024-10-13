@@ -20,7 +20,6 @@ class _ProfilepageState extends State<Profilepage> {
   driver? driverInf; // Driver information
   String?
       plateNumber; // To hold plate number fetched from Motorcycle collection
-  bool isLoading = true; // To show loading state
   String password = '*****';
   @override
   void initState() {
@@ -38,10 +37,6 @@ MotorcycleDatabase mdb = MotorcycleDatabase() ;
     // Fetch plate number using the driver's ID
     plateNumber = await mdb
         .getPlateNumberByDriverId('LMUhIgvgZa3H07D0IQvs'); //currentUser!.uid
-
-    setState(() {
-      isLoading = false; // Stop loading once data is fetched
-    });
   }
 
   @override
@@ -90,11 +85,7 @@ MotorcycleDatabase mdb = MotorcycleDatabase() ;
           ],
         ),
       ),
-      body: isLoading
-          ? const Center(
-              child:
-                  CircularProgressIndicator()) // Show loading spinner while data is being fetched
-          : Container(
+      body:  Container(
               width: double.infinity,
               padding: const EdgeInsets.only(top: 16.0),
               decoration: const BoxDecoration(
