@@ -2,9 +2,7 @@
 //LOG-In ....
 
 import 'package:flutter/material.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:sairdriver/models/violation.dart';
 import 'package:sairdriver/services/Violations_database.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -60,15 +58,15 @@ void getDatePicker() {
       return Theme(
         data: ThemeData.light().copyWith(
           colorScheme: ColorScheme.light(
-            primary: const Color(0xFF03A285), // Change the primary color of the calendar
-            onPrimary: Colors.white, // Change the text color on the primary color
-            surface: Colors.white, // Change the background color of the calendar
+            primary: const Color(0xFF03A285), 
+            onPrimary: Colors.white, 
+            surface: Colors.white, 
           ),
-          dialogBackgroundColor: Colors.white, // Change the background color of the dialog
+          dialogBackgroundColor: Colors.white, 
         ),
         child: Container(
-          height: 20, // Set the height of the calendar
-          width: 20, // Set the width of the calendar
+          height: 10, 
+          width: 10, 
           child: child,
         ),
       );
@@ -87,19 +85,18 @@ void getDatePicker() {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 3, 152, 85),  // Set the background color to white
       appBar: AppBar(
-      automaticallyImplyLeading: false,
-      elevation: 0,
-      backgroundColor: Color.fromARGB(255, 3, 152, 85), //Color(0xFF00BF63)
-        toolbarHeight: 120,// Adjust the toolbar height
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        automaticallyImplyLeading: false,
+        elevation: 0,
+        backgroundColor: Color.fromARGB(255, 3, 152, 85), // Color(0xFF00BF63)
+        toolbarHeight: 120, // Adjust the toolbar height
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between title and date filter
           children: [
-          Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 7),
-                ),
-                Transform.translate(
+            // Title section
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 7),
+                child: Transform.translate(
                   offset: const Offset(0, 10), // Move the text down by 10 pixels to match the home page
                   child: Padding(
                     padding: const EdgeInsets.only(left: 5),
@@ -114,55 +111,27 @@ void getDatePicker() {
                     ),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox( height: 15), // Space between title and date filter
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
               ),
-              child: Center(
-                child: Container(
-                  width: double.infinity,
-                  height: 40,
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          getDatePicker();
-                        },
-                        icon: const Icon(Icons.calendar_month,
-                            color: Color.fromARGB(202, 3, 152, 85), size: 28),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Text(
-                            "Select Date",
-                            style: GoogleFonts.poppins(
-                                fontSize: 16, color: const Color(0xFF211D1D)),
-                          ),
-                        ),
-                      ),
+            ),
 
-                    ],
-                  ),
+            // Date filter icon
+            Padding( // Added Padding widget to control the position of the icon
+              padding: const EdgeInsets.only(right: 18, top: 10), //////////////////////
+              child: IconButton(
+                onPressed: () {
+                  getDatePicker();
+                },
+                icon: const Icon(
+                  Icons.calendar_month,
+                  color: Colors.white, 
+                  size: 30, 
                 ),
               ),
-            )
-        
-
+            ),
           ],
         ),
       ),
+
 
       body: Container(
         width: double.infinity,
@@ -220,8 +189,11 @@ void getDatePicker() {
                       'V#${violations[index].id}', // From DB
                       style: GoogleFonts.poppins(fontSize: 17),
                     ),
-                    trailing: Icon(Icons.arrow_forward,
-                        color: Colors.green, size: 20),
+                    trailing: Icon(
+                      Icons.arrow_forward_ios, 
+                      color: Color.fromARGB(202, 3, 152, 85), 
+                      size: 20, 
+                    ),
                   ),
                 ),
               ),
