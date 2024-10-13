@@ -118,7 +118,29 @@ class _ViolationdetailState extends State<Violationdetail> {
                     */
                   ),
                 ),
-                
+                //disaple raise violation when violation is before 30 days //////////////////NOT SURE////////////////////
+                ElevatedButton(
+                onPressed: violation != null && violation!.dateTime != null && 
+                  DateTime.parse(violation!.dateTime.toString()).isAfter(DateTime.now().subtract(Duration(days: 30))) ? () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Raisecomplaint()),
+                    );
+                  } : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromARGB(202, 3, 152, 85),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  textStyle: GoogleFonts.poppins(fontSize: 18),
+                ),
+                child: Text(
+                  'Raise a Complaint',
+                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
+                ),
+              ),
+
                 
                 const SizedBox(height: 20),
                 ElevatedButton(
