@@ -25,15 +25,14 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
     debugShowCheckedModeBanner: false,
-   home:BottomNavBar()
-   /*AnimatedSplashScreen(
+   home:AnimatedSplashScreen(
             duration: 3000,
             splashIconSize: 160, // size of logo
             splash:Image.asset('assets/image/SAIRLogo.png',
             ),
             nextScreen: Welcomepage(),// navigate to this screen
             splashTransition: SplashTransition.scaleTransition, // the way of transition
-            )*/
+            )
   );
   
   }

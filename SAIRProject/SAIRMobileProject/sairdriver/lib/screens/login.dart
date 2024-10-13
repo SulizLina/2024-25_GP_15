@@ -52,7 +52,7 @@ class _LoginState extends State<Login> {
                 height: 20.0,
               ),
               Text(
-                "Welcome to SAIR, \n Glad to see you again!", //chande the size
+                "Welcome to SAIR, Glad to see you again!", //chande the size
                 style: GoogleFonts.poppins(
                   color: Color.fromARGB(202, 3, 152, 85),
                   fontSize: 24,
