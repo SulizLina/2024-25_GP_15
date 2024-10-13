@@ -15,7 +15,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-late final TextEditingController phoneController;
+  late final TextEditingController phoneController;
   late final TextEditingController passwordController;
   @override
   void initState() {
@@ -34,6 +34,7 @@ late final TextEditingController phoneController;
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        backgroundColor: Colors.white,
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -63,11 +64,10 @@ late final TextEditingController phoneController;
                 height: 44.0,
               ),
               TextField(
-                  onTapOutside: (event) =>
-                FocusManager.instance.primaryFocus?.unfocus(),
-            controller: phoneController,
-            keyboardType: TextInputType.phone,
-               
+                onTapOutside: (event) =>
+                    FocusManager.instance.primaryFocus?.unfocus(),
+                controller: phoneController,
+                keyboardType: TextInputType.phone,
                 decoration: InputDecoration(
                   hintText: "Enter Your Phone Number",
                   prefixIcon: Icon(
@@ -81,21 +81,21 @@ late final TextEditingController phoneController;
               SizedBox(
                 height: 26.0,
               ),
-              
               TextField(
-                 onTapOutside: (event) =>
-                FocusManager.instance.primaryFocus?.unfocus(),
-            controller: passwordController,
-            keyboardType: TextInputType.visiblePassword,
+                onTapOutside: (event) =>
+                    FocusManager.instance.primaryFocus?.unfocus(),
+                controller: passwordController,
+                keyboardType: TextInputType.visiblePassword,
                 obscureText: true,
                 decoration: InputDecoration(
                   hintText: "Enter Your Password",
-                  
+
                   prefixIcon: Icon(
                     Icons.lock,
                     color: Color.fromARGB(202, 3, 152, 85),
                   ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 20.0), // Align text and icon
+                  contentPadding: EdgeInsets.symmetric(
+                      vertical: 20.0), // Align text and icon
                 ),
               ),
               SizedBox(
@@ -126,11 +126,9 @@ late final TextEditingController phoneController;
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.0),
                   ),
-                 onPressed: () async {
-                //await ref.read(authStateProvider.notifier).sendOtp(context,
-                   // phone: phoneController.text,
-                   // password: passwordController.text);
-             },
+                  onPressed: () async {
+                    
+                  },
                   child: Text(
                     "Login",
                     style: GoogleFonts.poppins(
