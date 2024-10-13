@@ -80,67 +80,69 @@ class _EditpasswordpageState extends State<Editpasswordpage> {
         //User? currentUser = FirebaseAuth.instance.currentUser;
 
         //if (currentUser != null) {
-          // Update the password in Firebase Authentication
-         // await currentUser.updatePassword(_passwordController.text);
+        // Update the password in Firebase Authentication
+        // await currentUser.updatePassword(_passwordController.text);
 /*final bytes = utf8.encode(_passwordController.text); // data being hashed
 final digest = sha256.convert(bytes);*/
-          // Update password in Firestore (if needed)
-          await FirebaseFirestore.instance
-              .collection('Driver')
-              .doc("LMUhIgvgZa3H07D0IQvs") // Use currentUser.uid
-              .update({
-            'Password': _passwordController.text,
-          });
+        // Update password in Firestore (if needed)
+        await FirebaseFirestore.instance
+            .collection('Driver')
+            .doc("LMUhIgvgZa3H07D0IQvs") // Use currentUser.uid
+            .update({
+          'Password': _passwordController.text,
+        });
 
-          // Show success dialog once password is updated
-         showDialog(
-  context: context,
-  builder: (BuildContext context) {
-    return AlertDialog(
-      title: Text(
-        'Success',
-        style: GoogleFonts.poppins(
-          fontWeight: FontWeight.bold,
-          color: Color.fromARGB(201, 3, 152, 85),
-        ),
-      ),
-      content: Text(
-        'Your password has been updated successfully!',
-        style: GoogleFonts.poppins(fontSize: 16),
-      ),
-      actions: <Widget>[
-        // Cancel Button
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop(); // Close the dialog, stay on the same page
+        // Show success dialog once password is updated
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text(
+                'Success',
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(201, 3, 152, 85),
+                ),
+              ),
+              content: Text(
+                'Your password has been updated successfully!',
+                style: GoogleFonts.poppins(fontSize: 16),
+              ),
+              actions: <Widget>[
+                // Cancel Button
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context)
+                        .pop(); // Close the dialog, stay on the same page
+                  },
+                  child: Text(
+                    'Cancel',
+                    style: GoogleFonts.poppins(color: Colors.red),
+                  ),
+                ),
+                // OK Button
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                    Navigator.pushNamed(
+                        context, 'profilepage'); // Navigate to the profile page
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color.fromARGB(201, 3, 152, 85),
+                  ),
+                  child: Text(
+                    'OK',
+                    style: GoogleFonts.poppins(color: Colors.white),
+                  ),
+                ),
+              ],
+            );
           },
-          child: Text(
-            'Cancel',
-            style: GoogleFonts.poppins(color: Colors.red),
-          ),
-        ),
-        // OK Button
-        ElevatedButton(
-          onPressed: () {
-            Navigator.of(context).pop(); // Close the dialog
-            Navigator.pushNamed(context, 'profilepage'); // Navigate to the profile page
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Color.fromARGB(201, 3, 152, 85),
-          ),
-          child: Text(
-            'OK',
-            style: GoogleFonts.poppins(color: Colors.white),
-          ),
-        ),
-      ],
-    );
-  },
-);
+        );
 
         //} else {
-          // Handle the case where the user is not logged in
-          //print('User is not logged in.');
+        // Handle the case where the user is not logged in
+        //print('User is not logged in.');
         //}
       } catch (e) {
         // Handle errors during password update
@@ -236,14 +238,16 @@ final digest = sha256.convert(bytes);*/
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: Color.fromARGB(201, 3, 152, 85), // Green border color
+                      color:
+                          Color.fromARGB(201, 3, 152, 85), // Green border color
                       width: 1.5,
                     ),
                     borderRadius: BorderRadius.circular(10), // Rounded corners
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: Color.fromARGB(201, 3, 152, 85), // Green border when focused
+                      color: Color.fromARGB(
+                          201, 3, 152, 85), // Green border when focused
                       width: 2.0,
                     ),
                     borderRadius: BorderRadius.circular(10), // Rounded corners
@@ -257,7 +261,8 @@ final digest = sha256.convert(bytes);*/
                   ),
                   focusedErrorBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: Colors.red, // Red border color when focused and error
+                      color:
+                          Colors.red, // Red border color when focused and error
                       width: 2.0,
                     ),
                     borderRadius: BorderRadius.circular(10), // Rounded corners
@@ -290,21 +295,22 @@ final digest = sha256.convert(bytes);*/
                     ),
                     onPressed: () {
                       setState(() {
-                        _isConfirmPasswordVisible =
-                            !_isConfirmPasswordVisible;
+                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
                       });
                     },
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: Color.fromARGB(201, 3, 152, 85), // Green border color
+                      color:
+                          Color.fromARGB(201, 3, 152, 85), // Green border color
                       width: 1.5,
                     ),
                     borderRadius: BorderRadius.circular(10), // Rounded corners
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: Color.fromARGB(201, 3, 152, 85), // Green border when focused
+                      color: Color.fromARGB(
+                          201, 3, 152, 85), // Green border when focused
                       width: 2.0,
                     ),
                     borderRadius: BorderRadius.circular(10), // Rounded corners
@@ -318,7 +324,8 @@ final digest = sha256.convert(bytes);*/
                   ),
                   focusedErrorBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: Colors.red, // Red border color when focused and error
+                      color:
+                          Colors.red, // Red border color when focused and error
                       width: 2.0,
                     ),
                     borderRadius: BorderRadius.circular(10), // Rounded corners
@@ -346,9 +353,11 @@ final digest = sha256.convert(bytes);*/
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(201, 3, 152, 85), // Green background
+                    backgroundColor:
+                        Color.fromARGB(201, 3, 152, 85), // Green background
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0), // Rounded corners
+                      borderRadius:
+                          BorderRadius.circular(15.0), // Rounded corners
                     ),
                     padding: EdgeInsets.symmetric(
                         vertical: 16), // Add vertical padding
