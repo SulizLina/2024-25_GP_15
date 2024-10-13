@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';  // For Firebase Firestore
-import 'package:firebase_auth/firebase_auth.dart';  // For Firebase Authentication
-import 'package:sairdriver/messages/error_messages.dart';  
-import 'package:sairdriver/messages/success_dialog.dart';  
-import 'package:sairdriver/messages/phone_validator.dart';  
+import 'package:cloud_firestore/cloud_firestore.dart'; // For Firebase Firestore
+import 'package:firebase_auth/firebase_auth.dart'; // For Firebase Authentication
+import 'package:sairdriver/messages/error_messages.dart';
+import 'package:sairdriver/messages/success_dialog.dart';
+import 'package:sairdriver/messages/phone_validator.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class EditPhonePage extends StatefulWidget {
   @override
@@ -28,20 +29,20 @@ class _EditPhonePageState extends State<EditPhonePage> {
   // Function to update phone number in Firebase
   Future<void> updatePhoneNumberInFirebase(String phoneNumber) async {
     try {
-      User? currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser != null) {
+      //User? currentUser = FirebaseAuth.instance.currentUser;
+      //if (currentUser != null) {
         // Update phone number in the Firestore document for the user
         await FirebaseFirestore.instance
             .collection('Driver')
-            .doc(currentUser.uid)
+            .doc("LMUhIgvgZa3H07D0IQvs") // Use currentUser.uid
             .update({
           'PhoneNumber': phoneNumber,
-        });
-      } else {
-        setState(() {
-          errorMessage = 'User is not logged in.';
-        });
-      }
+        } );
+     // } /else {
+       // setState(() {
+         // errorMessage = 'User is not logged in.';
+       // });
+   // }
     } catch (e) {
       setState(() {
         errorMessage = 'Failed to update phone number. Please try again.';
@@ -49,7 +50,7 @@ class _EditPhonePageState extends State<EditPhonePage> {
     }
   }
 
-  // Function to show success dialog
+  // Function to show success dialog and navigate to profile page
   void showSuccessDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -62,7 +63,10 @@ class _EditPhonePageState extends State<EditPhonePage> {
               child: Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
-                Navigator.of(context).pop(); // Go back to the previous page
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/profile', // Navigate to the named profile route
+                  (Route<dynamic> route) => false, // Remove all other routes
+                );
               },
             ),
           ],
@@ -73,6 +77,9 @@ class _EditPhonePageState extends State<EditPhonePage> {
 
   // Function to handle phone number update
   Future<void> _updatePhoneNumber() async {
+     setState(() {
+    errorMessage = null;
+  });
     if (_formKey.currentState != null && _formKey.currentState!.validate()) {
       String phoneNumber = _phoneController.text;
 
@@ -93,6 +100,7 @@ class _EditPhonePageState extends State<EditPhonePage> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,98 +110,114 @@ class _EditPhonePageState extends State<EditPhonePage> {
         iconTheme: IconThemeData(color: Colors.black), // Back arrow color
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Bold Green Text (Heading)
-              Text(
-                'Update Your Phone Number',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(201, 3, 152, 85),
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 20,
                 ),
-              ),
-              SizedBox(height: 20), // Space between heading and input field
-
-              // Phone Number Input Field with Green Border
-             TextFormField(
-  controller: _phoneController,
-  decoration: InputDecoration(
-    labelText: 'Enter Your Phone Number',
-    enabledBorder: OutlineInputBorder(
-      borderSide: BorderSide(
-        color: Color.fromARGB(201, 3, 152, 85), // Green border when not focused
-        width: 1.5,
-      ),
-      borderRadius: BorderRadius.circular(10), // Rounded corners
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderSide: BorderSide(
-        color: Color.fromARGB(201, 3, 152, 85), // Green border when focused
-        width: 2.0,
-      ),
-      borderRadius: BorderRadius.circular(10), // Rounded corners
-    ),
-    errorBorder: OutlineInputBorder(
-      borderSide: BorderSide(
-        color: Colors.red, // Red border when there is an error
-        width: 1.5,
-      ),
-      borderRadius: BorderRadius.circular(10), // Rounded corners
-    ),
-    focusedErrorBorder: OutlineInputBorder(
-      borderSide: BorderSide(
-        color: Colors.red, // Red border when focused and there is an error
-        width: 2.0,
-      ),
-      borderRadius: BorderRadius.circular(10), // Rounded corners
-    ),
-  ),
-  keyboardType: TextInputType.phone,
-  validator: validatePhoneNumber, // Assuming validatePhoneNumber is defined in phone_validator.dart
-),
-
-              SizedBox(height: 20),
-
-              // Error Message Display
-              if (errorMessage != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Text(
-                    errorMessage!,
-                    style: TextStyle(color: Colors.red, fontSize: 16),
+                // Bold Green Text (Heading)
+                Text(
+                  'Enter Your Phone Number',
+                  style: GoogleFonts.poppins(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(201, 3, 152, 85),
                   ),
                 ),
-
-              // Update Button with Green Background
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _updatePhoneNumber,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(201, 3, 152, 85),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0), // Rounded corners
+                SizedBox(height: 10),
+                // Phone Number Input Field with Green Border or Red on Error
+                TextFormField(
+                  controller: _phoneController,
+                  decoration: InputDecoration(
+                    labelText: 'Enter your number with country code',
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Color.fromARGB(201, 3, 152, 85),
+                        width: 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 16), // Add vertical padding
-                  ),
-                  child: Text(
-                    'Update',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white, // White text
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: errorMessage == null
+                            ? Color.fromARGB(
+                                201, 3, 152, 85) // Green border if no error
+                            : Colors.red, // Red border if there is an error
+                        width: 2.0,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.red,
+                        width: 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.red,
+                        width: 2.0,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    errorStyle: TextStyle(
+                      fontSize: 12,
+                      color: Colors.red,
+                      height: 1.2, // Same error style as in validatePhoneNumber
                     ),
                   ),
+                  keyboardType: TextInputType.phone,
+                  validator: validatePhoneNumber, // Phone validator logic
                 ),
-              ),
-            ],
+                SizedBox(height: 10),
+                // Error Message Display
+                if (errorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: Text(
+                      errorMessage!,
+                      style: TextStyle(
+                        fontSize: 12, // Same font size as in validatePhoneNumber
+                        color: Colors.red, // Red color for the error
+                        height: 1.2, // Same line height as in validatePhoneNumber
+                      ),
+                    ),
+                  ),
+                SizedBox(
+                  height: 30,
+                ),
+                // Update Button with Green Background
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _updatePhoneNumber,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(201, 3, 152, 85),
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(15.0), // Rounded corners
+                      ),
+                      padding: EdgeInsets.symmetric(
+                          vertical: 16), // Add vertical padding
+                    ),
+                    child: Text(
+                      'Update',
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        color: Colors.white, // White text
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
     );
   }
 }
