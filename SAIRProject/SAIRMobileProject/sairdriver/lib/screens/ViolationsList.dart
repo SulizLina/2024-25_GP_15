@@ -83,16 +83,15 @@ void getDatePicker() {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 3, 152, 85),  // Set the background color to white
+      backgroundColor: Color.fromARGB(255, 3, 152, 85),  
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
         backgroundColor: Color.fromARGB(255, 3, 152, 85), // Color(0xFF00BF63)
-        toolbarHeight: 120, // Adjust the toolbar height
+        toolbarHeight: 120,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between title and date filter
           children: [
-            // Title section
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(left: 7),
@@ -116,7 +115,7 @@ void getDatePicker() {
 
             // Date filter icon
             Padding( // Added Padding widget to control the position of the icon
-              padding: const EdgeInsets.only(right: 18, top: 10), //////////////////////
+              padding: const EdgeInsets.only(right: 18, top: 10), //////////////////////offset: const Offset(0, 10),
               child: IconButton(
                 onPressed: () {
                   getDatePicker();
@@ -132,7 +131,6 @@ void getDatePicker() {
         ),
       ),
 
-
       body: Container(
         width: double.infinity,
         padding: const EdgeInsets.only(top: 16), /////////////////////should be consis for all pages/////////////
@@ -146,7 +144,7 @@ void getDatePicker() {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: violations.isEmpty
-              ? Center(
+              ? Center(/////////////we can add image or somthing 
                   child: Text(
                     "You don't have any violations, ride safe :)",
                     style:
@@ -174,7 +172,7 @@ void getDatePicker() {
                                 ]
                               : [],
                         ),
-                child: InkWell(
+                /*child: InkWell(
                   onTap: () {
                     // Navigate to ViolationDetail
                     Navigator.push(
@@ -183,57 +181,37 @@ void getDatePicker() {
                         builder: (context) => Violationdetail(), //ViolationDetail(violationId: violations[index],id); 
                       ),
                     );
-                  },
+                  }, */
                   child: ListTile(
-                    title: Text(
+                    title: Text( //Title
                       'V#${violations[index].id}', // From DB
                       style: GoogleFonts.poppins(fontSize: 17),
                     ),
+                    //we can add Subtitle: Text(''),
+                    //we can add leading: Icon(), //icon or image on the right before the title
                     trailing: Icon(
                       Icons.arrow_forward_ios, 
                       color: Color.fromARGB(202, 3, 152, 85), 
                       size: 20, 
                     ),
+                    onTap: (){
+                      Navigator.push(
+                        context, 
+                        MaterialPageRoute(builder: (context)=> Violationdetail(violationId: violations[index].id))
+                      );
+                    },
                   ),
-                ),
+                //),
               ),
             );
           },
           separatorBuilder: (BuildContext context, int index) {
             return Divider(color: Colors.grey[200]);
           },
-          itemCount: violations.length, // Number of violations
+          itemCount: violations.length, // itemCount: Number of violations
                 ),
         ),
       ),
     );
   }
-}   
-
-/*
-body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            //list of violations
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              child: Row(
-                children: [
-                  SizedBox(width: 10),
-                  Text(
-                    "V#111",
-                    style: TextStyle(fontSize: 22),
-                    ),
-                    Spacer(),
-                    Icon(Icons.arrow_forward, color: Colors.green, size: 20),
-                    Divider(color: const Color.fromARGB(237, 158, 158, 158)), // Horizontal line
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
-
-      */
+}
