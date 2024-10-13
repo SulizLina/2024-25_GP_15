@@ -26,7 +26,8 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
     debugShowCheckedModeBanner: false,
-   home:AnimatedSplashScreen(
+   home://sBottomNavBar()
+   AnimatedSplashScreen(
             duration: 3000,
             splashIconSize: 160, // size of logo
             splash:Image.asset('assets/image/SAIRLogo.png',
