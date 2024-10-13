@@ -1,21 +1,21 @@
 import 'dart:developer';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sairdriver/screens/Resetpass.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sairdriver/screens/home.dart';
 
-class Otppage extends StatefulWidget {
-  final String verificationId;
-
-  const Otppage({super.key, required this.verificationId}); // Constructor expecting verificationId
+class LoginOtp extends StatefulWidget {
+    final String verificationId;
+  const LoginOtp({super.key, required this.verificationId});
 
   @override
-  State<Otppage> createState() => _OtppageState();
+  State<LoginOtp> createState() => _LoginOtpState();
 }
 
-class _OtppageState extends State<Otppage> {
-  final otpController = TextEditingController();
+class _LoginOtpState extends State<LoginOtp> {
+final otpController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +88,7 @@ class _OtppageState extends State<Otppage> {
                   // Proceed with further actions like resetting the password
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Resetpass()),
+                    MaterialPageRoute(builder: (context) => Home()),
                   );
                 } catch (e) {
                   log(e.toString());

@@ -2,15 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // For Firebase Authentication
-import 'package:crypto/crypto.dart';
-import 'dart:convert'; // for the utf8.encode method
 
-class Editpasswordpage extends StatefulWidget {
+class Resetpass extends StatefulWidget {
+  const Resetpass({super.key});
+
   @override
-  _EditpasswordpageState createState() => _EditpasswordpageState();
+  State<Resetpass> createState() => _ResetpassState();
 }
 
-class _EditpasswordpageState extends State<Editpasswordpage> {
+class _ResetpassState extends State<Resetpass> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
@@ -200,7 +200,7 @@ final digest = sha256.convert(bytes);*/
             children: [
               // Bold Green Text (Heading)
               Text(
-                'Update Your Password',
+                'Reset Your Password',
                 style: GoogleFonts.poppins(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,

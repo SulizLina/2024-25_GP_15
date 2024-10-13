@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:sairdriver/screens/Forgotpass.dart';
 
 import 'package:sairdriver/screens/ViewComplaints.dart';
 import 'package:sairdriver/screens/ViolationsList.dart';
@@ -25,15 +26,14 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
     debugShowCheckedModeBanner: false,
-   home:BottomNavBar()
-   /*AnimatedSplashScreen(
+   home:AnimatedSplashScreen(
             duration: 3000,
             splashIconSize: 160, // size of logo
             splash:Image.asset('assets/image/SAIRLogo.png',
             ),
             nextScreen: Welcomepage(),// navigate to this screen
             splashTransition: SplashTransition.scaleTransition, // the way of transition
-            )*/
+            )
   );
   
   }
