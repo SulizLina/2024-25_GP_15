@@ -1,13 +1,14 @@
+import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'home.dart';
+import 'package:sairdriver/screens/Resetpass.dart';
 
 class Otppage extends StatefulWidget {
   final String verificationId;
 
-  const Otppage({super.key, required this.verificationId});
+  const Otppage({super.key, required this.verificationId}); // Constructor expecting verificationId
 
   @override
   State<Otppage> createState() => _OtppageState();
@@ -71,7 +72,6 @@ class _OtppageState extends State<Otppage> {
           const SizedBox(height: 30),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-             // primary: Color.fromARGB(202, 3, 152, 85),
               padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -80,18 +80,20 @@ class _OtppageState extends State<Otppage> {
             onPressed: () async {
               String otpCode = otpController.text;
               if (otpCode.length == 6) {
-              try {
-                final cred = PhoneAuthProvider.credential(
-                    verificationId: widget.verificationId,
-                    smsCode: otpController.text);
-
-                await FirebaseAuth.instance.signInWithCredential(cred);
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Home()));
-              } catch (e) {
-               // log(e.toString());
-              }
-            } else {
+                try {
+                  final cred = PhoneAuthProvider.credential(
+                    verificationId: widget.verificationId, // Use the verificationId passed to the widget
+                    smsCode: otpCode,
+                  );
+                  // Proceed with further actions like resetting the password
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Resetpass()),
+                  );
+                } catch (e) {
+                  log(e.toString());
+                }
+              } else {
                 // Show an error to the user.
               }
             },
