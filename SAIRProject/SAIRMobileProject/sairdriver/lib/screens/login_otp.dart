@@ -85,7 +85,9 @@ final otpController = TextEditingController();
                     verificationId: widget.verificationId, // Use the verificationId passed to the widget
                     smsCode: otpCode,
                   );
-                  // Proceed with further actions like resetting the password
+                  await FirebaseAuth.instance.signInWithCredential(cred);
+                  //check the defult password
+                  
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Home()),

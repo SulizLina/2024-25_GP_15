@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +19,8 @@ class _LoginState extends State<Login> {
   late final TextEditingController _passwordController;
   bool _isPasswordVisible = false; // For toggling password visibility
   String? errorMessage;
+  bool _isPhoneError = false;
+  bool _isPasswordError = false;
 
   @override
   void initState() {
@@ -35,17 +36,29 @@ class _LoginState extends State<Login> {
     super.dispose();
   }
 
-// Updated validatePassword function
-String? validatePassword(String? value) {
-  if (value == null || value.isEmpty) {
-    return 'Your password is required';
-  } else if (value.length < 6) {
-    return 'Password must be at least 6 characters long';
-  }
-  return null; // Return null if the input is valid
-}
+  // Validation method for phone and password fields
+  void validateFields() {
+    setState(() {
+      _isPhoneError = _phoneController.text.isEmpty;
+      _isPasswordError = _passwordController.text.isEmpty;
 
+      if (_isPhoneError || _isPasswordError) {
+        errorMessage = 'Please fill all required fields.';
+      } else {
+        errorMessage = null;
+      }
+    });
+  }
+
+  // Login method that checks for valid credentials and sends OTP
   Future<void> login() async {
+    // Validate fields before proceeding
+    validateFields();
+
+    if (errorMessage != null) {
+      return; // Stop login if validation fails
+    }
+
     try {
       final db = FirebaseFirestore.instance;
       // Retrieve the phone number from Firestore
@@ -55,10 +68,11 @@ String? validatePassword(String? value) {
           .limit(1)
           .get();
 
-      // Check if driver exists and the password matches
       if (driverDoc.docs.isEmpty) {
         setState(() {
-          errorMessage = "Phone number not found.";
+          errorMessage = "Incorrect phone number or password";
+          _isPhoneError = true;
+          _isPasswordError = true;
         });
         return;
       }
@@ -68,7 +82,9 @@ String? validatePassword(String? value) {
 
       if (storedPassword != _passwordController.text) {
         setState(() {
-          errorMessage = "Incorrect password.";
+          errorMessage = "Incorrect phone number or password.";
+          _isPhoneError = true;
+          _isPasswordError = true;
         });
         return;
       }
@@ -139,49 +155,67 @@ String? validatePassword(String? value) {
                 decoration: InputDecoration(
                   labelText: 'Enter your number with country code',
                   prefixIcon: Icon(
-                    Icons.phone, // Icon for phone input
-                    color: Color.fromARGB(201, 3, 152, 85),
+                    Icons.phone,
+                    color: _isPhoneError ? Colors.red : Color.fromARGB(201, 3, 152, 85),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: Color.fromARGB(201, 3, 152, 85),
+                      color: _isPhoneError ? Colors.red : Color.fromARGB(201, 3, 152, 85),
                       width: 1.5,
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: errorMessage == null
-                          ? Color.fromARGB(201, 3, 152, 85)
-                          : Colors.red,
+                      color: _isPhoneError ? Colors.red : Color.fromARGB(201, 3, 152, 85),
                       width: 2.0,
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  errorBorder: OutlineInputBorder(
+                ),
+                keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 15),
+              // Password Input Field with Icon
+              TextFormField(
+                controller: _passwordController,
+                obscureText: !_isPasswordVisible,
+                decoration: InputDecoration(
+                  labelText: 'Enter Your Password',
+                  prefixIcon: Icon(
+                    Icons.lock,
+                    color: _isPasswordError ? Colors.red : Color.fromARGB(201, 3, 152, 85),
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
+                  ),
+                  enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: Colors.red,
+                      color: _isPasswordError ? Colors.red : Color.fromARGB(201, 3, 152, 85),
                       width: 1.5,
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  focusedErrorBorder: OutlineInputBorder(
+                  focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: Colors.red,
+                      color: _isPasswordError ? Colors.red : Color.fromARGB(201, 3, 152, 85),
                       width: 2.0,
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  errorStyle: TextStyle(
-                    fontSize: 12,
-                    color: Colors.red,
-                    height: 1.2,
-                  ),
                 ),
-                keyboardType: TextInputType.phone,
-                validator: validatePhoneNumber, // Phone validator logic
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 12.0),
               // Error Message Display
               if (errorMessage != null)
                 Padding(
@@ -195,64 +229,6 @@ String? validatePassword(String? value) {
                     ),
                   ),
                 ),
-              const SizedBox(height: 10),
-              // Password Input Field with Icon
-             // Password Input Field with Icon
-TextFormField(
-  controller: _passwordController,
-  obscureText: !_isPasswordVisible,
-  decoration: InputDecoration(
-    labelText: 'Enter Your Password',
-    prefixIcon: Icon(
-      Icons.lock, // Icon for password input
-      color: Color.fromARGB(201, 3, 152, 85),
-    ),
-    suffixIcon: IconButton(
-      icon: Icon(
-        _isPasswordVisible
-            ? Icons.visibility
-            : Icons.visibility_off,
-        color: Colors.grey,
-      ),
-      onPressed: () {
-        setState(() {
-          _isPasswordVisible = !_isPasswordVisible;
-        });
-      },
-    ),
-    enabledBorder: OutlineInputBorder(
-      borderSide: BorderSide(
-        color: Color.fromARGB(201, 3, 152, 85),
-        width: 1.5,
-      ),
-      borderRadius: BorderRadius.circular(10),
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderSide: BorderSide(
-        color: Color.fromARGB(201, 3, 152, 85),
-        width: 2.0,
-      ),
-      borderRadius: BorderRadius.circular(10),
-    ),
-    errorBorder: OutlineInputBorder(
-      borderSide: BorderSide(
-        color: Colors.red,
-        width: 1.5,
-      ),
-      borderRadius: BorderRadius.circular(10),
-    ),
-    focusedErrorBorder: OutlineInputBorder(
-      borderSide: BorderSide(
-        color: Colors.red,
-        width: 2.0,
-      ),
-      borderRadius: BorderRadius.circular(10),
-    ),
-  ),
-  validator: (value) => validatePassword(value),
-),
-
-              const SizedBox(height: 12.0),
               GestureDetector(
                 onTap: () {
                   Navigator.push(
