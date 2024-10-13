@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:sairdriver/models/driver.dart';
 import 'package:sairdriver/screens/login.dart';
+import 'package:sairdriver/services/driver_database.dart';
+import 'package:sairdriver/services/motorcycle_database.dart';
 import 'editpasswordpage.dart';
 import 'edit_phone_page.dart'; // Page for editing phone number
 import 'package:google_fonts/google_fonts.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Profilepage extends StatefulWidget {
@@ -15,59 +17,41 @@ class Profilepage extends StatefulWidget {
 
 class _ProfilepageState extends State<Profilepage> {
   User? currentUser = FirebaseAuth.instance.currentUser; // Get current user
-
-  // Variables to hold data retrieved from Firebase
-  String firstName = "";
-  String lastName = "";
-  String idNumber = "";
-  String plateNumber = "";
-  String phoneNumber = "";
-  String gpsSerialNumber = "";
-  String password = "******"; // Hidden by default
-  String? userId; // Will hold the current user's ID (uid)
-
+  driver? driverInf; // Driver information
+  String?
+      plateNumber; // To hold plate number fetched from Motorcycle collection
+  bool isLoading = true; // To show loading state
+  String password = '*****';
   @override
   void initState() {
     super.initState();
-    if (currentUser != null) {
-      userId = currentUser!.uid; // Assign the user's UID from FirebaseAuth
-      fetchUserData(); // Fetch user data using this UID
-    } else {
-      print("No user is currently signed in.");
-    }
+    fetchDriverData(); // Fetch both driver data and plate number when the page loads
   }
 
-  Future<void> fetchUserData() async {
-    if (userId != null) {
-      // Fetch data from Firestore using the user UID
-      final userDoc = await FirebaseFirestore.instance
-          .collection('Driver')
-          .doc(userId) // Use the UID to fetch the corresponding document
-          .get();
+  Future<void> fetchDriverData() async {
+    DriverDatabase db = DriverDatabase();
+MotorcycleDatabase mdb = MotorcycleDatabase() ;
+    // Fetch driver information
+    driverInf =
+        await db.getDriversnById('LMUhIgvgZa3H07D0IQvs'); //currentUser!.uid
 
-      if (userDoc.exists) {
-        setState(() {
-          firstName = userDoc['Fname'];
-          lastName = userDoc['Lname'];
-          idNumber = userDoc['DriverID'];
-          phoneNumber = userDoc['PhoneNumber'];
-          // Handle null GPSSerialNumber case by showing a default message
-          gpsSerialNumber =
-              userDoc['GPSNumber'] ?? 'There is no assigned GPS yet';
-          password = userDoc['Password'];
-        });
-      }
-    }
+    // Fetch plate number using the driver's ID
+    plateNumber = await mdb
+        .getPlateNumberByDriverId('LMUhIgvgZa3H07D0IQvs'); //currentUser!.uid
+
+    setState(() {
+      isLoading = false; // Stop loading once data is fetched
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 3, 152, 85), 
+      backgroundColor: const Color.fromARGB(255, 3, 152, 85),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
-        backgroundColor: Color.fromARGB(255, 3, 152, 85), 
+        backgroundColor: const Color.fromARGB(255, 3, 152, 85),
         toolbarHeight: 120,
         iconTheme: const IconThemeData(color: Colors.white),
         title: Row(
@@ -106,236 +90,301 @@ class _ProfilepageState extends State<Profilepage> {
           ],
         ),
       ),
-      // Body with rounded white background from the top
-      body: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.only(top: 16.0),
-        decoration: const BoxDecoration(
-          color: Colors.white, // White background for the content
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30), // Rounded top-left corner
-            topRight: Radius.circular(30), // Rounded top-right corner
-          ),
-        ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 16),
-              // First Name field
-              TextFormField(
-                initialValue: firstName,
-                decoration: InputDecoration(
-                  labelText: 'First name',
-                  labelStyle:
-                      GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+      body: isLoading
+          ? const Center(
+              child:
+                  CircularProgressIndicator()) // Show loading spinner while data is being fetched
+          : Container(
+              width: double.infinity,
+              padding: const EdgeInsets.only(top: 16.0),
+              decoration: const BoxDecoration(
+                color: Colors.white, // White background for the content
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30), // Rounded top-left corner
+                  topRight: Radius.circular(30), // Rounded top-right corner
                 ),
-                style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                readOnly: true,
               ),
-              const SizedBox(height: 16),
-              // Last Name field
-              TextFormField(
-                initialValue: lastName,
-                decoration: InputDecoration(
-                  labelText: 'Last name',
-                  labelStyle:
-                      GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 1.5,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 16),
+                    // First Name field
+                    TextFormField(
+                      initialValue: driverInf?.fname ??
+                          '', // Fetch first name from driverInf
+                      decoration: InputDecoration(
+                        labelText: 'First name',
+                        labelStyle:
+                            GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(202, 3, 152, 85),
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(202, 3, 152, 85),
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      style:
+                          GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                      readOnly: true,
                     ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 2.0,
+                    const SizedBox(height: 16),
+                    // Last Name field
+                    TextFormField(
+                      initialValue: driverInf?.lname ?? '', // Fetch last name
+                      decoration: InputDecoration(
+                        labelText: 'Last name',
+                        labelStyle:
+                            GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(202, 3, 152, 85),
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(202, 3, 152, 85),
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      style:
+                          GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                      readOnly: true,
                     ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                    const SizedBox(height: 16),
+                    // Phone number field
+                    TextFormField(
+                      initialValue:
+                          driverInf?.phoneNumber ?? '', // Fetch phone number
+                      decoration: InputDecoration(
+                        labelText: 'Phone number',
+                        labelStyle:
+                            GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(202, 3, 152, 85),
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(202, 3, 152, 85),
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        suffixIcon: IconButton(
+                          icon: const Icon(
+                            Icons.edit,
+                            color: Color.fromARGB(202, 3, 152, 85),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => EditPhonePage()),
+                            );
+                          },
+                        ),
+                      ),
+                      style:
+                          GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                      readOnly: true,
+                    ),
+                    const SizedBox(height: 16),
+                    // ID / Residency number field
+                    TextFormField(
+                      initialValue:
+                          driverInf?.driverId ?? '', // Fetch driver ID
+                      decoration: InputDecoration(
+                        labelText: 'ID / Residency number',
+                        labelStyle:
+                            GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(202, 3, 152, 85),
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(202, 3, 152, 85),
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      style:
+                          GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                      readOnly: true,
+                    ),
+                    const SizedBox(height: 16),
+                    // Plate Number field
+                    TextFormField(
+                      initialValue:
+                          plateNumber ?? 'Loading...', // Fetch plate number
+                      decoration: InputDecoration(
+                        labelText: 'Plate number',
+                        labelStyle:
+                            GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(202, 3, 152, 85),
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(202, 3, 152, 85),
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      style:
+                          GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                      readOnly: true,
+                    ),
+                    const SizedBox(height: 16),
+                    // GPS serial number field
+                    TextFormField(
+                      initialValue: (driverInf?.gspNumber != null &&
+                              driverInf!.gspNumber != 'null')
+                          ? driverInf!.gspNumber
+                          : 'No assigned GPS yet', // If GPS number is null or 'null', show the default message
+                      decoration: InputDecoration(
+                        labelText: 'GPS serial number',
+                        labelStyle:
+                            GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(202, 3, 152, 85),
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(202, 3, 152, 85),
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      style:
+                          GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                      readOnly: true,
+                    ),
+
+                    const SizedBox(height: 16),
+                    // Password field with IconButton
+                    TextFormField(
+                      initialValue: password,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        labelStyle:
+                            GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(202, 3, 152, 85),
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(202, 3, 152, 85),
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        suffixIcon: IconButton(
+                          icon: const Icon(
+                            Icons.edit,
+                            color: Color.fromARGB(202, 3, 152, 85),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Editpasswordpage()),
+                            );
+                          },
+                        ),
+                      ),
+                      style:
+                          GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                      obscureText: true,
+                      readOnly: true,
+                    ),
+                    const SizedBox(height: 100),
+                  ],
                 ),
-                style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                readOnly: true,
               ),
-              const SizedBox(height: 16),
-              // Phone number field with IconButton
-              TextFormField(
-                initialValue: phoneNumber,
-                decoration: InputDecoration(
-                  labelText: 'Phone number',
-                  labelStyle:
-                      GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  suffixIcon: IconButton(
-                    icon: const Icon(
-                      Icons.edit,
-                      color: Color.fromARGB(202, 3, 152, 85),
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => EditPhonePage()),
-                      );
-                    },
-                  ),
-                ),
-                style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                readOnly: true,
-              ),
-              const SizedBox(height: 16),
-              // ID / Residency number field
-              TextFormField(
-                initialValue: idNumber,
-                decoration: InputDecoration(
-                  labelText: 'ID / Residency number',
-                  labelStyle:
-                      GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                readOnly: true,
-              ),
-              const SizedBox(height: 16),
-              // Plate number field
-              TextFormField(
-                initialValue: plateNumber,
-                decoration: InputDecoration(
-                  labelText: 'Plate number',
-                  labelStyle:
-                      GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                readOnly: true,
-              ),
-              const SizedBox(height: 16),
-              // GPS serial number field
-              TextFormField(
-                initialValue: gpsSerialNumber,
-                decoration: InputDecoration(
-                  labelText: 'GPS serial number',
-                  labelStyle:
-                      GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                readOnly: true,
-              ),
-              const SizedBox(height: 16),
-              // Password field with IconButton
-              TextFormField(
-                initialValue: password,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  labelStyle:
-                      GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  suffixIcon: IconButton(
-                    icon: const Icon(
-                      Icons.edit,
-                      color: Color.fromARGB(202, 3, 152, 85),
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Editpasswordpage()),
-                      );
-                    },
-                  ),
-                ),
-                style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                obscureText: true,
-                readOnly: true,
-              ),
-              const SizedBox(height: 95),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }
+
+/*
+  @override
+  void initState() {
+    super.initState();
+    if (currentUser != null) {
+      userId = currentUser!.uid; // Assign the user's UID from FirebaseAuth
+      fetchUserData(); // Fetch user data using this UID
+    } else {
+      print("No user is currently signed in.");
+    }
+  }*/
+/*
+  Future<void> fetchUserData() async {
+    if (userId != null) {
+      // Fetch data from Firestore using the user UID
+      final userDoc = await FirebaseFirestore.instance
+          .collection('Driver')
+          .doc(userId) // Use the UID to fetch the corresponding document
+          .get();
+
+      if (userDoc.exists) {
+        setState(() {
+          firstName = userDoc['Fname'];
+          lastName = userDoc['Lname'];
+          idNumber = userDoc['DriverID'];
+          phoneNumber = userDoc['PhoneNumber'];
+          // Handle null GPSSerialNumber case by showing a default message
+          gpsSerialNumber =
+              userDoc['GPSNumber'] ?? 'There is no assigned GPS yet';
+
+        });
+      }
+    }
+  }*/
+  /*
+   Future<void> fetchDriver() async {
+    String driverID = "1111111111"; // Static driverID for now
+
+    // Fetch driver from the data layer
+    List<driver> fetchedDriver =
+        await DriverDatabase().getDrivers(driverID);
+
+    setState(() {
+      driverinfo = fetchedDriver; 
+    });
+  }*/
