@@ -2,9 +2,7 @@
 //LOG-In ....
 
 import 'package:flutter/material.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:sairdriver/models/violation.dart';
 import 'package:sairdriver/services/Violations_database.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -220,8 +218,11 @@ void getDatePicker() {
                       'V#${violations[index].id}', // From DB
                       style: GoogleFonts.poppins(fontSize: 17),
                     ),
-                    trailing: Icon(Icons.arrow_forward,
-                        color: Colors.green, size: 20),
+                    trailing: Icon(
+                      Icons.arrow_forward_ios, 
+                      color: Color.fromARGB(202, 3, 152, 85), 
+                      size: 20, 
+                    ),
                   ),
                 ),
               ),
