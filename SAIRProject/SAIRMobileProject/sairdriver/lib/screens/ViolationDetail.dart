@@ -80,7 +80,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                     },
                   ),
                 ),
-
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: violation != null && violation!.dateTime != null && 
                     DateTime.parse(violation!.dateTime.toString()).isAfter(DateTime.now().subtract(Duration(days: 30))) ? () {
