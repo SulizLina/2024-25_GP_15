@@ -7,7 +7,7 @@ class ViolationsDatabase {
   Future<List<Violation>> getViolations(String driverID) async { //////////////////////
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('Violation')
+          .collection('te2') //////////////////Update table name//////////////////////////
           .where('DriverID', isEqualTo: driverID)
           .get();
 
@@ -24,7 +24,7 @@ class ViolationsDatabase {
   Future<Violation?> getViolationById(String violationId) async {
     try {
       DocumentSnapshot snapshot = await FirebaseFirestore.instance
-          .collection('Violation')
+          .collection('te2')
           .doc(violationId) // Use the document ID directly
           .get();
 

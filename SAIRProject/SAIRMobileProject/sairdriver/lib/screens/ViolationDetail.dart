@@ -15,7 +15,7 @@ class Violationdetail extends StatefulWidget {
 }
 
 class _ViolationdetailState extends State<Violationdetail> {
-  static const LatLng defaultLoc = LatLng(24.8348509, -46.5882190);
+  static const LatLng defaultLoc = LatLng(24.8348509, 46.5882190);
   Violation? violation;
 
   @override
@@ -32,8 +32,9 @@ class _ViolationdetailState extends State<Violationdetail> {
 
   @override
   Widget build(BuildContext context) {
-    final latitude = violation?.location?.latitude ?? defaultLoc.latitude;
-    final longitude = violation?.location?.longitude ?? defaultLoc.longitude;
+    final latitude = violation?.position?.latitude ?? defaultLoc.latitude;
+    final longitude = violation?.position?.longitude ?? defaultLoc.longitude;
+    final locationStr = violation?.location;
 
     return Scaffold(
       appBar: AppBar(
@@ -56,13 +57,15 @@ class _ViolationdetailState extends State<Violationdetail> {
                 const SizedBox(height: 20),
                 buildDetailSection('Driver ID:', violation?.driverId),
                 buildDetailSection('GPS Number:', violation?.gspNumber),
-                buildDetailSection('Motorcycle Speed:', violation?.speed.toString()),
+                buildDetailSection('Motorcycle Speed:', violation?.speed.toString()),//
                 buildDetailSection('Street Speed:', violation?.Maxspeed.toString()),
-                buildDetailSection('Price:', violation?.price.toString()),
+                buildDetailSection('Time:', violation?.time.toString()),//ask jumanah//////////////////////
+                buildDetailSection('Date:', violation?.time.toString()),//ask jumanah//////////////////////
+                buildDetailSection('Timestamp:', violation?.dateTime.toString()), //
 
-                const SizedBox(height: 20),
+                //no diveder after last info
                 Text('Location:', style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF211D1D))),
-                Text('Lat: $latitude, Lon: $longitude', style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))),
+                Text('$locationStr', style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))),
 
                 const SizedBox(height: 20),
                 Container(
