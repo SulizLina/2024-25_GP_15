@@ -72,7 +72,7 @@ class _Forgotpass extends State<Forgotpass> {
           });
           return;
         }
-
+/*
         // Proceed with sending OTP
         await FirebaseAuth.instance.verifyPhoneNumber(
           phoneNumber: phone,
@@ -94,10 +94,19 @@ class _Forgotpass extends State<Forgotpass> {
           codeAutoRetrievalTimeout: (String verificationId) {
             log('Auto Retrieval Timeout');
           },
-        );
+        );*/
       } catch (e) {
         print(e);
       }
+      print('getting otp ');
+      await FirebaseAuth.instance.verifyPhoneNumber(
+  phoneNumber: '+917905999153',
+  verificationCompleted: (PhoneAuthCredential credential) {      print('getting otp ==1');
+},
+  verificationFailed: (FirebaseAuthException e) { print('getting otp ==2');},
+  codeSent: (String verificationId, int? resendToken) { print('getting otp ==3');},
+  codeAutoRetrievalTimeout: (String verificationId) { print('getting otp ==4');},
+);
     }
   }
 
