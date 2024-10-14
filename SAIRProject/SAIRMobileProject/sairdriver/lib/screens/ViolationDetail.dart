@@ -66,9 +66,8 @@ class _ViolationdetailState extends State<Violationdetail> {
                 buildDetailSection('Motorcycle Speed:', violation?.speed.toString()),
                 buildDetailSection('Street Speed:', violation?.Maxspeed.toString()),
                 buildDetailSection('Price:', '${violation?.price} SAR'),
-                buildDetailSection('Time:', violation?.time.toString()),//ask jumanah//////////////////////
-                buildDetailSection('Date:', violation?.time.toString()),//ask jumanah//////////////////////
-                //buildDetailSection('timestamp:', formattedTimestamp), //
+                buildDetailSection('Time:', violation?.getFormattedTimeOnly()),
+                buildDetailSection('Date:', violation?.getFormattedDate()),
 
                 //no diveder after last info
                 Text('Location:', style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF211D1D))),
@@ -89,8 +88,8 @@ class _ViolationdetailState extends State<Violationdetail> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: violation != null && violation!.dateTime != null && 
-                    DateTime.parse(violation!.dateTime.toString()).isAfter(DateTime.now().subtract(Duration(days: 30))) ? () {
+                  onPressed: violation != null && violation!.time != null && 
+                    DateTime.parse(violation!.time.toString()).isAfter(DateTime.now().subtract(Duration(days: 30))) ? () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const Raisecomplaint()),
