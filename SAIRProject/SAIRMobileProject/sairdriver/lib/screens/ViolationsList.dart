@@ -1,8 +1,4 @@
-//Make sure the collection name (violations) and field names (driverID, violationID) match the NEW Firestore setup.
-//LOG-In ....
-
 import 'dart:ffi';
-
 import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,24 +17,22 @@ class Violationslist extends StatefulWidget {
 class _ViolationslistState extends State<Violationslist> {
   
   List<DocumentSnapshot> violations = []; // List to hold violation documents
-  
-      @override
+
+  @override
   void initState() {
     super.initState();
     fetchViolations();
   }
 
-  Future<void> fetchViolations() async { //Fetch all violations without filtering by userId
+  Future<void> fetchViolations() async { // Fetch all violations without filtering by userId
     try {
       String driverID = "1111111111"; // Set the driverID for this query
-
 
       // Query Firestore for violations where driverID matches 1111111111
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('te2')
-          .where('DriverID', isEqualTo: driverID) // Removed extra spaces
+          .where('DriverID', isEqualTo: driverID) // Ensure correct field name and value
           .get();
-
 
       setState(() {
         violations = snapshot.docs; // Store the retrieved documents
@@ -48,10 +42,13 @@ class _ViolationslistState extends State<Violationslist> {
     }
   }
 
-  final List<bool> isHoveredList = List.generate(10, (index) => false); // List to track hover state for each item
-  
+  // List to track hover state for each item, initialized with correct size once data is fetched
+  List<bool> isHoveredList = []; 
+
   DateTime selectDate = DateTime.now();
-  void _chooseDate() async{
+
+  // Choose date using the date picker
+  void _chooseDate() async {
     final result = await showBoardDateTimePicker(
       context: context, 
       pickerType: DateTimePickerType.date,
@@ -60,8 +57,8 @@ class _ViolationslistState extends State<Violationslist> {
         languages: BoardPickerLanguages(
           today: 'Today',
           tomorrow: 'Tomorrow',
-          now: 'now'
-        ), ////////////Shotrcut
+          now: 'now',
+        ), 
         startDayOfWeek: DateTime.sunday,
         pickerFormat: PickerFormat.ymd,
         activeColor: Color.fromARGB(255, 3, 152, 85),
@@ -69,16 +66,17 @@ class _ViolationslistState extends State<Violationslist> {
           color: Colors.white,
         ),
       ),
-      );
-      if (result != null){
-        setState(() {
-          selectDate = result;
-        }); 
-        // fetch violations based on the selected date here
-      }
+    );
+
+    if (result != null) {
+      setState(() {
+        selectDate = result;
+      }); 
+      // fetch violations based on the selected date here
+    }
   }   
 
-  ////////////////OLD DATE SEARCH 
+  // Date picker for manual search
   late DateTime _dateTime = DateTime.now();
 
   void getDatePicker() {
@@ -112,7 +110,6 @@ class _ViolationslistState extends State<Violationslist> {
       }
     });
   }
-////////////////
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +118,7 @@ class _ViolationslistState extends State<Violationslist> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
-        backgroundColor: Color.fromARGB(255, 3, 152, 85), // Color(0xFF00BF63)
+        backgroundColor: Color.fromARGB(255, 3, 152, 85),
         toolbarHeight: 120,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between title and date filter
@@ -148,8 +145,8 @@ class _ViolationslistState extends State<Violationslist> {
             ),
 
             // Date filter icon
-            Padding( // Added Padding widget to control the position of the icon
-              padding: const EdgeInsets.only(right: 18, top: 10), //////////////////////offset: const Offset(0, 10),
+            Padding(
+              padding: const EdgeInsets.only(right: 18, top: 10),
               child: IconButton(
                 onPressed: () {
                   _chooseDate();
@@ -167,7 +164,7 @@ class _ViolationslistState extends State<Violationslist> {
 
       body: Container(
         width: double.infinity,
-        padding: const EdgeInsets.only(top: 16), /////////////////////should be consis for all pages/////////////
+        padding: const EdgeInsets.only(top: 16),
         decoration: const BoxDecoration(
           color: Colors.white, 
           borderRadius: BorderRadius.only(
@@ -178,72 +175,60 @@ class _ViolationslistState extends State<Violationslist> {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: violations.isEmpty
-              ? Center(/////////////we can add image or somthing 
+              ? Center(
                   child: Text(
                     "You don't have any violations, ride safe :)",
-                    style:
-                        GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
-                        textAlign: TextAlign.center,
+                    style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
+                    textAlign: TextAlign.center,
                   ),
                 )
               : ListView.separated(
                   itemBuilder: (BuildContext context, int index) {
+                    if (index >= violations.length) return Container(); // Safeguard
+
+                    // Initialize the hover state list based on violations list length
+                    if (isHoveredList.length != violations.length) {
+                      isHoveredList = List.generate(violations.length, (index) => false);
+                    }
+
                     return MouseRegion(
-                      onEnter: (_) =>
-                          setState(() => isHoveredList[index] = true),
-                      onExit: (_) =>
-                          setState(() => isHoveredList[index] = false),
+                      onEnter: (_) => setState(() => isHoveredList[index] = true),
+                      onExit: (_) => setState(() => isHoveredList[index] = false),
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: isHoveredList[index]
-                              ? Colors.grey[300]
-                              : Colors.white,
+                          color: isHoveredList[index] ? Colors.grey[300] : Colors.white,
                           borderRadius: BorderRadius.circular(10),
                           boxShadow: isHoveredList[index]
-                              ? [
-                                  const BoxShadow(
-                                      color: Colors.black26, blurRadius: 5)
-                                ]
+                              ? [const BoxShadow(color: Colors.black26, blurRadius: 5)]
                               : [],
                         ),
-                /*child: InkWell(
-                  onTap: () {
-                    // Navigate to ViolationDetail
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Violationdetail(), //ViolationDetail(violationId: violations[index],id); 
+                        child: ListTile(
+                          title: Text(
+                            'V#${violations[index].id}', // From DB
+                            style: GoogleFonts.poppins(fontSize: 17),
+                          ),
+                          trailing: Icon(
+                            Icons.arrow_forward_ios, 
+                            color: Color.fromARGB(202, 3, 152, 85), 
+                            size: 20,
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context, 
+                              MaterialPageRoute(
+                                builder: (context) => Violationdetail(violationId: violations[index].id),
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     );
-                  }, */
-                  child: ListTile(
-                    title: Text( //Title
-                      'V#${violations[index].id}', // From DB
-                      style: GoogleFonts.poppins(fontSize: 17),
-                    ),
-                    //we can add Subtitle: Text(''),
-                    //we can add leading: Icon(), //icon or image on the right before the title
-                    trailing: Icon(
-                      Icons.arrow_forward_ios, 
-                      color: Color.fromARGB(202, 3, 152, 85), 
-                      size: 20, 
-                    ),
-                    onTap: (){
-                      Navigator.push(
-                        context, 
-                        MaterialPageRoute(builder: (context)=> Violationdetail(violationId: violations[index].id))
-                      );
-                    },
-                  ),
-                //),
-              ),
-            );
-          },
-          separatorBuilder: (BuildContext context, int index) {
-            return Divider(color: Colors.grey[200]);
-          },
-          itemCount: violations.length, // itemCount: Number of violations
+                  },
+                  separatorBuilder: (BuildContext context, int index) {
+                    return Divider(color: Colors.grey[200]);
+                  },
+                  itemCount: violations.length, // Number of violations
                 ),
         ),
       ),
