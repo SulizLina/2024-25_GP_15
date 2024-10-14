@@ -106,8 +106,23 @@ class _ViolationdetailState extends State<Violationdetail> {
                 children: [
                   Text(
                     violation != null ? 'V#${violation!.id}' : 'Loading...',
-                    style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(202, 3, 152, 85)),
+                    style: GoogleFonts.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(202, 3, 152, 85),
+                    ),
+                    
                   ),
+                  const SizedBox(height: 8), // Space between the ID and subtitle
+                  Text(
+                    'you can raise a complaint within 30 days', // Your subtitle here
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.grey[400], // Set a subtle color for the subtitle
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+
                   const SizedBox(height: 20),
                   buildDetailSection('Driver ID:', violation?.driverId),
                   buildDetailSection('GPS Number:', violation?.gspNumber),
