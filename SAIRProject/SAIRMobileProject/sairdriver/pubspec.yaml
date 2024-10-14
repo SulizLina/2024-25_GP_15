@@ -34,3 +34,4 @@ flutter:
   assets:
     - assets/icons/
     - assets/image/
+    - assets/image/greenMapMarker.png
