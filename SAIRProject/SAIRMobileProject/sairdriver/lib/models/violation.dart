@@ -43,8 +43,8 @@ class Violation {
               parsedJSON['position']['x'], // Longitude
             )
           : null,
-      dateTime: parsedJSON['DateTime'] as Timestamp?,
-      speed: parsedJSON['Speed'] as int?,
+      dateTime: parsedJSON['Rimestamp'] as Timestamp?, /////////////
+      speed: parsedJSON['speed'] as int?,
       Maxspeed: parsedJSON['MaxSpeed'] as int?, 
       price: parsedJSON['price'] as int?,
       time: parsedJSON['time'] as int?, // Time field

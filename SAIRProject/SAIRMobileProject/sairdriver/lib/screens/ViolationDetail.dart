@@ -34,7 +34,13 @@ class _ViolationdetailState extends State<Violationdetail> {
   Widget build(BuildContext context) {
     final latitude = violation?.position?.latitude ?? defaultLoc.latitude;
     final longitude = violation?.position?.longitude ?? defaultLoc.longitude;
-    final locationStr = violation?.location;
+
+/*
+        // Format the timestamp if it's a DateTime object
+        String formattedTimestamp = violation?.dateTime != null 
+        ? DateFormat('yyyy-MM-dd – kk:mm').format(violation!.dateTime!.toDate()) // Adjusting based on your timestamp type
+        : 'N/A';
+        */
 
     return Scaffold(
       appBar: AppBar(
@@ -57,15 +63,16 @@ class _ViolationdetailState extends State<Violationdetail> {
                 const SizedBox(height: 20),
                 buildDetailSection('Driver ID:', violation?.driverId),
                 buildDetailSection('GPS Number:', violation?.gspNumber),
-                buildDetailSection('Motorcycle Speed:', violation?.speed.toString()),//
+                buildDetailSection('Motorcycle Speed:', violation?.speed.toString()),
                 buildDetailSection('Street Speed:', violation?.Maxspeed.toString()),
+                buildDetailSection('Price:', '${violation?.price} SAR'),
                 buildDetailSection('Time:', violation?.time.toString()),//ask jumanah//////////////////////
                 buildDetailSection('Date:', violation?.time.toString()),//ask jumanah//////////////////////
-                buildDetailSection('Timestamp:', violation?.dateTime.toString()), //
+                //buildDetailSection('timestamp:', formattedTimestamp), //
 
                 //no diveder after last info
                 Text('Location:', style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF211D1D))),
-                Text('$locationStr', style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))),
+                Text('${violation?.location}', style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))),
 
                 const SizedBox(height: 20),
                 Container(
