@@ -1,6 +1,9 @@
 //Make sure the collection name (violations) and field names (driverID, violationID) match the NEW Firestore setup.
 //LOG-In ....
 
+import 'dart:ffi';
+
+import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sairdriver/models/violation.dart';
@@ -46,39 +49,70 @@ class _ViolationslistState extends State<Violationslist> {
   }
 
   final List<bool> isHoveredList = List.generate(10, (index) => false); // List to track hover state for each item
+  
+  DateTime selectDate = DateTime.now();
+  void _chooseDate() async{
+    final result = await showBoardDateTimePicker(
+      context: context, 
+      pickerType: DateTimePickerType.date,
+      initialDate: selectDate,
+      options: BoardDateTimeOptions(
+        languages: BoardPickerLanguages(
+          today: 'Today',
+          tomorrow: 'Tomorrow',
+          now: 'now'
+        ), ////////////Shotrcut
+        startDayOfWeek: DateTime.sunday,
+        pickerFormat: PickerFormat.ymd,
+        activeColor: Color.fromARGB(255, 3, 152, 85),
+        backgroundDecoration: BoxDecoration(
+          color: Colors.white,
+        ),
+      ),
+      );
+      if (result != null){
+        setState(() {
+          selectDate = result;
+        }); 
+        // fetch violations based on the selected date here
+      }
+  }   
+
+  ////////////////OLD DATE SEARCH 
   late DateTime _dateTime = DateTime.now();
 
-void getDatePicker() {
-  showDatePicker(
-    context: context,
-    initialDate: DateTime.now(),
-    firstDate: DateTime(2000),
-    lastDate: DateTime(3000),
-    builder: (BuildContext context, Widget? child) {
-      return Theme(
-        data: ThemeData.light().copyWith(
-          colorScheme: ColorScheme.light(
-            primary: const Color(0xFF03A285), 
-            onPrimary: Colors.white, 
-            surface: Colors.white, 
+  void getDatePicker() {
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(3000),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.light(
+              primary: const Color(0xFF03A285), 
+              onPrimary: Colors.white, 
+              surface: Colors.white, 
+            ),
+            dialogBackgroundColor: Colors.white, 
           ),
-          dialogBackgroundColor: Colors.white, 
-        ),
-        child: Container(
-          height: 10, 
-          width: 10, 
-          child: child,
-        ),
-      );
-    },
-  ).then((value) {
-    if (value != null) {
-      setState(() {
-        _dateTime = value;
-      });
-    }
-  });
-}
+          child: Container(
+            height: 10, 
+            width: 10, 
+            child: child,
+          ),
+        );
+      },
+    ).then((value) {
+      if (value != null) {
+        setState(() {
+          _dateTime = value;
+        });
+      }
+    });
+  }
+////////////////
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +152,7 @@ void getDatePicker() {
               padding: const EdgeInsets.only(right: 18, top: 10), //////////////////////offset: const Offset(0, 10),
               child: IconButton(
                 onPressed: () {
-                  getDatePicker();
+                  _chooseDate();
                 },
                 icon: const Icon(
                   Icons.calendar_month,
@@ -149,6 +183,7 @@ void getDatePicker() {
                     "You don't have any violations, ride safe :)",
                     style:
                         GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
+                        textAlign: TextAlign.center,
                   ),
                 )
               : ListView.separated(
