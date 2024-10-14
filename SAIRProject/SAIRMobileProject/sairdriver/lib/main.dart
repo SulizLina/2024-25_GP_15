@@ -28,7 +28,7 @@ class MainApp extends StatelessWidget {
     debugShowCheckedModeBanner: false,
    home://sBottomNavBar()
    AnimatedSplashScreen(
-            duration: 3000,
+            duration: 2500,
             splashIconSize: 160, // size of logo
             splash:Image.asset('assets/image/SAIRLogo.png',
             ),

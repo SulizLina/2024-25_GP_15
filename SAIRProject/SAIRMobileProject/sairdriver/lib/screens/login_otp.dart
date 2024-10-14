@@ -1,13 +1,15 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sairdriver/screens/changepassword.dart';
 import 'package:sairdriver/screens/home.dart';
 
 class LoginOtp extends StatefulWidget {
-    final String verificationId;
+  final String verificationId;
   const LoginOtp({super.key, required this.verificationId});
 
   @override
@@ -15,8 +17,9 @@ class LoginOtp extends StatefulWidget {
 }
 
 class _LoginOtpState extends State<LoginOtp> {
-final otpController = TextEditingController();
-
+  final otpController = TextEditingController();
+  final db = FirebaseFirestore.instance;
+  User? get currentUser => FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -49,7 +52,10 @@ final otpController = TextEditingController();
                   child: TextFormField(
                     controller: otpController,
                     keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(1)],
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(1)
+                    ],
                     onChanged: (value) {
                       if (value.length == 1) {
                         FocusScope.of(context).nextFocus();
@@ -82,21 +88,38 @@ final otpController = TextEditingController();
               if (otpCode.length == 6) {
                 try {
                   final cred = PhoneAuthProvider.credential(
-                    verificationId: widget.verificationId, // Use the verificationId passed to the widget
+                    verificationId: widget
+                        .verificationId, // Use the verificationId passed to the widget
                     smsCode: otpCode,
                   );
                   await FirebaseAuth.instance.signInWithCredential(cred);
                   //check the defult password
-                  
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Home()),
-                  );
+                  final driverDoc = await db
+                      .collection('Driver')
+                      .where('PhoneNumber', isEqualTo: currentUser?.phoneNumber)
+                      .limit(1)
+                      .get();
+                  final bool isDefaultPassword =
+                      driverDoc.docs.first.data()['isDefaultPassword'];
+                  if (isDefaultPassword == false) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Home()),
+                    );
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Changepassword()),);
+
+                  }
                 } catch (e) {
                   log(e.toString());
                 }
               } else {
-                // Show an error to the user.
+                 // Handle case where the driver document is not found
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text('Driver data not found')),
+  );
               }
             },
             child: Text(
