@@ -101,6 +101,7 @@ class _LoginState extends State<Login> {
           log(error.toString());
         },
         codeSent: (String verificationId, int? forceResendingToken) {
+          
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -123,8 +124,14 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: IconThemeData(color: Colors.black), // Back arrow color
+        ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -156,18 +163,24 @@ class _LoginState extends State<Login> {
                   labelText: 'Enter your number with country code',
                   prefixIcon: Icon(
                     Icons.phone,
-                    color: _isPhoneError ? Colors.red : Color.fromARGB(201, 3, 152, 85),
+                    color: _isPhoneError
+                        ? Colors.red
+                        : Color.fromARGB(201, 3, 152, 85),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _isPhoneError ? Colors.red : Color.fromARGB(201, 3, 152, 85),
+                      color: _isPhoneError
+                          ? Colors.red
+                          : Color.fromARGB(201, 3, 152, 85),
                       width: 1.5,
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _isPhoneError ? Colors.red : Color.fromARGB(201, 3, 152, 85),
+                      color: _isPhoneError
+                          ? Colors.red
+                          : Color.fromARGB(201, 3, 152, 85),
                       width: 2.0,
                     ),
                     borderRadius: BorderRadius.circular(10),
@@ -184,7 +197,9 @@ class _LoginState extends State<Login> {
                   labelText: 'Enter Your Password',
                   prefixIcon: Icon(
                     Icons.lock,
-                    color: _isPasswordError ? Colors.red : Color.fromARGB(201, 3, 152, 85),
+                    color: _isPasswordError
+                        ? Colors.red
+                        : Color.fromARGB(201, 3, 152, 85),
                   ),
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -201,14 +216,18 @@ class _LoginState extends State<Login> {
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _isPasswordError ? Colors.red : Color.fromARGB(201, 3, 152, 85),
+                      color: _isPasswordError
+                          ? Colors.red
+                          : Color.fromARGB(201, 3, 152, 85),
                       width: 1.5,
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _isPasswordError ? Colors.red : Color.fromARGB(201, 3, 152, 85),
+                      color: _isPasswordError
+                          ? Colors.red
+                          : Color.fromARGB(201, 3, 152, 85),
                       width: 2.0,
                     ),
                     borderRadius: BorderRadius.circular(10),
