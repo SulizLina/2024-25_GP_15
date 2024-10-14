@@ -146,8 +146,8 @@ class _ViolationdetailState extends State<Violationdetail> {
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: violation != null && violation!.time != null &&
-                        DateTime.parse(violation!.time.toString()).isAfter(
+                    onPressed: violation != null && violation!.getFormattedDate() != 'N/A' &&
+                        DateTime.parse(violation!.getFormattedDate()).isAfter(
                           DateTime.now().subtract(Duration(days: 30)),
                         )
                         ? () {
@@ -158,7 +158,12 @@ class _ViolationdetailState extends State<Violationdetail> {
                           }
                         : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(202, 3, 152, 85),
+                      backgroundColor: violation != null && violation!.getFormattedDate() != 'N/A' &&
+                          DateTime.parse(violation!.getFormattedDate()).isAfter(
+                            DateTime.now().subtract(Duration(days: 30)),
+                          )
+                          ? Color.fromARGB(202, 3, 152, 85) // Active color
+                          : Colors.grey, // Gray color if condition is not met
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -170,6 +175,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                       style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
                     ),
                   ),
+
                   const SizedBox(height: 20),
                 ],
               ),
