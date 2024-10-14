@@ -273,4 +273,23 @@ class _LoginState extends State<Login> {
                     fillColor: Color.fromARGB(202, 3, 152, 85),
                     elevation: 0.0,
                     padding: const EdgeInsets.symmetric(vertical: 20.0),
-                    shape: Round
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    onPressed: login,
+                    child: Text(
+                      "Login",
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
