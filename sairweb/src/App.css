@@ -1,0 +1,206 @@
+/* Global Styles */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Times New Roman', Times, serif; /* Global font for consistency */
+}
+
+p {
+  color: black;
+  margin-left: 30px;
+  margin-top: -10px;
+  
+}
+
+label {
+  color: black;
+  margin-left: 30px;
+  margin-top: -90px;
+}
+
+.fill {
+  color: black;
+  margin-left: 30px;
+  margin-top: -30px;
+}
+
+
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  height: 100vh;
+  padding-left: 20px;
+  background-position: center;
+  background-size: cover;
+}
+
+.login-container .form-container {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.login-container h1 {
+  color: #3CC585;
+  margin-left: 30px;
+}
+
+.error-message {
+  color: red;
+  display: none;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  transition: opacity 0.2s ease;
+}
+
+.login-container .error-message.visible {
+  display: block;
+  margin-left: 30px;
+  margin-top: -5px;
+}
+
+button {
+  border-radius: 25.5px;
+  background-color: #3CC585;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+  color: white;
+  margin-left: 90px;
+}
+
+.login-container input {
+  border: 1px solid #3CC585;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 16px;
+  margin: 30px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  color: black;
+  background-color: white;
+}
+
+.login-container select {
+  border: 1px solid #3CC585;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 16px;
+  background-color: white;
+  margin-left: 30px;
+  margin-bottom: 5px;
+}
+
+/* Popup styling */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  width: 400px; /* Adjust width as per your requirement */
+  text-align: center;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup img {
+  width: 50px;
+  margin-bottom: 10px; /* Reduce margin to improve spacing */
+}
+
+.popup p {
+  font-size: 16px;
+  color: #333;
+  margin: 0; /* Remove margin for better vertical alignment */
+}
+
+.popup .close-btn {
+  position: absolute;
+  top: -20px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #333;
+}
+
+.popup .close-btn:hover {
+  color: #ff0000; /* Optional: Red hover color for close button */
+}
+
+
+.signup-container {
+  border-radius: 10px; /* Rounded corners */
+  padding: 40px 20px; /* Add top padding for more space */
+  width: 90%; /* Responsive width */
+  max-width: 400px; /* Max width to keep it neat */
+  background-color: rgba(255, 255, 255, 0.8); /* Optional: Add a background for better contrast */
+}
+
+
+.signup-container h1 {
+  margin-top: 220px;
+  margin-left: 20px;
+  margin-right: -300px;
+  font-size: 28px;
+  color: #3CC585; /* Center title */
+}
+
+
+
+.signup-container .input-group {
+  margin-bottom: 15px; /* Spacing between input fields */
+}
+
+.signup-container label {
+  font-size: 18px; /* Font size for labels */
+  color: #3b3b3b; /* Same as title color */
+  margin-bottom: 5px;
+}
+
+.signup-container input {
+  padding: 10px; /* Padding for inputs */
+  border: 1px solid #3CC585; /* Light border */
+  border-radius: 5px; /* Rounded inputs */
+  font-size: 16px; /* Font size for inputs */
+}
+
+
+
+.signup-container button:hover {
+  background-color: #3a9a60; /* Darker green on hover */
+}
+
+
+/* Links in Login Styles */
+#forget {
+  color: #3CC585;
+  margin-left: 70px;
+}
+
+#signup {
+  color: #3CC585;
+  margin-left: 5px;
+  text-decoration: underline;
+}
+#login {
+  color: #3CC585;
+  margin-left: 20px;
+  text-decoration: underline;
+  margin-top: 10px;
+}
