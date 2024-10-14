@@ -22,10 +22,22 @@ class _ProfilepageState extends State<Profilepage> {
   String?
       plateNumber; // To hold plate number fetched from Motorcycle collection
   String password = '*******';
+  TextEditingController fname = TextEditingController();
+  TextEditingController lname = TextEditingController();
+  TextEditingController phone = TextEditingController();
+  TextEditingController gps = TextEditingController();
+  TextEditingController id = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     fetchDriverData(); // Fetch both driver data and plate number when the page loads
+  }
+
+  @override
+  void didUpdateWidget(Profilepage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    fetchDriverData();
   }
 
   Future<void> fetchDriverData() async {
@@ -34,10 +46,19 @@ class _ProfilepageState extends State<Profilepage> {
     // Fetch driver information
     driverInf =
         await db.getDriversnById('LMUhIgvgZa3H07D0IQvs'); //currentUser!.uid
-
+    fname.text = driverInf?.fname ?? '';
+    lname.text = driverInf?.lname ?? '';
+    phone.text = driverInf?.phoneNumber ?? '';
+    id.text = driverInf?.driverId ?? '';
+    gps.text = (driverInf?.gspNumber != null && driverInf?.gspNumber != 'null'
+        ? driverInf!.gspNumber
+        : 'No assigned GPS yet')!;
     // Fetch plate number using the driver's ID
     plateNumber = await mdb
-        .getPlateNumberByDriverId('LMUhIgvgZa3H07D0IQvs'); //currentUser!.uid
+        .getPlateNumberByDriverId(driverInf?.driverId ?? ''); //currentUser!.uid
+    print('$driverInf ${driverInf?.fname}');
+    print('$plateNumber');
+    setState(() {});
   }
 
   @override
@@ -84,7 +105,7 @@ class _ProfilepageState extends State<Profilepage> {
                         'Logout',
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.bold,
-                          color:Color.fromARGB(202, 3, 152, 85),
+                          color: Color.fromARGB(202, 3, 152, 85),
                         ),
                       ),
                       content: Text(
@@ -201,8 +222,9 @@ class _ProfilepageState extends State<Profilepage> {
               const SizedBox(height: 16),
               // First Name field
               TextFormField(
-                initialValue:
-                    driverInf?.fname ?? '', // Fetch first name from driverInf
+                //   initialValue:
+                //         driverInf?.fname ?? '', // Fetch first name from driverInf
+                controller: fname,
                 decoration: InputDecoration(
                   labelText: 'First name',
                   labelStyle:
@@ -228,7 +250,8 @@ class _ProfilepageState extends State<Profilepage> {
               const SizedBox(height: 16),
               // Last Name field
               TextFormField(
-                initialValue: driverInf?.lname ?? '', // Fetch last name
+                controller: lname,
+                //initialValue: driverInf?.lname ?? '', // Fetch last name
                 decoration: InputDecoration(
                   labelText: 'Last name',
                   labelStyle:
@@ -254,8 +277,10 @@ class _ProfilepageState extends State<Profilepage> {
               const SizedBox(height: 16),
               // Phone number field
               TextFormField(
-                initialValue:
-                    driverInf?.phoneNumber ?? '', // Fetch phone number
+                //  initialValue:
+                //    driverInf?.phoneNumber ?? '', // Fetch phone number
+                controller: phone,
+
                 decoration: InputDecoration(
                   labelText: 'Phone number',
                   labelStyle:
@@ -294,7 +319,9 @@ class _ProfilepageState extends State<Profilepage> {
               const SizedBox(height: 16),
               // ID / Residency number field
               TextFormField(
-                initialValue: driverInf?.driverId ?? '', // Fetch driver ID
+                controller: id,
+
+                //initialValue: driverInf?.driverId ?? '', // Fetch driver ID
                 decoration: InputDecoration(
                   labelText: 'ID / Residency number',
                   labelStyle:
@@ -346,10 +373,12 @@ class _ProfilepageState extends State<Profilepage> {
               const SizedBox(height: 16),
               // GPS serial number field
               TextFormField(
-                initialValue: (driverInf?.gspNumber != null &&
+                controller: gps,
+
+                /*initialValue: (driverInf?.gspNumber != null &&
                         driverInf!.gspNumber != 'null')
                     ? driverInf!.gspNumber
-                    : 'No assigned GPS yet', // If GPS number is null or 'null', show the default message
+                    : 'No assigned GPS yet', */ // If GPS number is null or 'null', show the default message
                 decoration: InputDecoration(
                   labelText: 'GPS serial number',
                   labelStyle:

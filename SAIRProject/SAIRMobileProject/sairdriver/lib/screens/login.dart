@@ -1,3 +1,4 @@
+
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -189,6 +190,7 @@ class _LoginState extends State<Login> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
+                   validator: validatePhoneNumber, 
                   keyboardType: TextInputType.phone,
                 ),
                 const SizedBox(height: 15),

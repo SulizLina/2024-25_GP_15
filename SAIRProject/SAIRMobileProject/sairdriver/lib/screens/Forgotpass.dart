@@ -1,4 +1,6 @@
 import 'dart:developer';
+import 'package:sairdriver/screens/login.dart';
+
 import 'otppage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -97,7 +99,7 @@ class _Forgotpass extends State<Forgotpass> {
       } catch (e) {
         print(e);
       }
-    /*  print('getting otp ');
+      /*  print('getting otp ');
       await FirebaseAuth.instance.verifyPhoneNumber(
   phoneNumber: '+917905999153',
   verificationCompleted: (PhoneAuthCredential credential) {      print('getting otp ==1');
@@ -114,39 +116,28 @@ class _Forgotpass extends State<Forgotpass> {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 3, 152, 85),
       appBar: AppBar(
-        automaticallyImplyLeading: false,
         elevation: 0,
         backgroundColor: Color.fromARGB(255, 3, 152, 85),
-        shape: const RoundedRectangleBorder(),
-        toolbarHeight: 90, // Adjust the toolbar height
+        toolbarHeight: 80, // Adjust the toolbar height
         iconTheme: const IconThemeData(color: Color(0xFF211D1D)),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 7),
-                ),
-                Transform.translate(
-                  offset: const Offset(0,
-                      10), // Move the text down by 10 pixels to match the home page
-                  child: const Padding(
-                    padding: EdgeInsets.only(left: 5),
-                    child: Text(
-                      "Rest Password",
-                      style: TextStyle(
-                        fontSize: 24.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                ),
-              ],
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            // Navigate to the login page
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const Login()));
+          },
+        ),
+        title: 
+         Text(
+            "Reset Password",
+            style: TextStyle(
+              fontSize: 24.0,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
-          ],
+            textAlign: TextAlign.center,
+        
         ),
       ),
       body: Container(
@@ -166,6 +157,7 @@ class _Forgotpass extends State<Forgotpass> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(height: 30,),
                 Text(
                   "Don't worry we got you!",
                   style: GoogleFonts.poppins(
