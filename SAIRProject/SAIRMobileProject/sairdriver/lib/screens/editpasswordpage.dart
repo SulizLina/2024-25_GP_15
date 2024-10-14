@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // For Firebase Authentication
 import 'package:crypto/crypto.dart';
-import 'dart:convert'; // for the utf8.encode method
+import 'dart:convert';
+
+import 'package:sairdriver/screens/profilepage.dart'; // for the utf8.encode method
 
 class Editpasswordpage extends StatefulWidget {
   @override
@@ -186,192 +188,234 @@ final digest = sha256.convert(bytes);*/
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 3, 152, 85),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black), // Back arrow color
+        backgroundColor: Color.fromARGB(255, 3, 152, 85),
+        toolbarHeight: 80, // Adjust the toolbar height
+        iconTheme: const IconThemeData(color: Colors.white),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Profilepage()),
+            );
+          },
+        ),
+        title: Text(
+            "Update Your Password",
+            style: TextStyle(
+              fontSize: 24.0,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Bold Green Text (Heading)
-              Text(
-                'Update Your Password',
-                style: GoogleFonts.poppins(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(201, 3, 152, 85),
-                ),
-              ),
-              SizedBox(height: 8), // Space between heading and input field
-
-              // Subtitle text
-              Text(
-                'Write Your New Password Below.',
-                style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
-              ),
-              SizedBox(height: 20),
-
-              // New Password Input Field with Green Border and Eye Icon
-              TextFormField(
-                controller: _passwordController,
-                obscureText:
-                    !_isPasswordVisible, // Toggle for hiding/revealing password
-                decoration: InputDecoration(
-                  labelText: 'Enter Your New Password',
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _isPasswordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                      color: Colors.grey,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
-                    },
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color:
-                          Color.fromARGB(201, 3, 152, 85), // Green border color
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Color.fromARGB(
-                          201, 3, 152, 85), // Green border when focused
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.red, // Red border color for error state
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color:
-                          Colors.red, // Red border color when focused and error
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
+      body: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.only(top: 16.0),
+        decoration: const BoxDecoration(
+          color: Colors.white, // White background for the content
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30), // Rounded top-left corner
+            topRight: Radius.circular(30), // Rounded top-right corner
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Bold Green Text (Heading)
+                Text(
+                  'Update Your Password',
+                  style: GoogleFonts.poppins(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(201, 3, 152, 85),
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  } else if (!_isPasswordValid(value)) {
-                    return 'Password must contain 8+ characters, including uppercase, \n lowercase, number, and special character.';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 16),
+                SizedBox(height: 8), // Space between heading and input field
 
-              // Confirm Password Input Field with Green Border and Eye Icon
-              TextFormField(
-                controller: _confirmPasswordController,
-                obscureText:
-                    !_isConfirmPasswordVisible, // Toggle for hiding/revealing password
-                decoration: InputDecoration(
-                  labelText: 'Re-enter your new password',
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _isConfirmPasswordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                      color: Colors.grey,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
-                      });
-                    },
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color:
-                          Color.fromARGB(201, 3, 152, 85), // Green border color
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Color.fromARGB(
-                          201, 3, 152, 85), // Green border when focused
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.red, // Red border color for error state
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color:
-                          Colors.red, // Red border color when focused and error
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                  ),
+                // Subtitle text
+                Text(
+                  'Write Your New Password Below.',
+                  style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please confirm your password';
-                  } else if (value != _passwordController.text) {
-                    return 'Passwords do not match';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 32),
+                SizedBox(height: 20),
 
-              // Update Button with Green Background
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Show confirmation dialog before proceeding with password change
-                    if (_formKey.currentState!.validate()) {
-                      _showConfirmationDialog();
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Color.fromARGB(201, 3, 152, 85), // Green background
-                    shape: RoundedRectangleBorder(
+                // New Password Input Field with Green Border and Eye Icon
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText:
+                      !_isPasswordVisible, // Toggle for hiding/revealing password
+                  decoration: InputDecoration(
+                    labelText: 'Enter Your New Password',
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Color.fromARGB(
+                            201, 3, 152, 85), // Green border color
+                        width: 1.5,
+                      ),
                       borderRadius:
-                          BorderRadius.circular(15.0), // Rounded corners
+                          BorderRadius.circular(10), // Rounded corners
                     ),
-                    padding: EdgeInsets.symmetric(
-                        vertical: 16), // Add vertical padding
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Color.fromARGB(
+                            201, 3, 152, 85), // Green border when focused
+                        width: 2.0,
+                      ),
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.red, // Red border color for error state
+                        width: 1.5,
+                      ),
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors
+                            .red, // Red border color when focused and error
+                        width: 2.0,
+                      ),
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
+                    ),
                   ),
-                  child: Text(
-                    'Update',
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      color: Colors.white, // White text
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your password';
+                    } else if (!_isPasswordValid(value)) {
+                      return 'Password must contain 8+ characters, including uppercase, \n lowercase, number, and special character.';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 16),
+
+                // Confirm Password Input Field with Green Border and Eye Icon
+                TextFormField(
+                  controller: _confirmPasswordController,
+                  obscureText:
+                      !_isConfirmPasswordVisible, // Toggle for hiding/revealing password
+                  decoration: InputDecoration(
+                    labelText: 'Re-enter your new password',
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isConfirmPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isConfirmPasswordVisible =
+                              !_isConfirmPasswordVisible;
+                        });
+                      },
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Color.fromARGB(
+                            201, 3, 152, 85), // Green border color
+                        width: 1.5,
+                      ),
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Color.fromARGB(
+                            201, 3, 152, 85), // Green border when focused
+                        width: 2.0,
+                      ),
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.red, // Red border color for error state
+                        width: 1.5,
+                      ),
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors
+                            .red, // Red border color when focused and error
+                        width: 2.0,
+                      ),
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please confirm your password';
+                    } else if (value != _passwordController.text) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 32),
+
+                // Update Button with Green Background
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Show confirmation dialog before proceeding with password change
+                      if (_formKey.currentState!.validate()) {
+                        _showConfirmationDialog();
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          Color.fromARGB(201, 3, 152, 85), // Green background
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(15.0), // Rounded corners
+                      ),
+                      padding: EdgeInsets.symmetric(
+                          vertical: 16), // Add vertical padding
+                    ),
+                    child: Text(
+                      'Update',
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        color: Colors.white, // White text
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

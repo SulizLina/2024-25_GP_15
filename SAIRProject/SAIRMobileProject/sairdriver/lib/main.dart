@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:sairdriver/screens/Forgotpass.dart';
+import 'package:sairdriver/screens/Resetpass.dart';
 
 import 'package:sairdriver/screens/ViewComplaints.dart';
 import 'package:sairdriver/screens/ViolationsList.dart';
@@ -32,7 +33,7 @@ class MainApp extends StatelessWidget {
             splashIconSize: 160, // size of logo
             splash:Image.asset('assets/image/SAIRLogo.png',
             ),
-            nextScreen: Welcomepage(),// navigate to this screen
+            nextScreen: BottomNavBar(),// navigate to this screen
             splashTransition: SplashTransition.scaleTransition, // the way of transition
             )
   );

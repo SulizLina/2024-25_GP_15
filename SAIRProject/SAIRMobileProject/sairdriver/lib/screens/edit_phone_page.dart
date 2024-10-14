@@ -5,6 +5,7 @@ import 'package:sairdriver/messages/error_messages.dart';
 import 'package:sairdriver/messages/success_dialog.dart';
 import 'package:sairdriver/messages/phone_validator.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sairdriver/screens/profilepage.dart';
 
 class EditPhonePage extends StatefulWidget {
   @override
@@ -119,13 +120,47 @@ class _EditPhonePageState extends State<EditPhonePage> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
+            backgroundColor: Color.fromARGB(255, 3, 152, 85),
+
+       appBar: AppBar(
+        automaticallyImplyLeading: false,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black), // Back arrow color
+        backgroundColor: Color.fromARGB(255, 3, 152, 85),
+        toolbarHeight: 80, // Adjust the toolbar height
+        iconTheme: const IconThemeData(color: Colors.white),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Profilepage()),
+            );
+          },
+        ),
+        title: Text(
+            "Update Your Phone Number",
+            style: TextStyle(
+              fontSize: 24.0,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        
       ),
-      body: Padding(
+      body: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.only(top: 16.0),
+        decoration: const BoxDecoration(
+          color: Colors.white, // White background for the content
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30), // Rounded top-left corner
+            topRight: Radius.circular(30), // Rounded top-right corner
+          ),
+        ),
+        child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
@@ -239,6 +274,6 @@ class _EditPhonePageState extends State<EditPhonePage> {
           ),
         ),
       ),
-    );
+     ), );
   }
 }

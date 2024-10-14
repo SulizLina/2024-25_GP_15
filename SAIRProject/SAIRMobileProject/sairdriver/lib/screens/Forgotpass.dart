@@ -34,7 +34,7 @@ class _Forgotpass extends State<Forgotpass> {
   }
 
   bool _isPhoneValid(String phone) {
-    final phoneRegex = RegExp(r'^\+9665\d{8}$');
+    final phoneRegex = RegExp(r'^\+9665\d{8}$'); // Regex for phone validation
     return phoneRegex.hasMatch(phone);
   }
 
@@ -60,7 +60,8 @@ class _Forgotpass extends State<Forgotpass> {
     if (_phoneErrorText.isEmpty) {
       try {
         // Check if the phone number exists in Firestore
-        QuerySnapshot<Map<String, dynamic>> query = await FirebaseFirestore.instance
+        QuerySnapshot<Map<String, dynamic>> query = await FirebaseFirestore
+            .instance
             .collection('Driver')
             .where('PhoneNumber', isEqualTo: phone)
             .get();
@@ -85,7 +86,8 @@ class _Forgotpass extends State<Forgotpass> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => Otppage(verificationId: verificationId), // Pass verificationId here
+                builder: (context) => Otppage(
+                    verificationId: verificationId), // Pass verificationId here
               ),
             );
           },
@@ -102,120 +104,153 @@ class _Forgotpass extends State<Forgotpass> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 3, 152, 85),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black), // Back arrow color
+        backgroundColor: Color.fromARGB(255, 3, 152, 85),
+        shape: const RoundedRectangleBorder(),
+        toolbarHeight: 90, // Adjust the toolbar height
+        iconTheme: const IconThemeData(color: Color(0xFF211D1D)),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 7),
+                ),
+                Transform.translate(
+                  offset: const Offset(0,
+                      10), // Move the text down by 10 pixels to match the home page
+                  child: const Padding(
+                    padding: EdgeInsets.only(left: 5),
+                    child: Text(
+                      "Rest Password",
+                      style: TextStyle(
+                        fontSize: 24.0,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Reset Your Password',
-                style: GoogleFonts.poppins(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(201, 3, 152, 85),
+      body: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.only(top: 16.0),
+        decoration: const BoxDecoration(
+          color: Colors.white, // White background for the content
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30), // Rounded top-left corner
+            topRight: Radius.circular(30), // Rounded top-right corner
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Don't worry we got you!",
+                  style: GoogleFonts.poppins(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(201, 3, 152, 85),
+                  ),
                 ),
-              ),
-              SizedBox(height: 8), // Space between heading and input field
+                SizedBox(height: 8), // Space between heading and input field
 
-              // Subtitle text
-              Text(
-                'Enter your phone number to receive OTP.',
-                style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
-              ),
-              SizedBox(height: 20),
+                // Subtitle text
+                Text(
+                  'Enter your phone number to receive an OTP',
+                  style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
+                ),
+                SizedBox(height: 20),
 
-              // Phone Number Input Field with Green Border or Red on Error
-              TextFormField(
-                controller: _phoneController,
-                decoration: InputDecoration(
-                  labelText: 'Enter your number with country code',
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Color.fromARGB(201, 3, 152, 85),
-                      width: 1.5,
+                // Phone Number Input Field with Green Border or Red on Error
+                TextFormField(
+                  controller: _phoneController,
+                  decoration: InputDecoration(
+                    labelText: 'Enter your number with country code',
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: _phoneErrorText.isEmpty
+                            ? Color.fromARGB(201, 3, 152, 85) // Green if valid
+                            : Colors.red, // Red for error
+                        width: 1.5,
+                      ),
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
                     ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: _phoneErrorText.isEmpty
-                          ? Color.fromARGB(201, 3, 152, 85) // Green border if no error
-                          : Colors.red, // Red border if there is an error
-                      width: 2.0,
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: _phoneErrorText.isEmpty
+                            ? Color.fromARGB(
+                                201, 3, 152, 85) // Green if focused and valid
+                            : Colors.red, // Red if error on focus
+                        width: 2.0,
+                      ),
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
                     ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.red,
-                      width: 1.5,
+                    errorText: _phoneErrorText.isNotEmpty
+                        ? _phoneErrorText
+                        : null, // Show error if not empty
+                    errorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.red,
+                        width: 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.red,
-                      width: 2.0,
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.red,
+                        width: 2.0,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    borderRadius: BorderRadius.circular(10),
                   ),
-                  errorStyle: TextStyle(
-                    fontSize: 12,
-                    color: Colors.red,
-                    height: 1.2, // Same error style as in validatePhoneNumber
-                  ),
+                  keyboardType: TextInputType.phone,
+                  onChanged: _validatePhone, // Call validation on every change
                 ),
-                keyboardType: TextInputType.phone,
-                onChanged: _validatePhone, // Call validation on every change
-              ),
-              SizedBox(height: 10),
-              // Error Message Display
-              if (_phoneErrorText.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Text(
-                    _phoneErrorText,
-                    style: TextStyle(
-                      fontSize: 12, // Same font size as in validatePhoneNumber
-                      color: Colors.red, // Red color for the error
-                      height: 1.2, // Same line height as in validatePhoneNumber
+                SizedBox(height: 10),
+
+                SizedBox(height: 30),
+                // Send OTP Button with Green Background
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _sendResetPassword,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(201, 3, 152, 85),
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(15.0), // Rounded corners
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        vertical: 16, // Add vertical padding
+                      ),
                     ),
-                  ),
-                ),
-              SizedBox(
-                height: 30,
-              ),
-              // Send OTP Button with Green Background
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _sendResetPassword,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(201, 3, 152, 85),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0), // Rounded corners
-                    ),
-                    padding: EdgeInsets.symmetric(
-                      vertical: 16, // Add vertical padding
-                    ),
-                  ),
-                  child: Text(
-                    'Send OTP',
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      color: Colors.white, // White text
+                    child: Text(
+                      'Send OTP',
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        color: Colors.white, // White text
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

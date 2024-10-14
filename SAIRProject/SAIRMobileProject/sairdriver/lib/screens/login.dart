@@ -126,166 +126,151 @@ class _LoginState extends State<Login> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        resizeToAvoidBottomInset: true, // Prevent overflow when keyboard appears
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
           iconTheme: IconThemeData(color: Colors.black), // Back arrow color
+          automaticallyImplyLeading: true,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                // Center the logo
-                child: Image.asset(
-                  'assets/image/SAIRLogo.png', // Logo asset path
-                  height: 200,
-                ),
-              ),
-              const SizedBox(height: 20.0),
-              Text(
-                " Welcome to SAIR,\n Glad to see you again!",
-                style: GoogleFonts.poppins(
-                  color: Color.fromARGB(202, 3, 152, 85),
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.left,
-              ),
-              const SizedBox(height: 44.0),
-              // Phone Number Input Field with Icon
-              TextFormField(
-                controller: _phoneController,
-                decoration: InputDecoration(
-                  labelText: 'Enter your number with country code',
-                  prefixIcon: Icon(
-                    Icons.phone,
-                    color: _isPhoneError
-                        ? Colors.red
-                        : Color.fromARGB(201, 3, 152, 85),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: _isPhoneError
-                          ? Colors.red
-                          : Color.fromARGB(201, 3, 152, 85),
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: _isPhoneError
-                          ? Colors.red
-                          : Color.fromARGB(201, 3, 152, 85),
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  // Center the logo
+                  child: Image.asset(
+                    'assets/image/SAIRLogo.png',
+                    height: 200,
                   ),
                 ),
-                keyboardType: TextInputType.phone,
-              ),
-              const SizedBox(height: 15),
-              // Password Input Field with Icon
-              TextFormField(
-                controller: _passwordController,
-                obscureText: !_isPasswordVisible,
-                decoration: InputDecoration(
-                  labelText: 'Enter Your Password',
-                  prefixIcon: Icon(
-                    Icons.lock,
-                    color: _isPasswordError
-                        ? Colors.red
-                        : Color.fromARGB(201, 3, 152, 85),
-                  ),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _isPasswordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                      color: Colors.grey,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
-                    },
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: _isPasswordError
-                          ? Colors.red
-                          : Color.fromARGB(201, 3, 152, 85),
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: _isPasswordError
-                          ? Colors.red
-                          : Color.fromARGB(201, 3, 152, 85),
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12.0),
-              // Error Message Display
-              if (errorMessage != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Text(
-                    errorMessage!,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.red,
-                      height: 1.2,
-                    ),
-                  ),
-                ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const Forgotpass()));
-                },
-                child: Text(
-                  "Forgot your password?",
+                const SizedBox(height: 20.0),
+                Text(
+                  "Welcome to SAIR,\nGlad to see you again!",
                   style: GoogleFonts.poppins(
                     color: Color.fromARGB(202, 3, 152, 85),
-                    fontSize: 14,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
                   ),
+                  textAlign: TextAlign.left,
                 ),
-              ),
-              const SizedBox(height: 88.0),
-              Container(
-                width: double.infinity,
-                child: RawMaterialButton(
-                  fillColor: Color.fromARGB(202, 3, 152, 85),
-                  elevation: 0.0,
-                  padding: const EdgeInsets.symmetric(vertical: 20.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
+                const SizedBox(height: 44.0),
+                // Phone Number Input Field with Icon
+                TextFormField(
+                  controller: _phoneController,
+                  decoration: InputDecoration(
+                    labelText: 'Enter your number with country code',
+                    prefixIcon: Icon(
+                      Icons.phone,
+                      color: _isPhoneError
+                          ? Colors.red
+                          : Color.fromARGB(201, 3, 152, 85),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: _isPhoneError
+                            ? Colors.red
+                            : Color.fromARGB(201, 3, 152, 85),
+                        width: 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: _isPhoneError
+                            ? Colors.red
+                            : Color.fromARGB(201, 3, 152, 85),
+                        width: 2.0,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
-                  onPressed: login,
-                  child: Text(
-                    "Login",
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
+                  keyboardType: TextInputType.phone,
+                ),
+                const SizedBox(height: 15),
+                // Password Input Field with Icon
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: !_isPasswordVisible,
+                  decoration: InputDecoration(
+                    labelText: 'Enter Your Password',
+                    prefixIcon: Icon(
+                      Icons.lock,
+                      color: _isPasswordError
+                          ? Colors.red
+                          : Color.fromARGB(201, 3, 152, 85),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: _isPasswordError
+                            ? Colors.red
+                            : Color.fromARGB(201, 3, 152, 85),
+                        width: 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: _isPasswordError
+                            ? Colors.red
+                            : Color.fromARGB(201, 3, 152, 85),
+                        width: 2.0,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+                const SizedBox(height: 12.0),
+                // Error Message Display
+                if (errorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: Text(
+                      errorMessage!,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.red,
+                        height: 1.2,
+                      ),
+                    ),
+                  ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Forgotpass()));
+                  },
+                  child: Text(
+                    "Forgot your password?",
+                    style: GoogleFonts.poppins(
+                      color: Color.fromARGB(202, 3, 152, 85),
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 88.0),
+                Container(
+                  width: double.infinity,
+                  child: RawMaterialButton(
+                    fillColor: Color.fromARGB(202, 3, 152, 85),
+                    elevation: 0.0,
+                    padding: const EdgeInsets.symmetric(vertical: 20.0),
+                    shape: Round

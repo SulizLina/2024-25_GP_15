@@ -9,7 +9,7 @@ class Resetpass extends StatefulWidget {
   @override
   State<Resetpass> createState() => _ResetpassState();
 }
-
+////////////To enter the phone then go to the otp then chamge pass
 class _ResetpassState extends State<Resetpass> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _passwordController = TextEditingController();
@@ -185,13 +185,37 @@ final digest = sha256.convert(bytes);*/
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+   return Scaffold(
+      backgroundColor: Color.fromARGB(255, 3, 152, 85),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black), // Back arrow color
+  automaticallyImplyLeading: false,
+  elevation: 0,
+  backgroundColor: Color.fromARGB(255, 3, 152, 85),
+  toolbarHeight: 80, // Adjust the toolbar height
+  iconTheme: const IconThemeData(color: Color(0xFF211D1D)),
+  title: Center(
+    child: Text(
+      "Reset Password",
+      style: TextStyle(
+        fontSize: 24.0,
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
       ),
-      body: Padding(
+      textAlign: TextAlign.center,
+    ),
+  ),
+),
+      body: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.only(top: 16.0),
+        decoration: const BoxDecoration(
+          color: Colors.white, // White background for the content
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30), // Rounded top-left corner
+            topRight: Radius.circular(30), // Rounded top-right corner
+          ),
+        ),
+        child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
@@ -200,7 +224,7 @@ final digest = sha256.convert(bytes);*/
             children: [
               // Bold Green Text (Heading)
               Text(
-                'Reset Your Password',
+                'One More Step!',
                 style: GoogleFonts.poppins(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -375,6 +399,6 @@ final digest = sha256.convert(bytes);*/
           ),
         ),
       ),
-    );
+    ),);
   }
 }
