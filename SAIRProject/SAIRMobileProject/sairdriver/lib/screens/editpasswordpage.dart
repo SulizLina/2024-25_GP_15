@@ -8,6 +8,8 @@ import 'dart:convert';
 import 'package:sairdriver/screens/profilepage.dart'; // for the utf8.encode method
 
 class Editpasswordpage extends StatefulWidget {
+     final String driverId;  // DriverID passed from previous page
+     Editpasswordpage({required this.driverId});
   @override
   _EditpasswordpageState createState() => _EditpasswordpageState();
 }
@@ -76,20 +78,20 @@ class _EditpasswordpageState extends State<Editpasswordpage> {
 
   // Function to handle password update
   Future<void> _changePassword() async {
-    if (_formKey.currentState!.validate()) {
+   if (_formKey.currentState!.validate()) {
       try {
         // Get the current user
-        //User? currentUser = FirebaseAuth.instance.currentUser;
+       /// User? currentUser = FirebaseAuth.instance.currentUser;
 
-        //if (currentUser != null) {
+       // if (currentUser != null) {
         // Update the password in Firebase Authentication
-        // await currentUser.updatePassword(_passwordController.text);
+       // await currentUser.updatePassword(_passwordController.text);
 /*final bytes = utf8.encode(_passwordController.text); // data being hashed
 final digest = sha256.convert(bytes);*/
         // Update password in Firestore (if needed)
         await FirebaseFirestore.instance
             .collection('Driver')
-            .doc("LMUhIgvgZa3H07D0IQvs") // Use currentUser.uid
+            .doc(widget.driverId) // Use currentUser.uid
             .update({
           'Password': _passwordController.text,
         });
@@ -132,11 +134,12 @@ final digest = sha256.convert(bytes);*/
           },
         );
 
-        //} else {
+     //   } else {
         // Handle the case where the user is not logged in
-        //print('User is not logged in.');
-        //}
-      } catch (e) {
+       // print('User is not logged in.');
+    //    }
+     }
+      catch (e) {
         // Handle errors during password update
         print('Failed to update password: $e');
         showDialog(
@@ -184,13 +187,13 @@ final digest = sha256.convert(bytes);*/
         elevation: 0,
         backgroundColor: Color.fromARGB(255, 3, 152, 85),
         toolbarHeight: 80, // Adjust the toolbar height
-        iconTheme: const IconThemeData(color: Colors.white),
+       iconTheme: const IconThemeData(color: Colors.white),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Profilepage()),
+              MaterialPageRoute(builder: (context) => Profilepage(driverId:widget.driverId)),
             );
           },
         ),

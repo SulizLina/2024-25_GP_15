@@ -9,8 +9,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Profilepage extends StatefulWidget {
-  const Profilepage({super.key});
+ final String driverId;  // DriverID passed from previous page
 
+  Profilepage({required this.driverId});
   @override
   State<Profilepage> createState() => _ProfilepageState();
 }
@@ -40,26 +41,31 @@ class _ProfilepageState extends State<Profilepage> {
     fetchDriverData();
   }
 
-  Future<void> fetchDriverData() async {
-    DriverDatabase db = DriverDatabase();
-    MotorcycleDatabase mdb = MotorcycleDatabase();
-    // Fetch driver information
-    driverInf =
-        await db.getDriversnById('LMUhIgvgZa3H07D0IQvs'); //currentUser!.uid
-    fname.text = driverInf?.fname ?? '';
-    lname.text = driverInf?.lname ?? '';
-    phone.text = driverInf?.phoneNumber ?? '';
-    id.text = driverInf?.driverId ?? '';
-    gps.text = (driverInf?.gspNumber != null && driverInf?.gspNumber != 'null'
-        ? driverInf!.gspNumber
-        : 'No assigned GPS yet')!;
-    // Fetch plate number using the driver's ID
-    plateNumber = await mdb
-        .getPlateNumberByDriverId(driverInf?.driverId ?? ''); //currentUser!.uid
-    print('$driverInf ${driverInf?.fname}');
-    print('$plateNumber');
-    setState(() {});
-  }
+Future<void> fetchDriverData() async {
+  DriverDatabase db = DriverDatabase();
+  MotorcycleDatabase mdb = MotorcycleDatabase();
+
+  // Fetch driver information
+  driverInf = await db.getDriversnById(widget.driverId);
+
+  // Update text fields with fetched data
+  fname.text = driverInf?.fname ?? '';
+  lname.text = driverInf?.lname ?? '';
+  phone.text = driverInf?.phoneNumber ?? '';
+  id.text = driverInf?.driverId ?? '';
+  gps.text = ((driverInf?.gspNumber != null && driverInf?.gspNumber != 'null')
+      ? driverInf!.gspNumber
+      : 'No assigned GPS yet')!;
+
+  // Fetch plate number using the driver's ID
+  plateNumber = await mdb.getPlateNumberByDriverId(widget.driverId);
+
+  // Debugging print statement
+  print('License Plate fetched: $plateNumber');
+
+  setState(() {});
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -226,7 +232,7 @@ class _ProfilepageState extends State<Profilepage> {
                 //         driverInf?.fname ?? '', // Fetch first name from driverInf
                 controller: fname,
                 decoration: InputDecoration(
-                  labelText: 'First name',
+                  labelText: 'First Name',
                   labelStyle:
                       GoogleFonts.poppins(color: const Color(0xFF211D1D)),
                   enabledBorder: OutlineInputBorder(
@@ -253,7 +259,7 @@ class _ProfilepageState extends State<Profilepage> {
                 controller: lname,
                 //initialValue: driverInf?.lname ?? '', // Fetch last name
                 decoration: InputDecoration(
-                  labelText: 'Last name',
+                  labelText: 'Last Name',
                   labelStyle:
                       GoogleFonts.poppins(color: const Color(0xFF211D1D)),
                   enabledBorder: OutlineInputBorder(
@@ -282,7 +288,7 @@ class _ProfilepageState extends State<Profilepage> {
                 controller: phone,
 
                 decoration: InputDecoration(
-                  labelText: 'Phone number',
+                  labelText: 'Phone Number',
                   labelStyle:
                       GoogleFonts.poppins(color: const Color(0xFF211D1D)),
                   enabledBorder: OutlineInputBorder(
@@ -308,7 +314,7 @@ class _ProfilepageState extends State<Profilepage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => EditPhonePage()),
+                            builder: (context) => EditPhonePage(driverId: widget.driverId)),
                       );
                     },
                   ),
@@ -323,7 +329,7 @@ class _ProfilepageState extends State<Profilepage> {
 
                 //initialValue: driverInf?.driverId ?? '', // Fetch driver ID
                 decoration: InputDecoration(
-                  labelText: 'ID / Residency number',
+                  labelText: 'ID / Residency Number',
                   labelStyle:
                       GoogleFonts.poppins(color: const Color(0xFF211D1D)),
                   enabledBorder: OutlineInputBorder(
@@ -349,7 +355,7 @@ class _ProfilepageState extends State<Profilepage> {
               TextFormField(
                 initialValue: plateNumber ?? 'Loading...', // Fetch plate number
                 decoration: InputDecoration(
-                  labelText: 'Plate number',
+                  labelText: 'License Plate',
                   labelStyle:
                       GoogleFonts.poppins(color: const Color(0xFF211D1D)),
                   enabledBorder: OutlineInputBorder(
@@ -380,7 +386,7 @@ class _ProfilepageState extends State<Profilepage> {
                     ? driverInf!.gspNumber
                     : 'No assigned GPS yet', */ // If GPS number is null or 'null', show the default message
                 decoration: InputDecoration(
-                  labelText: 'GPS serial number',
+                  labelText: 'GPS Serial Number',
                   labelStyle:
                       GoogleFonts.poppins(color: const Color(0xFF211D1D)),
                   enabledBorder: OutlineInputBorder(
@@ -433,7 +439,7 @@ class _ProfilepageState extends State<Profilepage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => Editpasswordpage()),
+                            builder: (context) => Editpasswordpage(driverId: widget.driverId,)),
                       );
                     },
                   ),

@@ -8,7 +8,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/screens/ViolationDetail.dart';
 
 class Violationslist extends StatefulWidget {
-  const Violationslist({super.key});
+   final String driverId;  // DriverID passed from previous page
+  const Violationslist({required this.driverId});
 
   @override
   State<Violationslist> createState() => _ViolationslistState();
@@ -26,12 +27,11 @@ class _ViolationslistState extends State<Violationslist> {
 
   Future<void> fetchViolations() async { // Fetch all violations without filtering by userId
     try {
-      String driverID = "1111111111"; // Set the driverID for this query
 
       // Query Firestore for violations where driverID matches 1111111111
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('te2')
-          .where('DriverID', isEqualTo: driverID) // Ensure correct field name and value
+          .where('DriverID', isEqualTo: widget.driverId) // Ensure correct field name and value
           .get();
 
       setState(() {

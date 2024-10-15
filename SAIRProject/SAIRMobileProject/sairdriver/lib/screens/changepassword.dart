@@ -5,7 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sairdriver/screens/home.dart'; // For Firebase Authentication
 
 class Changepassword extends StatefulWidget {
-  const Changepassword({super.key});
+   final String driverId;  // DriverID passed from previous page
+  const Changepassword({required this.driverId});
 
   @override
   State<Changepassword> createState() => _ChangepasswordState();
@@ -133,7 +134,7 @@ final digest = sha256.convert(bytes);*/
                       Navigator.of(context).pop(); // Close the dialog
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Home()),
+                        MaterialPageRoute(builder: (context) => Home(driverId: widget.driverId)),
                       );
                     },
                     style: ElevatedButton.styleFrom(

@@ -9,7 +9,9 @@ import 'package:sairdriver/screens/home.dart';
 import 'package:sairdriver/screens/profilepage.dart';
 
 class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({super.key});
+  final String driverId; // DriverID passed from login
+
+  BottomNavBar({required this.driverId});
 
   @override
   State<BottomNavBar> createState() => _MyBottomNavState();
@@ -30,7 +32,7 @@ class _MyBottomNavState extends State<BottomNavBar> {
     return PersistentTabView(
       controller: _controller,
       context,
-      screens: _buildScreen(),
+      screens: _buildScreen(widget.driverId), // Pass driverId to the method
       items: _navbarItem(),
       navBarStyle: NavBarStyle.style15,
       backgroundColor: Colors.white,
@@ -56,6 +58,18 @@ class _MyBottomNavState extends State<BottomNavBar> {
         ),
       ),
     );
+  }
+
+  // List of Screens for Bottom NavBar
+  List<Widget> _buildScreen(String driverId) {
+    // Add driverId parameter
+    return [
+      const Crasheslist(),
+      Violationslist(driverId: driverId),
+      Home(driverId: driverId),
+       Viewcomplaints(driverId: driverId),
+      Profilepage(driverId: driverId), // Use the driverId here
+    ];
   }
 }
 
@@ -95,16 +109,5 @@ List<PersistentBottomNavBarItem> _navbarItem() {
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
     ),
-  ];
-}
-
-// List of Screens for Bottom NavBar
-List<Widget> _buildScreen() {
-  return [
-    const Crasheslist(),
-    Violationslist(),
-    const Home(),
-    const Viewcomplaints(),
-    const Profilepage(),
   ];
 }

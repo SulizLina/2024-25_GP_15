@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  final String driverId;  // DriverID passed from previous page
+  const Home({required this.driverId});
 
   @override
   State<Home> createState() => _HomeState();

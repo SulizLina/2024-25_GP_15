@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Viewcomplaints extends StatefulWidget {
-  const Viewcomplaints({super.key});
+   final String driverId;  // DriverID passed from previous page
+  const Viewcomplaints({required this.driverId});
 
   @override
   State<Viewcomplaints> createState() => _ViewcomplaintsState();
