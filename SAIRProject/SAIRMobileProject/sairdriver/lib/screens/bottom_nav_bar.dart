@@ -9,7 +9,7 @@ import 'package:sairdriver/screens/home.dart';
 import 'package:sairdriver/screens/profilepage.dart';
 
 class BottomNavBar extends StatefulWidget {
-  final String driverId;  // DriverID passed from login
+  final String driverId; // DriverID passed from login
 
   BottomNavBar({required this.driverId});
 
@@ -61,12 +61,13 @@ class _MyBottomNavState extends State<BottomNavBar> {
   }
 
   // List of Screens for Bottom NavBar
-  List<Widget> _buildScreen(String driverId) { // Add driverId parameter
+  List<Widget> _buildScreen(String driverId) {
+    // Add driverId parameter
     return [
       const Crasheslist(),
-      Violationslist(),
-      const Home(),
-      const Viewcomplaints(),
+      Violationslist(driverId: driverId),
+      Home(driverId: driverId),
+       Viewcomplaints(driverId: driverId),
       Profilepage(driverId: driverId), // Use the driverId here
     ];
   }

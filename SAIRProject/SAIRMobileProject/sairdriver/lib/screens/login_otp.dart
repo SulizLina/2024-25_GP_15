@@ -198,7 +198,7 @@ class _LoginOtpState extends State<LoginOtp> {
                                         } else {
                                           Navigator.push(
                                             context,
-                                            MaterialPageRoute(builder: (context) => Changepassword()),
+                                            MaterialPageRoute(builder: (context) => Changepassword(driverId: driverId)),
                                           );
                                         }
                                       } catch (e) {
