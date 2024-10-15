@@ -63,7 +63,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints> {
           padding: const EdgeInsets.only(left: 16.0), // Add left padding here
           child: Center(
             child: Text(
-              'This is a View complaints page. Will be done in Sprint 2',
+              'This is a View complaints page.\n Will be done in Sprint 2',
               style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
               textAlign: TextAlign.center,
             ),
