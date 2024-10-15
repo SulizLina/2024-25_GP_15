@@ -7,6 +7,7 @@ import 'package:sairdriver/screens/ViolationDetail.dart';
 import 'package:sairdriver/screens/ViolationsList.dart';
 import 'package:sairdriver/screens/home.dart';
 import 'package:sairdriver/screens/profilepage.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BottomNavBar extends StatefulWidget {
   final String driverId; // DriverID passed from login
