@@ -8,6 +8,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/screens/profilepage.dart';
 
 class EditPhonePage extends StatefulWidget {
+   final String driverId;  // DriverID passed from previous page
+EditPhonePage({required this.driverId});
   @override
   _EditPhonePageState createState() => _EditPhonePageState();
 }
@@ -35,7 +37,7 @@ class _EditPhonePageState extends State<EditPhonePage> {
       // Update phone number in the Firestore document for the user
       await FirebaseFirestore.instance
           .collection('Driver')
-          .doc("LMUhIgvgZa3H07D0IQvs") // Use currentUser.uid
+          .doc(widget.driverId) // Use currentUser.uid
           .update({
         'PhoneNumber': phoneNumber,
       });
@@ -129,13 +131,13 @@ class _EditPhonePageState extends State<EditPhonePage> {
         elevation: 0,
         backgroundColor: Color.fromARGB(255, 3, 152, 85),
         toolbarHeight: 80, // Adjust the toolbar height
-        iconTheme: const IconThemeData(color: Colors.white),
+         iconTheme: const IconThemeData(color: Colors.white),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.push(
+          Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Profilepage()),
+              MaterialPageRoute(builder: (context) => Profilepage(driverId:widget.driverId)),
             );
           },
         ),

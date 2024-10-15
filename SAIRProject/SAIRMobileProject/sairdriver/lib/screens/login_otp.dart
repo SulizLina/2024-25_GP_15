@@ -186,12 +186,14 @@ class _LoginOtpState extends State<LoginOtp> {
                                                 isEqualTo: currentUser?.phoneNumber)
                                             .limit(1)
                                             .get();
+                                            // Fetch driverId from the document
+                                        final String driverId = driverDoc.docs.first.id;
                                         final bool isDefaultPassword =
                                             driverDoc.docs.first.data()['isDefaultPassword'];
                                         if (isDefaultPassword == false) {
                                           Navigator.push(
                                             context,
-                                            MaterialPageRoute(builder: (context) => BottomNavBar()),
+                                            MaterialPageRoute(builder: (context) => BottomNavBar(driverId: driverId)),
                                           );
                                         } else {
                                           Navigator.push(

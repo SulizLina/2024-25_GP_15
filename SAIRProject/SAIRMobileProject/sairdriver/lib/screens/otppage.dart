@@ -18,7 +18,7 @@ class _OtppageState extends State<Otppage> {
   final _formKey = GlobalKey<FormState>();
   final _otpController = TextEditingController();
   bool isError = false;
-
+ User? get currentUser => FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
