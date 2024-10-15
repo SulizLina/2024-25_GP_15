@@ -43,7 +43,7 @@ class _LoginOtpState extends State<LoginOtp> {
           },
         ),
         title: Text(
-          "Reset Password",
+          "Login",
           style: TextStyle(
             fontSize: 24.0,
             color: Colors.white,
@@ -219,7 +219,7 @@ class _LoginOtpState extends State<LoginOtp> {
                                   padding: EdgeInsets.symmetric(vertical: 16),
                                 ),
                                 child: Text(
-                                  'Send OTP',
+                                  'Login',
                                   style: GoogleFonts.poppins(
                                     fontSize: 18,
                                     color: Colors.white,
