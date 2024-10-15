@@ -45,7 +45,7 @@ class _LoginOtpState extends State<LoginOtp> {
         title: Text(
           "Login",
           style: TextStyle(
-            fontSize: 24.0,
+            fontSize: 23.0,
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
@@ -85,7 +85,7 @@ class _LoginOtpState extends State<LoginOtp> {
                       Text(
                         "Almost there!",
                         style: GoogleFonts.poppins(
-                          fontSize: 24,
+                          fontSize: 21,
                           fontWeight: FontWeight.bold,
                           color: Color.fromARGB(202, 3, 152, 85),
                         ),
@@ -95,7 +95,7 @@ class _LoginOtpState extends State<LoginOtp> {
                         "Please enter the OTP code sent to your phone number for verification.",
                         textAlign: TextAlign.left,
                         style: GoogleFonts.poppins(
-                            fontSize: 16, color: Colors.grey),
+                            fontSize: 14, color: Colors.grey),
                       ),
                       const SizedBox(height: 30),
                       Form(
