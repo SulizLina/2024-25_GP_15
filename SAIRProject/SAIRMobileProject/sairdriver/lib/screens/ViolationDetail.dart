@@ -54,34 +54,35 @@ class _ViolationdetailState extends State<Violationdetail> {
     final longitude = violation?.position?.longitude ?? defaultLoc.longitude;
 
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        elevation: 0,
-        backgroundColor: Color.fromARGB(255, 3, 152, 85),
-        toolbarHeight: 80, // Adjust the toolbar height
-        iconTheme: const IconThemeData(color: Colors.white),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Column(
-          mainAxisAlignment: MainAxisAlignment.center, // Center the title vertically
-          children: [
-            const SizedBox(height: 40), // Space for the icon
-            Text(
-              "Violation Details",
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.white,
+            appBar: AppBar(
+      automaticallyImplyLeading: false,
+      elevation: 0,
+      backgroundColor: Color.fromARGB(255, 3, 152, 85), // Background color
+      toolbarHeight: 100, // Adjusted toolbar height for the row layout
+      iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)), // Arrow color
+      title: Row(
+        children: [
+          IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context); // Navigate back
+            },
+          ),
+          SizedBox(width: 10), // Space between arrow and text
+          Expanded( // Allows the text to take up remaining space
+            child: Text(
+              "Violation Details", // Adjust the text as needed
+              style: GoogleFonts.poppins(
+                fontSize: 20, // Font size to match the image
                 fontWeight: FontWeight.bold,
+                color: Color(0xFFFAFAFF), // Color for the text
               ),
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.start, // Align text to the start
             ),
-          ],
-        ),
+          ),
+        ],
       ),
+    ),
 
       body: Container(
         width: double.infinity,
