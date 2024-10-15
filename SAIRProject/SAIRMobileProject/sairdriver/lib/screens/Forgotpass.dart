@@ -30,7 +30,7 @@ class _Forgotpass extends State<Forgotpass> {
         _phoneErrorText = "Your phone number is required";
       } else if (!_isPhoneValid(value)) {
         _phoneErrorText =
-            "Invalid phone number. \nIt must start with +966 and be followed by 9 digits.";
+            "Phone number must start with +966 and be followed by 9 digits.";
       } else {
         _phoneErrorText = ""; // Clear the error message if valid
       }
@@ -198,7 +198,7 @@ class _Forgotpass extends State<Forgotpass> {
                     if (value == null || value.isEmpty) {
                       return "Your phone number is required";
                     } else if (!_isPhoneValid(value)) {
-                      return "Invalid phone number. \nIt must start with +966 and be followed by 9 digits.";
+                      return "Phone number must start with +966 and be followed\nby 9 digits.";
                     }
                     return null; // Clear error message if valid
                   },

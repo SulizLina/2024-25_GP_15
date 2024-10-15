@@ -43,7 +43,7 @@ class _LoginState extends State<Login> {
       _isPasswordError = _passwordController.text.isEmpty;
       if (!_isPhoneValid(_phoneController.text)) {
         errorMessage =
-            'Invalid phone number it must start with +966 and be followed by 9 digits.';
+            'Phone number must start with +966 and be followed\nby 9 digits.';
       }
       if (_isPhoneError || _isPasswordError) {
         errorMessage = 'Please fill all required fields.';
