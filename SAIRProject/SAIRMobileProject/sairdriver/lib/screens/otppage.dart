@@ -7,8 +7,8 @@ import 'package:sairdriver/screens/Resetpass.dart';
 
 class Otppage extends StatefulWidget {
   final String verificationId;
-
-  const Otppage({super.key, required this.verificationId});
+ final String driverId;  // DriverID passed from previous page
+  const Otppage({super.key, required this.verificationId, required this.driverId});
 
   @override
   State<Otppage> createState() => _OtppageState();
@@ -181,7 +181,7 @@ class _OtppageState extends State<Otppage> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  Resetpass()),
+                                                  Resetpass(driverId: widget.driverId)),
                                         );
                                       } catch (e) {
                                         log(e.toString());

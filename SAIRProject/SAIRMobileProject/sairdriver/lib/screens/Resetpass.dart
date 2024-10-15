@@ -5,7 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sairdriver/screens/login.dart'; // For Firebase Authentication
 
 class Resetpass extends StatefulWidget {
-  const Resetpass({super.key});
+  final String driverId; // DriverID passed from previous page
+  Resetpass({required this.driverId});
 
   @override
   State<Resetpass> createState() => _ResetpassState();
@@ -79,74 +80,72 @@ class _ResetpassState extends State<Resetpass> {
     if (_formKey.currentState!.validate()) {
       try {
         // Get the current user
-       // User? currentUser = FirebaseAuth.instance.currentUser;
+        // User? currentUser = FirebaseAuth.instance.currentUser;
 
-       // if (currentUser != null) {
-          // Update the password in Firebase Authentication
-       //   await currentUser.updatePassword(_passwordController.text);
+        // if (currentUser != null) {
+        // Update the password in Firebase Authentication
+        //   await currentUser.updatePassword(_passwordController.text);
 /*final bytes = utf8.encode(_passwordController.text); // data being hashed
 final digest = sha256.convert(bytes);*/
-          // Update password in Firestore (if needed)
-          await FirebaseFirestore.instance
-              .collection('Driver')
-              .doc("LMUhIgvgZa3H07D0IQvs") // Use currentUser.uid
-              .update({
-            'Password': _passwordController.text,
-          });
+        // Update password in Firestore (if needed)
+        await FirebaseFirestore.instance
+            .collection('Driver')
+            .doc(widget.driverId) // Use currentUser.uid
+            .update({
+          'Password': _passwordController.text,
+        });
 
-          // Show success dialog once password is updated
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text(
-                  'Success',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(201, 3, 152, 85),
+        // Show success dialog once password is updated
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text(
+                'Success',
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(201, 3, 152, 85),
+                ),
+              ),
+              content: Text(
+                'Your password has been updated successfully!',
+                style: GoogleFonts.poppins(fontSize: 16),
+              ),
+              actions: <Widget>[
+                // Cancel Button
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => const Login()));
+                  },
+                  child: Text(
+                    'Cancel',
+                    style: GoogleFonts.poppins(color: Colors.red),
                   ),
                 ),
-                content: Text(
-                  'Your password has been updated successfully!',
-                  style: GoogleFonts.poppins(fontSize: 16),
+                // OK Button
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                    Navigator.pushNamed(
+                        context, 'profilepage'); // Navigate to the profile page
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color.fromARGB(201, 3, 152, 85),
+                  ),
+                  child: Text(
+                    'OK',
+                    style: GoogleFonts.poppins(color: Colors.white),
+                  ),
                 ),
-                actions: <Widget>[
-                  // Cancel Button
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Login()));
-                    },
-                    child: Text(
-                      'Cancel',
-                      style: GoogleFonts.poppins(color: Colors.red),
-                    ),
-                  ),
-                  // OK Button
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Close the dialog
-                      Navigator.pushNamed(context,
-                          'profilepage'); // Navigate to the profile page
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(201, 3, 152, 85),
-                    ),
-                    child: Text(
-                      'OK',
-                      style: GoogleFonts.poppins(color: Colors.white),
-                    ),
-                  ),
-                ],
-              );
-            },
-          );
-    //    } else {
-          // Handle the case where the user is not logged in
-      //    print('User is not logged in.');
-       // }
+              ],
+            );
+          },
+        );
+        //    } else {
+        // Handle the case where the user is not logged in
+        //    print('User is not logged in.');
+        // }
       } catch (e) {
         // Handle errors during password update
         print('Failed to update password: $e');
