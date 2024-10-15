@@ -84,7 +84,11 @@ List<PersistentBottomNavBarItem> _navbarItem() {
       inactiveColorPrimary: Colors.grey,
     ),
     PersistentBottomNavBarItem(
-      icon: const Icon(Icons.warning, size: 31), // Smaller icon size
+      icon: const FaIcon(
+      FontAwesomeIcons.fileCircleExclamation,
+      color: Colors.white,
+        size: 31, // Adjust the size as needed
+    ), // Smaller icon size
       title: 'Violations',
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
