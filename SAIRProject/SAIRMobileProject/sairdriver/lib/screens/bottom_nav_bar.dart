@@ -86,7 +86,6 @@ List<PersistentBottomNavBarItem> _navbarItem() {
     PersistentBottomNavBarItem(
       icon: const FaIcon(
       FontAwesomeIcons.fileCircleExclamation,
-      color: Colors.white,
         size: 31, // Adjust the size as needed
     ), // Smaller icon size
       title: 'Violations',
@@ -103,13 +102,19 @@ List<PersistentBottomNavBarItem> _navbarItem() {
       inactiveColorPrimary: Colors.grey,
     ),
     PersistentBottomNavBarItem(
-      icon: const Icon(Icons.report, size: 31), // Smaller icon size
+      icon: const FaIcon(
+      FontAwesomeIcons.fileSignature,
+        size: 32, // Adjust the size as needed
+    ),
       title: 'Complaints',
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
     ),
     PersistentBottomNavBarItem(
-      icon: const Icon(Icons.person, size: 31), // Smaller icon size
+      icon: const FaIcon(
+      FontAwesomeIcons.user,
+        size: 32, // Adjust the size as needed
+    ),
       title: 'Profile',
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
