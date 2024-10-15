@@ -79,15 +79,47 @@ List<PersistentBottomNavBarItem> _navbarItem() {
   return [
     PersistentBottomNavBarItem(
       icon: const Icon(Icons.motorcycle, size: 35), // Smaller icon size
-      title: 'Crashes',
+      //title: 'Crashes',
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
       contentPadding: 5, // Adjust the padding between the icon and the text
     ),
     PersistentBottomNavBarItem(
+      icon: const Icon(Icons.stop, size: 35), // Smaller icon size
+      //title: 'Violation',
+      activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
+      inactiveColorPrimary: Colors.grey,
+      contentPadding: 5, // Adjust the padding between the icon and the text
+    ),
+    PersistentBottomNavBarItem(
+      icon: const Icon(Icons.home, size: 35), // Smaller icon size
+      
+      activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
+      inactiveColorPrimary: Colors.grey,
+      contentPadding: 5, // Adjust the padding between the icon and the text
+    ),
+    PersistentBottomNavBarItem(
+      icon: const FaIcon(FontAwesomeIcons.filePen, size: 35), // Smaller icon size
+      //title: 'Complaint',
+      activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
+      inactiveColorPrimary: Colors.grey,
+      contentPadding: 5, // Adjust the padding between the icon and the text
+    ),
+    PersistentBottomNavBarItem(
+      icon: const Icon(Icons.person, size: 35), // Smaller icon size
+      //title: 'Crashes',
+      activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
+      inactiveColorPrimary: Colors.grey,
+      contentPadding: 5, // Adjust the padding between the icon and the text
+    ),
+
+
+
+
+    PersistentBottomNavBarItem(
       icon: const FaIcon(
-      FontAwesomeIcons.fileCircleExclamation, size: 20 ), // .hand
-      title: 'Violations',
+      FontAwesomeIcons.hand, size: 20 ), // .fileCircleExclamation
+      //title: 'Violations',
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
       contentPadding: 5, // Adjust the padding between the icon and the text
@@ -104,10 +136,10 @@ List<PersistentBottomNavBarItem> _navbarItem() {
     ),
     PersistentBottomNavBarItem(
       icon: const FaIcon(
-      FontAwesomeIcons.fileSignature,
+      FontAwesomeIcons.filePen, //filepen
         size: 20, // Adjust the size as needed
     ),
-      title: 'Complaints',
+      //title: 'Complaints',
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
       contentPadding: 5, // Adjust the padding between the icon and the text
