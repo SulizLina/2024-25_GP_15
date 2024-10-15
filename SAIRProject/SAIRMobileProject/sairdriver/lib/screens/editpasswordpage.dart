@@ -111,17 +111,7 @@ final digest = sha256.convert(bytes);*/
                 style: GoogleFonts.poppins(fontSize: 16),
               ),
               actions: <Widget>[
-                // Cancel Button
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context)
-                        .pop(); // Close the dialog, stay on the same page
-                  },
-                  child: Text(
-                    'Cancel',
-                    style: GoogleFonts.poppins(color: Colors.red),
-                  ),
-                ),
+    
                 // OK Button
                 ElevatedButton(
                   onPressed: () {
