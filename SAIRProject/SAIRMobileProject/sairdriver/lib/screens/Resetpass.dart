@@ -112,23 +112,13 @@ final digest = sha256.convert(bytes);*/
                 style: GoogleFonts.poppins(fontSize: 16),
               ),
               actions: <Widget>[
-                // Cancel Button
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const Login()));
-                  },
-                  child: Text(
-                    'Cancel',
-                    style: GoogleFonts.poppins(color: Colors.red),
-                  ),
-                ),
+
                 // OK Button
                 ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pop(); // Close the dialog
-                    Navigator.pushNamed(
-                        context, 'profilepage'); // Navigate to the profile page
+                     Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => const Login()));
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color.fromARGB(201, 3, 152, 85),
