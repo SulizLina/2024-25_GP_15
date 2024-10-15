@@ -83,9 +83,6 @@ class _ViolationdetailState extends State<Violationdetail> {
         ),
       ),
 
-
-
-
       body: Container(
         width: double.infinity,
         padding: const EdgeInsets.only(top: 16.0),
@@ -105,7 +102,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    violation != null ? 'V#${violation!.id}' : 'Loading...',
+                    violation != null ? 'V#${violation!.id}' : '',
                     style: GoogleFonts.poppins(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -142,7 +139,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                     style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D)),
                   ),
                   
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
                   Container(
                     height: 200,
                     child: GoogleMap(
@@ -159,7 +156,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                       },
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
                   ElevatedButton(
                   onPressed: violation != null && violation!.getFormattedDate() != 'N/A' &&
                       DateTime.parse(violation!.getFormattedDate()).isAfter(

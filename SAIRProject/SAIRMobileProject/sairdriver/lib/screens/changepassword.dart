@@ -198,12 +198,46 @@ final digest = sha256.convert(bytes);*/
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black), // Back arrow color
+            appBar: AppBar(
+      automaticallyImplyLeading: false,
+      elevation: 0,
+      backgroundColor: Color.fromARGB(255, 3, 152, 85), // Background color
+      toolbarHeight: 100, // Adjusted toolbar height for the row layout
+      iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)), // Arrow color
+      title: Row(
+        children: [
+          IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context); // Navigate back
+            },
+          ),
+          SizedBox(width: 10), // Space between arrow and text
+          Expanded( // Allows the text to take up remaining space
+            child: Text(
+              "Change Password", // Adjust the text as needed
+              style: GoogleFonts.poppins(
+                fontSize: 20, // Font size to match the image
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFFAFAFF), // Color for the text
+              ),
+              textAlign: TextAlign.start, // Align text to the start
+            ),
+          ),
+        ],
       ),
-      body: Padding(
+    ),
+      body: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.only(top: 16),
+        decoration: const BoxDecoration(
+          color: Color(0xFFFAFAFF), // White background for the content
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30), // Rounded top-left corner
+            topRight: Radius.circular(30), // Rounded top-right corner
+          ),
+        ),
+        child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
@@ -387,6 +421,7 @@ final digest = sha256.convert(bytes);*/
           ),
         ),
       ),
+      )
     );
   }
 }
