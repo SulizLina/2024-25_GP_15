@@ -53,7 +53,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints> {
         width: double.infinity,
         padding: const EdgeInsets.only(top: 16.0),
         decoration: const BoxDecoration(
-          color: Colors.white, // White background for the content
+          color:Color(0xFFF3F3F3), // White background for the content
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(30), // Rounded top-left corner
             topRight: Radius.circular(30), // Rounded top-right corner

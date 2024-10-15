@@ -34,7 +34,6 @@ class _ProfilepageState extends State<Profilepage> {
   void initState() {
     super.initState();
     fetchDriverData(); // Fetch both driver data and plate number when the page loads
-      setState(() {});
 
   }
 
@@ -42,10 +41,8 @@ class _ProfilepageState extends State<Profilepage> {
   void didUpdateWidget(Profilepage oldWidget) {
     super.didUpdateWidget(oldWidget);
     fetchDriverData();
-      setState(() {});
 
   }
-
 Future<void> fetchDriverData() async {
   DriverDatabase db = DriverDatabase();
   MotorcycleDatabase mdb = MotorcycleDatabase();
@@ -53,22 +50,25 @@ Future<void> fetchDriverData() async {
   // Fetch driver information
   driverInf = await db.getDriversnById(widget.driverId);
 
-  // Update text fields with fetched data
-PlateN.text = plateNumber??'';
-  fname.text = driverInf?.fname ?? '';
-  lname.text = driverInf?.lname ?? '';
-  phone.text = driverInf?.phoneNumber ?? '';
-  id.text = driverInf?.driverId ?? '';
-  gps.text = ((driverInf?.gspNumber != null && driverInf?.gspNumber != 'null')
-      ? driverInf!.gspNumber
-      : 'No assigned GPS yet')!;
-
   // Fetch plate number using the driver's ID
   plateNumber = await mdb.getPlateNumberByDriverId(widget.driverId);
+
+  // Update text fields with fetched data after both driver data and plate number are retrieved
+  if (mounted) {
+    setState(() {
+      fname.text = driverInf?.fname ?? '';
+      lname.text = driverInf?.lname ?? '';
+      phone.text = driverInf?.phoneNumber ?? '';
+      id.text = driverInf?.driverId ?? '';
+      gps.text = ((driverInf?.gspNumber != null && driverInf?.gspNumber != 'null')
+          ? driverInf!.gspNumber
+          : 'No assigned GPS yet')!;
+      PlateN.text = plateNumber ?? 'No plate number available';
+    });
+  }
+
   // Debugging print statement
   print('License Plate fetched: $plateNumber');
-
-  setState(() {});
 }
 
 

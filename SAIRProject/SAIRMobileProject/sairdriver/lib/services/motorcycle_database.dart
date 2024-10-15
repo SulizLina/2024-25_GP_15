@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:sairdriver/models/motorcycle.dart';
 class MotorcycleDatabase {
   
   final CollectionReference motorcycleCollection =
       FirebaseFirestore.instance.collection('Motorcycle');
-
+ 
   // Fetch the plate number from the Motorcycle collection using DriverID
  Future<String?> getPlateNumberByDriverId(String driverId) async {
-  
+
   try {
     var motorcycleSnapshot = await FirebaseFirestore.instance
         .collection('Motorcycle')
@@ -26,7 +26,26 @@ class MotorcycleDatabase {
     print('Error fetching LicensePlate: $e');
   }
   return null; // Return null if no motorcycle is found
+  
+}
+/*
+Future<Object?> getViolation(String driverID) async {
+  try {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('Motorcycle') // Update table name
+        .where('DriverID', isEqualTo: driverID)
+        .limit(1) // Limit the result to 1 item
+        .get();
+
+    // If there is at least one document, return the first one
+    if (snapshot.docs.isNotEmpty) {
+      return snapshot.docs.first.data(); // Return the first document
+    }
+
+    return null; // Return null if no violation is found
+  } catch (e) {
+    print("Error fetching violation: $e");
+    return null; // Return null in case of an error
+  }*/
 }
 
-
-}

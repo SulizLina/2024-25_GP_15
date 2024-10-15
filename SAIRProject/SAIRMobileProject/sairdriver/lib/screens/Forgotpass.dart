@@ -20,7 +20,7 @@ class _Forgotpass extends State<Forgotpass> {
 
   // Validate phone number format
   bool _isPhoneValid(String phone) {
-    final phoneRegex = RegExp(r'^\+9665\d{8}$'); // Saudi phone number validation
+    final phoneRegex = RegExp(r'^\+966\d{9}$'); // Saudi phone number validation
     return phoneRegex.hasMatch(phone);
   }
 
@@ -29,19 +29,23 @@ class _Forgotpass extends State<Forgotpass> {
       if (value.isEmpty) {
         _phoneErrorText = "Your phone number is required";
       } else if (!_isPhoneValid(value)) {
-        _phoneErrorText = "Invalid phone number";
+        _phoneErrorText =
+            "Phone number must start with +966 and be followed by 9 digits.";
       } else {
-        _phoneErrorText = "";
+        _phoneErrorText = ""; // Clear the error message if valid
       }
     });
   }
-Future<void> _sendResetPassword() async {
-  final phone = _phoneController.text;
 
-  // Validate the phone number
-  if (_formKey.currentState?.validate() ?? false) {
+  // Function to send OTP after validating the phone number and checking if it's registered
+  Future<void> _sendResetPassword() async {
+     if (_formKey.currentState?.validate() ?? false) {
+    // Proceed with checking the phone number in Firestore
+    final phone = _phoneController.text;
+    // Validate the phone number
+
     try {
-      // Query Firestore for the phone number
+      // Query Firestore for the phone number (only when button is pressed)
       final db = FirebaseFirestore.instance;
       final driverDoc = await db
           .collection('Driver')
@@ -56,7 +60,8 @@ Future<void> _sendResetPassword() async {
       }
 
       // Extract driver ID
-      final driverId = driverDoc.docs.first.id; // Assuming first match is the driver
+      final driverId =
+          driverDoc.docs.first.id; // Assuming first match is the driver
 
       // Proceed to send OTP
       await FirebaseAuth.instance.verifyPhoneNumber(
@@ -87,7 +92,7 @@ Future<void> _sendResetPassword() async {
       log(e.toString());
     }
   }
-}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +146,8 @@ Future<void> _sendResetPassword() async {
                     color: const Color.fromARGB(201, 3, 152, 85),
                   ),
                 ),
-                const SizedBox(height: 8), // Space between heading and input field
+                const SizedBox(
+                    height: 8), // Space between heading and input field
                 Text(
                   'Enter your phone number to receive an OTP',
                   style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
@@ -156,41 +162,56 @@ Future<void> _sendResetPassword() async {
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
                         color: _phoneErrorText.isEmpty
-                            ? const Color.fromARGB(201, 3, 152, 85) // Green if valid
+                            ? const Color.fromARGB(
+                                201, 3, 152, 85) // Green if valid
                             : Colors.red, // Red for error
                         width: 1.5,
                       ),
-                      borderRadius: BorderRadius.circular(10), // Rounded corners
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
                         color: _phoneErrorText.isEmpty
-                            ? const Color.fromARGB(201, 3, 152, 85) // Green on focus
+                            ? const Color.fromARGB(
+                                201, 3, 152, 85) // Green on focus
                             : Colors.red, // Red for error on focus
                         width: 2.0,
                       ),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    errorText: _phoneErrorText.isNotEmpty ? _phoneErrorText : null,
+                    errorText:
+                        _phoneErrorText.isNotEmpty ? _phoneErrorText : null,
                     errorBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.red, width: 1.5),
+                      borderSide:
+                          const BorderSide(color: Colors.red, width: 1.5),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.red, width: 2.0),
+                      borderSide:
+                          const BorderSide(color: Colors.red, width: 2.0),
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   keyboardType: TextInputType.phone,
-                  onChanged: _validatePhone,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Your phone number is required";
+                    } else if (!_isPhoneValid(value)) {
+                      return "Phone number must start with +966 and be followed\nby 9 digits.";
+                    }
+                    return null; // Clear error message if valid
+                  },
                 ),
+
                 const SizedBox(height: 30),
 
                 // Send OTP Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: _sendResetPassword,
+                    onPressed:
+                        _sendResetPassword, // Firestore check only on button press
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(201, 3, 152, 85),
                       shape: RoundedRectangleBorder(
