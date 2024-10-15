@@ -78,7 +78,7 @@ class _MyBottomNavState extends State<BottomNavBar> {
 List<PersistentBottomNavBarItem> _navbarItem() {
   return [
     PersistentBottomNavBarItem(
-      icon: const Icon(Icons.motorcycle, size: 30), // Smaller icon size
+      icon: const Icon(Icons.motorcycle, size: 35), // Smaller icon size
       title: 'Crashes',
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
