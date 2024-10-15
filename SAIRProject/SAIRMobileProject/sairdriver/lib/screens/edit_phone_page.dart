@@ -124,37 +124,40 @@ class _EditPhonePageState extends State<EditPhonePage> {
   Widget build(BuildContext context) {
     
     return Scaffold(
-            backgroundColor: Color.fromARGB(255, 3, 152, 85),
-
-       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        elevation: 0,
-        backgroundColor: Color.fromARGB(255, 3, 152, 85),
-        toolbarHeight: 80, // Adjust the toolbar height
-         iconTheme: const IconThemeData(color: Colors.white),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Profilepage(driverId:widget.driverId)),
-            );
-          },
-        ),
-        title: Text(
-            "Update Your Phone Number",
-            style: TextStyle(
-              fontSize: 24.0,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
+      backgroundColor: Color.fromARGB(255, 3, 152, 85),
+      appBar: AppBar(
+      automaticallyImplyLeading: false,
+      elevation: 0,
+      backgroundColor: Color.fromARGB(255, 3, 152, 85), // Background color
+      toolbarHeight: 100, // Adjusted toolbar height for the row layout
+      iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)), // Arrow color
+      title: Row(
+        children: [
+          IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context); // Navigate back
+            },
           ),
-        
+          SizedBox(width: 10), // Space between arrow and text
+          Expanded( // Allows the text to take up remaining space
+            child: Text(
+              "Update Phone Number", // Adjust the text as needed
+              style: GoogleFonts.poppins(
+                fontSize: 22, // Font size to match the image
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFFAFAFF), // Color for the text
+              ),
+              textAlign: TextAlign.start, // Align text to the start
+            ),
+          ),
+        ],
       ),
+    ),
+
       body: Container(
         width: double.infinity,
-        padding: const EdgeInsets.only(top: 16.0),
+        padding: const EdgeInsets.only(top: 16),
         decoration: const BoxDecoration(
           color: Colors.white, // White background for the content
           borderRadius: BorderRadius.only(
@@ -169,20 +172,22 @@ class _EditPhonePageState extends State<EditPhonePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              
               Text(
                 'Update Your Phone Number',
                 style: GoogleFonts.poppins(
-                  fontSize: 24,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(201, 3, 152, 85),
                 ),
               ),
+              
               SizedBox(height: 8), // Space between heading and input field
 
               // Subtitle text
               Text(
                 'Write Your New Phone Number Below.',
-                style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
+                style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
               ),
               SizedBox(height: 20),
 

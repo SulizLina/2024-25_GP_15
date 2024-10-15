@@ -78,44 +78,49 @@ class _MyBottomNavState extends State<BottomNavBar> {
 List<PersistentBottomNavBarItem> _navbarItem() {
   return [
     PersistentBottomNavBarItem(
-      icon: const Icon(Icons.motorcycle, size: 31), // Smaller icon size
+      icon: const Icon(Icons.motorcycle, size: 30), // Smaller icon size
       title: 'Crashes',
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
+      contentPadding: 5, // Adjust the padding between the icon and the text
     ),
     PersistentBottomNavBarItem(
       icon: const FaIcon(
-      FontAwesomeIcons.fileCircleExclamation, size: 31 ), // Smaller icon size
+      FontAwesomeIcons.fileCircleExclamation, size: 20 ), // .hand
       title: 'Violations',
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
+      contentPadding: 5, // Adjust the padding between the icon and the text
     ),
     PersistentBottomNavBarItem(
       icon: const FaIcon(
       FontAwesomeIcons.house,
       color: Colors.white,
-        size: 28, // Adjust the size as needed
+        size: 25, // Adjust the size as needed
     ),
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
+      contentPadding: 5, // Adjust the padding between the icon and the text
     ),
     PersistentBottomNavBarItem(
       icon: const FaIcon(
       FontAwesomeIcons.fileSignature,
-        size: 32, // Adjust the size as needed
+        size: 20, // Adjust the size as needed
     ),
       title: 'Complaints',
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
+      contentPadding: 5, // Adjust the padding between the icon and the text
     ),
     PersistentBottomNavBarItem(
       icon: const FaIcon(
-      FontAwesomeIcons.user,
-        size: 32, // Adjust the size as needed
+      FontAwesomeIcons.userLarge,
+        size: 20, // Adjust the size as needed
     ),
       title: 'Profile',
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
+      contentPadding: 5, // Adjust the padding between the icon and the text
     ),
   ];
 }
