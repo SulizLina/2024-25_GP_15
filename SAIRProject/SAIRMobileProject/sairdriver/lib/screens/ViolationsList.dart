@@ -56,7 +56,7 @@ class _ViolationslistState extends State<Violationslist> {
       options: BoardDateTimeOptions(
         languages: BoardPickerLanguages(
           today: 'Today',
-          tomorrow: 'Tomorrow',
+          tomorrow: '',
           now: 'now',
         ), 
         startDayOfWeek: DateTime.sunday,
