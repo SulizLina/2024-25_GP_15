@@ -90,11 +90,11 @@ List<PersistentBottomNavBarItem> _navbarItem() {
       inactiveColorPrimary: Colors.grey,
     ),
     PersistentBottomNavBarItem(
-      icon: const Icon(
-        Icons.home,
-        color: Colors.white,
-        size: 28, // Home icon remains larger and unchanged
-      ),
+      icon: const FaIcon(
+      FontAwesomeIcons.house,
+      color: Colors.white,
+        size: 28, // Adjust the size as needed
+    ),
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
     ),
