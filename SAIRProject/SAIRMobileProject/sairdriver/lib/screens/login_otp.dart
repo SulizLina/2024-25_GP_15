@@ -70,7 +70,7 @@ class _LoginOtpState extends State<LoginOtp> {
                 padding:
                     const EdgeInsets.only(top: 30.0), // Set top padding to 30
                 decoration: const BoxDecoration(
-                  color: Colors.white,
+                  color:Color(0xFFF3F3F3),
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),

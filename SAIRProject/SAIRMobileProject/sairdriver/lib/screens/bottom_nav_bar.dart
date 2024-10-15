@@ -36,7 +36,7 @@ class _MyBottomNavState extends State<BottomNavBar> {
       screens: _buildScreen(widget.driverId), // Pass driverId to the method
       items: _navbarItem(),
       navBarStyle: NavBarStyle.style15,
-      backgroundColor: Colors.white,
+      backgroundColor:Color(0xFFF3F3F3),
       decoration: NavBarDecoration(
         boxShadow: [
           BoxShadow(

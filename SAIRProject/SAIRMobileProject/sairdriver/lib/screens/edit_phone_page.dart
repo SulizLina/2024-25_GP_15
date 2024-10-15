@@ -144,7 +144,7 @@ class _EditPhonePageState extends State<EditPhonePage> {
             child: Text(
               "Update Phone Number", // Adjust the text as needed
               style: GoogleFonts.poppins(
-                fontSize: 22, // Font size to match the image
+                fontSize: 23, // Font size to match the image
                 fontWeight: FontWeight.bold,
                 color: Color(0xFFFAFAFF), // Color for the text
               ),
@@ -175,7 +175,7 @@ class _EditPhonePageState extends State<EditPhonePage> {
               Text(
                 'Update Your Phone Number',
                 style: GoogleFonts.poppins(
-                  fontSize: 20,
+                  fontSize: 21,
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(201, 3, 152, 85),
                 ),

@@ -201,7 +201,7 @@ final digest = sha256.convert(bytes);*/
             child: Text(
               "Update Your Password", // Adjust the text as needed
               style: GoogleFonts.poppins(
-                fontSize: 22, // Font size to match the image
+                fontSize: 23, // Font size to match the image
                 fontWeight: FontWeight.bold,
                 color: Color(0xFFFAFAFF), // Color for the text
               ),
@@ -232,7 +232,7 @@ final digest = sha256.convert(bytes);*/
                 Text(
                   'Update Your Password',
                   style: GoogleFonts.poppins(
-                    fontSize: 24,
+                    fontSize: 21,
                     fontWeight: FontWeight.bold,
                     color: Color.fromARGB(201, 3, 152, 85),
                   ),
@@ -242,7 +242,7 @@ final digest = sha256.convert(bytes);*/
                 // Subtitle text
                 Text(
                   'Write Your New Password Below.',
-                  style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
+                  style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
                 ),
                 SizedBox(height: 20),
 
