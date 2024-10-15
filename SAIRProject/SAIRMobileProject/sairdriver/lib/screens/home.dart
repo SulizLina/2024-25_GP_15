@@ -24,29 +24,30 @@ class _HomeState extends State<Home> {
         toolbarHeight: 120, // Adjust the toolbar height
         iconTheme: const IconThemeData(color: Color(0xFF211D1D)),
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 7),
-                ),
-                Transform.translate(
-                  offset: const Offset(0, 10), // Move the text down by 10 pixels to match the home page
-                  child: const Padding(
-                    padding: EdgeInsets.only(left: 5),
-                    child: Text(
-                      "Hello USER", ////////////////////////FROM DB!!//////////////
-                      style: TextStyle(
-                        fontSize: 24.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
+            Padding(
+              padding: const EdgeInsets.only(left: 7),
+              child: Image.asset(
+                'assets/image/WhiteMotorcycle.png',
+                width: 70,
+                height: 60,
+              ),
+            ),
+            Transform.translate(
+              offset: Offset(0, 10), // Move the text down by 10 pixels
+              child: Padding(
+                padding: const EdgeInsets.only(left: 5),
+                child: Text(
+                  "Hello USER !", ///////////////////////
+                  style: GoogleFonts.poppins(
+                    fontSize: 32.0,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
                   ),
+                  textAlign: TextAlign.left,
                 ),
-              ],
+              ),
             ),
           ],
         ),
@@ -65,7 +66,7 @@ class _HomeState extends State<Home> {
           padding: const EdgeInsets.only(left: 16.0), // Add left padding here
           child: Center(
             child: Text(
-              'This is a View crashes page. Will be done in Sprint 2',
+              'This is a Home page...',
               style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
               textAlign: TextAlign.center,
             ),
