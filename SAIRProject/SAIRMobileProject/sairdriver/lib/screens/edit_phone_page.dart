@@ -172,7 +172,6 @@ class _EditPhonePageState extends State<EditPhonePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              
               Text(
                 'Update Your Phone Number',
                 style: GoogleFonts.poppins(
@@ -181,7 +180,6 @@ class _EditPhonePageState extends State<EditPhonePage> {
                   color: Color.fromARGB(201, 3, 152, 85),
                 ),
               ),
-              
               SizedBox(height: 8), // Space between heading and input field
 
               // Subtitle text
