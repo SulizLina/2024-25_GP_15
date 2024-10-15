@@ -118,17 +118,7 @@ final digest = sha256.convert(bytes);*/
                   style: GoogleFonts.poppins(fontSize: 16),
                 ),
                 actions: <Widget>[
-                  // Cancel Button
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context)
-                          .pop(); // Close the dialog, stay on the same page
-                    },
-                    child: Text(
-                      'Cancel',
-                      style: GoogleFonts.poppins(color: Colors.red),
-                    ),
-                  ),
+      
                   // OK Button
                   ElevatedButton(
                     onPressed: () {
@@ -330,7 +320,7 @@ final digest = sha256.convert(bytes);*/
                   errorBorder: OutlineInputBorder(
                     borderSide: BorderSide(
                       color: Colors.red, // Red border color for error state
-                      width: 15,
+                      width: 1.5,
                     ),
                     borderRadius: BorderRadius.circular(10), // Rounded corners
                   ),

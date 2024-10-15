@@ -41,7 +41,10 @@ class _LoginState extends State<Login> {
     setState(() {
       _isPhoneError = _phoneController.text.isEmpty;
       _isPasswordError = _passwordController.text.isEmpty;
-
+      if (!_isPhoneValid(_phoneController.text)) {
+        errorMessage =
+            'Invalid phone number it must start with +966 and be followed by 9 digits.';
+      }
       if (_isPhoneError || _isPasswordError) {
         errorMessage = 'Please fill all required fields.';
       } else {
@@ -52,8 +55,7 @@ class _LoginState extends State<Login> {
 
   // Validate phone number format
   bool _isPhoneValid(String phone) {
-    final phoneRegex =
-        RegExp(r'^\+9665\d{8}$'); // Saudi phone number validation
+    final phoneRegex = RegExp(r'^\+966\d{9}$'); // Saudi phone number validation
     return phoneRegex.hasMatch(phone);
   }
 
