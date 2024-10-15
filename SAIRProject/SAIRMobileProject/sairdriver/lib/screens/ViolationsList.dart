@@ -226,7 +226,7 @@ class _ViolationslistState extends State<Violationslist> {
                     );
                   },
                   separatorBuilder: (BuildContext context, int index) {
-                    return Divider(color: Colors.grey[200]);
+                    return Divider(color: Colors.grey[350]);
                   },
                   itemCount: violations.length, // Number of violations
                 ),

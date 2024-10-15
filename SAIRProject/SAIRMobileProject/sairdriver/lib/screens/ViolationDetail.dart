@@ -161,35 +161,47 @@ class _ViolationdetailState extends State<Violationdetail> {
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: violation != null && violation!.getFormattedDate() != 'N/A' &&
+                  onPressed: violation != null && violation!.getFormattedDate() != 'N/A' &&
+                      DateTime.parse(violation!.getFormattedDate()).isAfter(
+                        DateTime.now().subtract(Duration(days: 30)),
+                      )
+                      ? () {
+                          // Button is enabled, navigate to RaiseComplaint
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const Raisecomplaint()),
+                          );
+                        }
+                      : () { // Button is disabled, show the SnackBar
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Container(
+                                height: 90,
+                                child: Text('You can\'t raise a complaint after 30 days of the violation !'),
+                              ),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: violation != null && violation!.getFormattedDate() != 'N/A' &&
                         DateTime.parse(violation!.getFormattedDate()).isAfter(
                           DateTime.now().subtract(Duration(days: 30)),
                         )
-                        ? () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const Raisecomplaint()),
-                            );
-                          }
-                        : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: violation != null && violation!.getFormattedDate() != 'N/A' &&
-                          DateTime.parse(violation!.getFormattedDate()).isAfter(
-                            DateTime.now().subtract(Duration(days: 30)),
-                          )
-                          ? Color.fromARGB(202, 3, 152, 85) // Active color
-                          : Colors.grey, // Gray color if condition is not met
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      textStyle: GoogleFonts.poppins(fontSize: 18),
+                        ? Color.fromARGB(202, 3, 152, 85) // Active color
+                        : Colors.grey, // Gray color if condition is not met
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Text(
-                      'Raise a Complaint',
-                      style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
-                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    textStyle: GoogleFonts.poppins(fontSize: 18),
                   ),
+                  child: Text(
+                    'Raise a Complaint',
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
+                  ),
+                ),
+
 
                   const SizedBox(height: 20),
                 ],
