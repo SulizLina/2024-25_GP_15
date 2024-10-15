@@ -50,12 +50,16 @@ class _LoginState extends State<Login> {
       }
     });
   }
-
+ // Validate phone number format
+  bool _isPhoneValid(String phone) {
+    final phoneRegex = RegExp(r'^\+9665\d{8}$'); // Saudi phone number validation
+    return phoneRegex.hasMatch(phone);
+  }
   // Login method that checks for valid credentials and sends OTP
   Future<void> login() async {
     // Validate fields before proceeding
     validateFields();
-
+_isPhoneValid(_phoneController.text);
     if (errorMessage != null) {
       return; // Stop login if validation fails
     }
