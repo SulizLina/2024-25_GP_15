@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:sairdriver/screens/CrashesList.dart';
-import 'package:sairdriver/screens/RaiseCompliants.dart';
 import 'package:sairdriver/screens/ViewComplaints.dart';
-import 'package:sairdriver/screens/ViolationDetail.dart';
 import 'package:sairdriver/screens/ViolationsList.dart';
 import 'package:sairdriver/screens/home.dart';
 import 'package:sairdriver/screens/profilepage.dart';
@@ -78,81 +76,37 @@ class _MyBottomNavState extends State<BottomNavBar> {
 List<PersistentBottomNavBarItem> _navbarItem() {
   return [
     PersistentBottomNavBarItem(
-      icon: const Icon(Icons.motorcycle, size: 35), // Smaller icon size
+      icon: const Icon(Icons.motorcycle, size: 31), // Smaller icon size
       //title: 'Crashes',
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
-      contentPadding: 5, // Adjust the padding between the icon and the text
     ),
     PersistentBottomNavBarItem(
-      icon: const Icon(Icons.stop, size: 35), // Smaller icon size
-      //title: 'Violation',
-      activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
-      inactiveColorPrimary: Colors.grey,
-      contentPadding: 5, // Adjust the padding between the icon and the text
-    ),
-    PersistentBottomNavBarItem(
-      icon: const Icon(Icons.home, size: 35), // Smaller icon size
-      
-      activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
-      inactiveColorPrimary: Colors.grey,
-      contentPadding: 5, // Adjust the padding between the icon and the text
-    ),
-    PersistentBottomNavBarItem(
-      icon: const FaIcon(FontAwesomeIcons.filePen, size: 35), // Smaller icon size
-      //title: 'Complaint',
-      activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
-      inactiveColorPrimary: Colors.grey,
-      contentPadding: 5, // Adjust the padding between the icon and the text
-    ),
-    PersistentBottomNavBarItem(
-      icon: const Icon(Icons.person, size: 35), // Smaller icon size
-      //title: 'Crashes',
-      activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
-      inactiveColorPrimary: Colors.grey,
-      contentPadding: 5, // Adjust the padding between the icon and the text
-    ),
-
-
-
-
-    PersistentBottomNavBarItem(
-      icon: const FaIcon(
-      FontAwesomeIcons.hand, size: 20 ), // .fileCircleExclamation
+      icon: const Icon(Icons.stop, size: 31), // Smaller icon size
       //title: 'Violations',
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
-      contentPadding: 5, // Adjust the padding between the icon and the text
     ),
     PersistentBottomNavBarItem(
-      icon: const FaIcon(
-      FontAwesomeIcons.house,
-      color: Colors.white,
-        size: 25, // Adjust the size as needed
-    ),
+      icon: const Icon(
+        Icons.home,
+        color: Colors.white,
+        size: 28, // Home icon remains larger and unchanged
+      ),
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
-      contentPadding: 5, // Adjust the padding between the icon and the text
     ),
     PersistentBottomNavBarItem(
-      icon: const FaIcon(
-      FontAwesomeIcons.filePen, //filepen
-        size: 20, // Adjust the size as needed
-    ),
+      icon: const FaIcon(FontAwesomeIcons.filePen, size: 31), // Smaller icon size
       //title: 'Complaints',
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
-      contentPadding: 5, // Adjust the padding between the icon and the text
     ),
     PersistentBottomNavBarItem(
-      icon: const FaIcon(
-      FontAwesomeIcons.userLarge,
-        size: 20, // Adjust the size as needed
-    ),
-      title: 'Profile',
+      icon: const Icon(Icons.person, size: 31), // Smaller icon size
+      //title: 'Profile',
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
-      contentPadding: 5, // Adjust the padding between the icon and the text
     ),
   ];
 }
