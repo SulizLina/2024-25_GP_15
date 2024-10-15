@@ -129,9 +129,9 @@ class _Forgotpass extends State<Forgotpass> {
     ),
       body: Container(
         width: double.infinity,
-        padding: const EdgeInsets.only(top: 16.0),
+        padding: const EdgeInsets.only(top: 16),
         decoration: const BoxDecoration(
-          color:  Color(0xFFF3F3F3),
+          color: Color(0xFFF3F3F3),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(30), // Rounded top-left corner
             topRight: Radius.circular(30), // Rounded top-right corner
@@ -148,7 +148,7 @@ class _Forgotpass extends State<Forgotpass> {
                 Text(
                   "Don't worry we got you!",
                   style: GoogleFonts.poppins(
-                    fontSize: 24,
+                    fontSize: 21,
                     fontWeight: FontWeight.bold,
                     color: const Color.fromARGB(201, 3, 152, 85),
                   ),
@@ -157,7 +157,7 @@ class _Forgotpass extends State<Forgotpass> {
                     height: 8), // Space between heading and input field
                 Text(
                   'Enter your phone number to receive an OTP',
-                  style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
+                  style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
                 ),
                 const SizedBox(height: 20),
 
