@@ -20,6 +20,7 @@ dependencies:
   google_maps_flutter: ^2.9.0
   flutter_riverpod: ^2.5.3
   board_datetime_picker: ^2.1.4
+  hugeicons: ^0.0.7
 
 
 
