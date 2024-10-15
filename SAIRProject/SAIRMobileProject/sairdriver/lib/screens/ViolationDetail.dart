@@ -86,14 +86,16 @@ class _ViolationdetailState extends State<Violationdetail> {
 
       body: Container(
         width: double.infinity,
-        padding: const EdgeInsets.only(top: 16.0),
+        padding: const EdgeInsets.only(top: 16),
         decoration: const BoxDecoration(
-          color:Color(0xFFF3F3F3),
+          color: Color(0xFFF3F3F3),
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
+            topLeft: Radius.circular(30), // Rounded top-left corner
+            topRight: Radius.circular(30), // Rounded top-right corner
           ),
         ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Center(
             child: Container(
@@ -206,6 +208,7 @@ class _ViolationdetailState extends State<Violationdetail> {
               ),
             ),
           ),
+        ),
         ),
       ),
     );

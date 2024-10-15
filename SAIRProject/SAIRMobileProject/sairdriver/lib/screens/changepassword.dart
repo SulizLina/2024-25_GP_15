@@ -188,7 +188,7 @@ final digest = sha256.convert(bytes);*/
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-            appBar: AppBar(
+    appBar: AppBar(
       automaticallyImplyLeading: false,
       elevation: 0,
       backgroundColor: Color.fromARGB(255, 3, 152, 85), // Background color
@@ -205,9 +205,9 @@ final digest = sha256.convert(bytes);*/
           SizedBox(width: 10), // Space between arrow and text
           Expanded( // Allows the text to take up remaining space
             child: Text(
-              "Change Password", // Adjust the text as needed
+              "Reset Your Password", // Adjust the text as needed
               style: GoogleFonts.poppins(
-                fontSize: 20, // Font size to match the image
+                fontSize: 22, // Font size to match the image
                 fontWeight: FontWeight.bold,
                 color: Color(0xFFFAFAFF), // Color for the text
               ),
