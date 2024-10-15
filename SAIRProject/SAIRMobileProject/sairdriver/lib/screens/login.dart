@@ -135,7 +135,7 @@ class _LoginState extends State<Login> {
       home: Scaffold(
         resizeToAvoidBottomInset:
             true, // Prevent overflow when keyboard appears
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFFF3F3F3),
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
