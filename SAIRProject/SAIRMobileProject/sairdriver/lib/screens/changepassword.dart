@@ -2,10 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sairdriver/screens/bottom_nav_bar.dart';
 import 'package:sairdriver/screens/home.dart'; // For Firebase Authentication
 
 class Changepassword extends StatefulWidget {
-   final String driverId;  // DriverID passed from previous page
+  final String driverId; // DriverID passed from previous page
   const Changepassword({required this.driverId});
 
   @override
@@ -89,14 +90,14 @@ final digest = sha256.convert(bytes);*/
           // Update password in Firestore (if needed)
           await FirebaseFirestore.instance
               .collection('Driver')
-              .doc(currentUser.uid)
+              .doc(widget.driverId)
               .update({
             'Password': _passwordController.text,
           });
 //change is defult
           await FirebaseFirestore.instance
               .collection('Driver')
-              .doc(currentUser.uid)
+              .doc(widget.driverId)
               .update({
             'isDefaultPassword': false,
           });
@@ -134,7 +135,9 @@ final digest = sha256.convert(bytes);*/
                       Navigator.of(context).pop(); // Close the dialog
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Home(driverId: widget.driverId)),
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                BottomNavBar(driverId: widget.driverId)),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -327,7 +330,7 @@ final digest = sha256.convert(bytes);*/
                   errorBorder: OutlineInputBorder(
                     borderSide: BorderSide(
                       color: Colors.red, // Red border color for error state
-                      width: 1.5,
+                      width: 15,
                     ),
                     borderRadius: BorderRadius.circular(10), // Rounded corners
                   ),

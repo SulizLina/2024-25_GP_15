@@ -28,8 +28,7 @@ class driver {
     return driver(
       id: id,
       driverId: parsedJSON['DriverID'].toString(),
-      gspNumber: parsedJSON['GPSNumber'].toString(),
-
+      gspNumber: parsedJSON['GPSnumber'].toString(),
       fname: parsedJSON['Fname'] as String?,
       lname: parsedJSON['Lname'] as String?,
       phoneNumber: parsedJSON['PhoneNumber'] as String?,

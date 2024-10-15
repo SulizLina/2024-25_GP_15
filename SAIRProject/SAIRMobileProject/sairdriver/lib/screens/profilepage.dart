@@ -28,17 +28,22 @@ class _ProfilepageState extends State<Profilepage> {
   TextEditingController phone = TextEditingController();
   TextEditingController gps = TextEditingController();
   TextEditingController id = TextEditingController();
+  TextEditingController PlateN = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     fetchDriverData(); // Fetch both driver data and plate number when the page loads
+      setState(() {});
+
   }
 
   @override
   void didUpdateWidget(Profilepage oldWidget) {
     super.didUpdateWidget(oldWidget);
     fetchDriverData();
+      setState(() {});
+
   }
 
 Future<void> fetchDriverData() async {
@@ -49,6 +54,7 @@ Future<void> fetchDriverData() async {
   driverInf = await db.getDriversnById(widget.driverId);
 
   // Update text fields with fetched data
+PlateN.text = plateNumber??'';
   fname.text = driverInf?.fname ?? '';
   lname.text = driverInf?.lname ?? '';
   phone.text = driverInf?.phoneNumber ?? '';
@@ -59,7 +65,6 @@ Future<void> fetchDriverData() async {
 
   // Fetch plate number using the driver's ID
   plateNumber = await mdb.getPlateNumberByDriverId(widget.driverId);
-
   // Debugging print statement
   print('License Plate fetched: $plateNumber');
 
@@ -353,7 +358,8 @@ Future<void> fetchDriverData() async {
               const SizedBox(height: 16),
               // Plate Number field
               TextFormField(
-                initialValue: plateNumber ?? 'Loading...', // Fetch plate number
+               // initialValue: plateNumber ?? 'Loading...', // Fetch plate number
+               controller: PlateN ,
                 decoration: InputDecoration(
                   labelText: 'License Plate',
                   labelStyle:

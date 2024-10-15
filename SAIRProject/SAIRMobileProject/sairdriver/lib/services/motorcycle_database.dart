@@ -7,6 +7,7 @@ class MotorcycleDatabase {
 
   // Fetch the plate number from the Motorcycle collection using DriverID
  Future<String?> getPlateNumberByDriverId(String driverId) async {
+  
   try {
     var motorcycleSnapshot = await FirebaseFirestore.instance
         .collection('Motorcycle')

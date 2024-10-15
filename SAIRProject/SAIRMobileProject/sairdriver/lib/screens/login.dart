@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -50,16 +49,18 @@ class _LoginState extends State<Login> {
       }
     });
   }
- // Validate phone number format
+
+  // Validate phone number format
   bool _isPhoneValid(String phone) {
-    final phoneRegex = RegExp(r'^\+9665\d{8}$'); // Saudi phone number validation
+    final phoneRegex =
+        RegExp(r'^\+9665\d{8}$'); // Saudi phone number validation
     return phoneRegex.hasMatch(phone);
   }
+
   // Login method that checks for valid credentials and sends OTP
   Future<void> login() async {
     // Validate fields before proceeding
     validateFields();
-_isPhoneValid(_phoneController.text);
     if (errorMessage != null) {
       return; // Stop login if validation fails
     }
@@ -106,7 +107,6 @@ _isPhoneValid(_phoneController.text);
           log(error.toString());
         },
         codeSent: (String verificationId, int? forceResendingToken) {
-          
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -131,7 +131,8 @@ _isPhoneValid(_phoneController.text);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        resizeToAvoidBottomInset: true, // Prevent overflow when keyboard appears
+        resizeToAvoidBottomInset:
+            true, // Prevent overflow when keyboard appears
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -194,7 +195,7 @@ _isPhoneValid(_phoneController.text);
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                   validator: validatePhoneNumber, 
+                  validator: validatePhoneNumber,
                   keyboardType: TextInputType.phone,
                 ),
                 const SizedBox(height: 15),
