@@ -99,27 +99,34 @@ class _Forgotpass extends State<Forgotpass> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 3, 152, 85),
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: const Color.fromARGB(255, 3, 152, 85),
-        toolbarHeight: 80, // Adjust the toolbar height
-        iconTheme: const IconThemeData(color: Color(0xFF211D1D)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const Login()));
-          },
-        ),
-        title: const Text(
-          "Reset Password",
-          style: TextStyle(
-            fontSize: 24.0,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+      automaticallyImplyLeading: false,
+      elevation: 0,
+      backgroundColor: Color.fromARGB(255, 3, 152, 85), // Background color
+      toolbarHeight: 100, // Adjusted toolbar height for the row layout
+      iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)), // Arrow color
+      title: Row(
+        children: [
+          IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context); // Navigate back
+            },
           ),
-          textAlign: TextAlign.center,
-        ),
+          SizedBox(width: 10), // Space between arrow and text
+          Expanded( // Allows the text to take up remaining space
+            child: Text(
+              "Reset Your Password", // Adjust the text as needed
+              style: GoogleFonts.poppins(
+                fontSize: 23, // Font size to match the image
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFFAFAFF), // Color for the text
+              ),
+              textAlign: TextAlign.start, // Align text to the start
+            ),
+          ),
+        ],
       ),
+    ),
       body: Container(
         width: double.infinity,
         padding: const EdgeInsets.only(top: 16.0),
