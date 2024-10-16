@@ -94,8 +94,6 @@ class _ViolationdetailState extends State<Violationdetail> {
             topRight: Radius.circular(30), // Rounded top-right corner
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Center(
             child: Container(
@@ -209,7 +207,7 @@ class _ViolationdetailState extends State<Violationdetail> {
             ),
           ),
         ),
-        ),
+        
       ),
     );
   }
