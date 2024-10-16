@@ -85,7 +85,7 @@ class _ViolationdetailState extends State<Violationdetail> {
     ),
 
       body: Container(
-        width: double.infinity,
+        //width: double.infinity,
         padding: const EdgeInsets.only(top: 16),
         decoration: const BoxDecoration(
           color: Color(0xFFF3F3F3),
