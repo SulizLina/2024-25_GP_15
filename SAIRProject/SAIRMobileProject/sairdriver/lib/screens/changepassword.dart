@@ -76,64 +76,101 @@ class _ChangepasswordState extends State<Changepassword> {
   }
 
   // Function to handle password update
-Future<void> _changePassword() async {
-  if (_formKey.currentState!.validate()) {
-    try {
-      // Get the current user
-      User? currentUser = FirebaseAuth.instance.currentUser;
+  Future<void> _changePassword() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        // Get the current user
+        User? currentUser = FirebaseAuth.instance.currentUser;
 
-      if (currentUser != null) {
-        // Re-authenticate user if required (example: email and password)
-        // This is needed when changing sensitive info like a password
-
-        AuthCredential credential = EmailAuthProvider.credential(
-          email: currentUser.email!,
-          password: _passwordController.text,
-        );
-        
-        await currentUser.reauthenticateWithCredential(credential);
-
-        // Update the password in Firebase Authentication
-        await currentUser.updatePassword(_passwordController.text);
-
-        // Update password in Firestore
-        await FirebaseFirestore.instance
-            .collection('Driver')
-            .doc(widget.driverId)
-            .update({
-          'Password': _passwordController.text,
-          'isDefaultPassword': false,  // Set isDefaultPassword to false
-        });
-
-        // Show success dialog once password is updated
+        if (currentUser != null) {
+          // Update the password in Firebase Authentication
+          await currentUser.updatePassword(_passwordController.text);
+/*final bytes = utf8.encode(_passwordController.text); // data being hashed
+final digest = sha256.convert(bytes);*/
+          // Update password in Firestore (if needed)
+          await FirebaseFirestore.instance
+              .collection('Driver')
+              .doc(widget.driverId)
+              .update({
+            'Password': _passwordController.text,
+          });
+//change is defult
+          await FirebaseFirestore.instance
+              .collection('Driver')
+              .doc(widget.driverId)
+              .update({
+            'isDefaultPassword': false,
+          });
+          // Show success dialog once password is updated
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text(
+                  'Success',
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(201, 3, 152, 85),
+                  ),
+                ),
+                content: Text(
+                  'Your password has been updated successfully!',
+                  style: GoogleFonts.poppins(fontSize: 16),
+                ),
+                actions: <Widget>[
+      
+                  // OK Button
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                BottomNavBar(driverId: widget.driverId)),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(201, 3, 152, 85),
+                    ),
+                    child: Text(
+                      'OK',
+                      style: GoogleFonts.poppins(color: Colors.white),
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
+          // Handle the case where the user is not logged in
+          print('User is not logged in.');
+        }
+      } catch (e) {
+        // Handle errors during password update
+        print('Failed to update password: $e');
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text(
-                'Success',
+                'Error',
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(201, 3, 152, 85),
+                  color: Colors.red,
                 ),
               ),
               content: Text(
-                'Your password has been updated successfully!',
+                'Failed to update password. Please try again.',
                 style: GoogleFonts.poppins(fontSize: 16),
               ),
               actions: <Widget>[
                 ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pop(); // Close the dialog
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              BottomNavBar(driverId: widget.driverId)),
-                    );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(201, 3, 152, 85),
+                    backgroundColor: Colors.red,
                   ),
                   child: Text(
                     'OK',
@@ -144,50 +181,9 @@ Future<void> _changePassword() async {
             );
           },
         );
-      } else {
-        // Handle the case where the user is not logged in
-        print('User is not logged in.');
       }
-    } catch (e) {
-      // Handle errors during password update
-      print('Failed to update password: $e');
-
-      // Show error dialog
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(
-              'Error',
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.bold,
-                color: Colors.red,
-              ),
-            ),
-            content: Text(
-              'Failed to update password. Please try again.',
-              style: GoogleFonts.poppins(fontSize: 16),
-            ),
-            actions: <Widget>[
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close the dialog
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                ),
-                child: Text(
-                  'OK',
-                  style: GoogleFonts.poppins(color: Colors.white),
-                ),
-              ),
-            ],
-          );
-        },
-      );
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
