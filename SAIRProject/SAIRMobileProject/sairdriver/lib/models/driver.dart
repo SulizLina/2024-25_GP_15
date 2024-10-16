@@ -9,7 +9,7 @@ class driver {
   String? fname;
   String? lname;
   String? phoneNumber;
-
+String? CompanyName; 
   driver({
     required this.id,
     required this.driverId,
@@ -17,6 +17,7 @@ class driver {
     required this.fname,
     required this.lname,
     required this.phoneNumber,
+    required this.CompanyName,
 
   });
 
@@ -32,6 +33,8 @@ class driver {
       fname: parsedJSON['Fname'] as String?,
       lname: parsedJSON['Lname'] as String?,
       phoneNumber: parsedJSON['PhoneNumber'] as String?,
+            CompanyName: parsedJSON['CompanyName'] as String?,
+
     );
   }
 }

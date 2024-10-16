@@ -29,6 +29,7 @@ class _ProfilepageState extends State<Profilepage> {
   TextEditingController gps = TextEditingController();
   TextEditingController id = TextEditingController();
   TextEditingController PlateN = TextEditingController();
+  TextEditingController Compn = TextEditingController();
 
   @override
   void initState() {
@@ -60,6 +61,7 @@ Future<void> fetchDriverData() async {
       lname.text = driverInf?.lname ?? '';
       phone.text = driverInf?.phoneNumber ?? '';
       id.text = driverInf?.driverId ?? '';
+      Compn.text= driverInf?.CompanyName??''; 
       gps.text = ((driverInf?.gspNumber != null && driverInf?.gspNumber != 'null')
           ? driverInf!.gspNumber
           : 'No assigned GPS yet')!;
@@ -356,6 +358,36 @@ Future<void> fetchDriverData() async {
                 readOnly: true,
               ),
               const SizedBox(height: 16),
+               TextFormField(
+                controller: Compn,
+
+                /*initialValue: (driverInf?.gspNumber != null &&
+                        driverInf!.gspNumber != 'null')
+                    ? driverInf!.gspNumber
+                    : 'No assigned GPS yet', */ // If GPS number is null or 'null', show the default message
+                decoration: InputDecoration(
+                  labelText: 'Company Name',
+                  labelStyle:
+                      GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(202, 3, 152, 85),
+                      width: 1.5,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(202, 3, 152, 85),
+                      width: 2.0,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                readOnly: true,
+              ),              const SizedBox(height: 16),
+
               // Plate Number field
               TextFormField(
                // initialValue: plateNumber ?? 'Loading...', // Fetch plate number
