@@ -27,11 +27,9 @@ class _ViolationslistState extends State<Violationslist> {
 
   Future<void> fetchViolations() async { // Fetch all violations without filtering by userId
     try {
-
-      // Query Firestore for violations where driverID matches 1111111111
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('te2')
-          .where('DriverID', isEqualTo: widget.driverId) // Ensure correct field name and value
+          .where('DriverID', isEqualTo: widget.driverId) 
           .get();
 
       setState(() {

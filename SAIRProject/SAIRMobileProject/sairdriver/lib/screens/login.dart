@@ -152,7 +152,7 @@ class _LoginState extends State<Login> {
                 Center(
                   // Center the logo
                   child: Image.asset(
-                    'assets/image/SAIRLogo.png',
+                    'assets/image/SAIRLogoWhiteMarker.png',
                     height: 200,
                   ),
                 ),

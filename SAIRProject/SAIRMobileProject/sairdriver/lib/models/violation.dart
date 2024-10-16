@@ -12,7 +12,7 @@ class Violation {
   GeoPoint? position; // GeoPoint for latitude and longitude
   int? price; // Price associated with the violation
   int? speed; // Motorcycle speed
-  int? time; // Time in seconds or some unit
+  int? time; // Time and date 
 
   Violation({
     required this.id,
