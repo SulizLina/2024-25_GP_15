@@ -5,10 +5,10 @@ import 'package:sairdriver/screens/ViewComplaints.dart';
 import 'package:sairdriver/screens/ViolationsList.dart';
 import 'package:sairdriver/screens/home.dart';
 import 'package:sairdriver/screens/profilepage.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class BottomNavBar extends StatefulWidget {
-  final String driverId; // DriverID passed from login
+  final String driverId;
 
   BottomNavBar({required this.driverId});
 
@@ -31,20 +31,23 @@ class _MyBottomNavState extends State<BottomNavBar> {
     return PersistentTabView(
       controller: _controller,
       context,
-      screens: _buildScreen(widget.driverId), // Pass driverId to the method
+      screens: _buildScreen(widget.driverId),
       items: _navbarItem(),
       navBarStyle: NavBarStyle.style15,
-      backgroundColor:Color(0xFFF3F3F3),
+      backgroundColor: Color(0xFFF3F3F3),
+      navBarHeight: 55,
+      onItemSelected: (int index) {
+        setState(() {}); // Rebuilds the widget on item selection to apply the line dynamically
+      },
       decoration: NavBarDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1), // Color for shadow
-            blurRadius: 10, // Spread of the shadow
-            offset: const Offset(0, -3), // Position of shadow (above nav bar)
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -3),
           ),
         ],
       ),
-      navBarHeight: 55, // Reduced height to make navbar more compact
       animationSettings: const NavBarAnimationSettings(
         navBarItemAnimation: ItemAnimationSettings(
           duration: Duration(milliseconds: 400),
@@ -61,52 +64,78 @@ class _MyBottomNavState extends State<BottomNavBar> {
 
   // List of Screens for Bottom NavBar
   List<Widget> _buildScreen(String driverId) {
-    // Add driverId parameter
     return [
       const Crasheslist(),
       Violationslist(driverId: driverId),
       Home(driverId: driverId),
-       Viewcomplaints(driverId: driverId),
-      Profilepage(driverId: driverId), // Use the driverId here
+      Viewcomplaints(driverId: driverId),
+      Profilepage(driverId: driverId),
     ];
   }
-}
 
-// Bottom NavBar Items
-List<PersistentBottomNavBarItem> _navbarItem() {
-  return [
-    PersistentBottomNavBarItem(
-      icon: const Icon(Icons.motorcycle, size: 31), // Smaller icon size
-      //title: 'Crashes',
-      activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
-      inactiveColorPrimary: Colors.grey,
-    ),
-    PersistentBottomNavBarItem(
-      icon: const Icon(Icons.stop, size: 31), // Smaller icon size
-      //title: 'Violations',
-      activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
-      inactiveColorPrimary: Colors.grey,
-    ),
-    PersistentBottomNavBarItem(
-      icon: const Icon(
-        Icons.home,
-        color: Colors.white,
-        size: 28, // Home icon remains larger and unchanged
+  // Bottom NavBar Items with dynamic line
+  List<PersistentBottomNavBarItem> _navbarItem() {
+    return [
+      _customNavBarItem(
+        HugeIcons.strokeRoundedMotorbike01,
+        'Crashes',
+        0,
+      ),
+      _customNavBarItem(
+        HugeIcons.strokeRoundedDoNotTouch02,
+        'Violations',
+        1,
+      ),
+      PersistentBottomNavBarItem(
+        icon: const Icon(
+          Icons.home,
+          color: Colors.white,
+          size: 32,
+        ),
+        activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
+        inactiveColorPrimary: Colors.grey,
+      ),
+      _customNavBarItem(
+        HugeIcons.strokeRoundedFileEdit,
+        'Complaints',
+        3,
+      ),
+      _customNavBarItem(
+        HugeIcons.strokeRoundedUser,
+        'Profile',
+        4,
+      ),
+    ];
+  }
+
+  PersistentBottomNavBarItem _customNavBarItem(
+      IconData icon, String title, int index) {
+    return PersistentBottomNavBarItem(
+      icon: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Conditionally add the top border when the icon is active
+          if (_controller.index == index)
+            Positioned(
+              top: 0,
+              child: Container(
+                height: 2.0,
+                width: 40.0,
+                color: Color.fromARGB(202, 3, 152, 85),
+              ),
+            ),
+          // The actual icon, always centered
+          Icon(
+            icon,
+            color: _controller.index == index
+                ? Color.fromARGB(202, 3, 152, 85)
+                : Colors.grey,
+            size: 30,
+          ),
+        ],
       ),
       activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
-    ),
-    PersistentBottomNavBarItem(
-      icon: const FaIcon(FontAwesomeIcons.filePen, size: 31), // Smaller icon size
-      //title: 'Complaints',
-      activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
-      inactiveColorPrimary: Colors.grey,
-    ),
-    PersistentBottomNavBarItem(
-      icon: const Icon(Icons.person, size: 31), // Smaller icon size
-      //title: 'Profile',
-      activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
-      inactiveColorPrimary: Colors.grey,
-    ),
-  ];
+    );
+  }
 }
