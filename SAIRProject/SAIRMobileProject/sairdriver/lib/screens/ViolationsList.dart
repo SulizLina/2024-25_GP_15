@@ -177,7 +177,7 @@ class _ViolationslistState extends State<Violationslist> {
           child: violations.isEmpty
               ? Center(
                   child: Text(
-                    "You don't have any violations, ride safe :)",
+                    "You don't have any violations,\nride safe :)",
                     style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
                     textAlign: TextAlign.center,
                   ),
