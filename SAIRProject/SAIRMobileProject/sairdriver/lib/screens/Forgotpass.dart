@@ -97,13 +97,13 @@ class _Forgotpass extends State<Forgotpass> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 3, 152, 85),
+      backgroundColor: Color(0xFFFAFAFF),
       appBar: AppBar(
       automaticallyImplyLeading: false,
       elevation: 0,
-      backgroundColor: Color.fromARGB(255, 3, 152, 85), // Background color
-      toolbarHeight: 100, // Adjusted toolbar height for the row layout
-      iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)), // Arrow color
+      backgroundColor: Color.fromARGB(255, 3, 152, 85), 
+      toolbarHeight: 100, 
+      iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)), 
       title: Row(
         children: [
           IconButton(
@@ -115,23 +115,24 @@ class _Forgotpass extends State<Forgotpass> {
           SizedBox(width: 10), // Space between arrow and text
           Expanded( // Allows the text to take up remaining space
             child: Text(
-              "Reset Your Password", // Adjust the text as needed
+              "Reset Your Password", 
               style: GoogleFonts.poppins(
-                fontSize: 23, // Font size to match the image
+                fontSize: 23, 
                 fontWeight: FontWeight.bold,
-                color: Color(0xFFFAFAFF), // Color for the text
+                color: Color(0xFFFAFAFF),
               ),
-              textAlign: TextAlign.start, // Align text to the start
+              textAlign: TextAlign.start, 
             ),
           ),
         ],
       ),
     ),
-      body: Container(
+    resizeToAvoidBottomInset: true,
+      body: Container( ////////////////////
         width: double.infinity,
         padding: const EdgeInsets.only(top: 16),
         decoration: const BoxDecoration(
-          color: Color(0xFFF3F3F3),
+          color: Color(0xFFFAFAFF),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(30), // Rounded top-left corner
             topRight: Radius.circular(30), // Rounded top-right corner
