@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sairdriver/screens/bottom_nav_bar.dart';
-import 'package:sairdriver/screens/home.dart'; // For Firebase Authentication
 
 class Changepassword extends StatefulWidget {
   final String driverId; // DriverID passed from previous page
@@ -20,6 +19,25 @@ class _ChangepasswordState extends State<Changepassword> {
       TextEditingController();
   bool _isPasswordVisible = false; // For toggling password visibility
   bool _isConfirmPasswordVisible = false;
+
+  // Password requirement flags
+  bool hasMinLength = false;
+  bool hasUpperLowerCase = false;
+  bool hasNumber = false;
+  bool hasSpecialChar = false;
+
+  bool hasUserTyped = false; // Flag to check if user has started typing
+
+  // Function to validate password dynamically
+  void _validatePassword(String password) {
+    setState(() {
+      hasUserTyped = true;
+      hasMinLength = password.length >= 8;
+      hasUpperLowerCase = password.contains(RegExp(r'(?=.*[a-z])(?=.*[A-Z])'));
+      hasNumber = password.contains(RegExp(r'[0-9]'));
+      hasSpecialChar = password.contains(RegExp(r'[!@#\$%^&*_\-]'));
+    });
+  }
 
   // Function to show the confirmation dialog before updating the password
   void _showConfirmationDialog() {
@@ -67,41 +85,23 @@ class _ChangepasswordState extends State<Changepassword> {
     );
   }
 
-  // Function to validate password strength
-  bool _isPasswordValid(String password) {
-    final RegExp passwordPattern = RegExp(
-      r'^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%^&*_\-])[\w!@#\$%^&*_\-]{8,}$',
-    );
-    return passwordPattern.hasMatch(password);
-  }
-
   // Function to handle password update
   Future<void> _changePassword() async {
     if (_formKey.currentState!.validate()) {
       try {
-        // Get the current user
         User? currentUser = FirebaseAuth.instance.currentUser;
 
         if (currentUser != null) {
-          // Update the password in Firebase Authentication
           await currentUser.updatePassword(_passwordController.text);
-/*final bytes = utf8.encode(_passwordController.text); // data being hashed
-final digest = sha256.convert(bytes);*/
-          // Update password in Firestore (if needed)
+
           await FirebaseFirestore.instance
               .collection('Driver')
               .doc(widget.driverId)
               .update({
             'Password': _passwordController.text,
-          });
-//change is defult
-          await FirebaseFirestore.instance
-              .collection('Driver')
-              .doc(widget.driverId)
-              .update({
             'isDefaultPassword': false,
           });
-          // Show success dialog once password is updated
+
           showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -118,8 +118,6 @@ final digest = sha256.convert(bytes);*/
                   style: GoogleFonts.poppins(fontSize: 16),
                 ),
                 actions: <Widget>[
-      
-                  // OK Button
                   ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pop(); // Close the dialog
@@ -142,12 +140,8 @@ final digest = sha256.convert(bytes);*/
               );
             },
           );
-        } else {
-          // Handle the case where the user is not logged in
-          print('User is not logged in.');
         }
       } catch (e) {
-        // Handle errors during password update
         print('Failed to update password: $e');
         showDialog(
           context: context,
@@ -185,78 +179,75 @@ final digest = sha256.convert(bytes);*/
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
     appBar: AppBar(
       automaticallyImplyLeading: false,
       elevation: 0,
-      backgroundColor: Color.fromARGB(255, 3, 152, 85), // Background color
-      toolbarHeight: 100, // Adjusted toolbar height for the row layout
-      iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)), // Arrow color
+      backgroundColor: Color.fromARGB(255, 3, 152, 85), 
+      toolbarHeight: 100, 
+      iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)), 
       title: Row(
         children: [
           IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.pop(context); // Navigate back
+              Navigator.pop(context); 
             },
           ),
-          SizedBox(width: 10), // Space between arrow and text
-          Expanded( // Allows the text to take up remaining space
+          SizedBox(width: 10), 
+          Expanded( 
             child: Text(
-              "Reset Your Password", // Adjust the text as needed
+              "Set Your Password",
               style: GoogleFonts.poppins(
-                fontSize: 23, // Font size to match the image
+                fontSize: 23, 
                 fontWeight: FontWeight.bold,
-                color: Color(0xFFFAFAFF), // Color for the text
+                color: Color(0xFFFAFAFF), 
               ),
-              textAlign: TextAlign.start, // Align text to the start
+              textAlign: TextAlign.start,
             ),
           ),
         ],
       ),
     ),
-      body: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.only(top: 16),
-        decoration: const BoxDecoration(
-          color: Color(0xFFFAFAFF), // White background for the content
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30), // Rounded top-left corner
-            topRight: Radius.circular(30), // Rounded top-right corner
-          ),
+    body: Container(
+      width: double.infinity,
+      padding: const EdgeInsets.only(top: 16),
+      decoration: const BoxDecoration(
+        color: Color(0xFFFAFAFF),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
         ),
-        child: Padding(
+      ),
+      child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Bold Green Text (Heading)
               Text(
-                'Reset Your Password',
+                'Set Your Password',
                 style: GoogleFonts.poppins(
                   fontSize: 21,
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(201, 3, 152, 85),
                 ),
               ),
-              SizedBox(height: 8), // Space between heading and input field
-
-              // Subtitle text
+              SizedBox(height: 8), 
               Text(
                 'Write Your New Password Below.',
                 style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
               ),
               SizedBox(height: 14),
 
-              // New Password Input Field with Green Border and Eye Icon
+              // Password Input Field with dynamic validation
               TextFormField(
                 controller: _passwordController,
-                obscureText:
-                    !_isPasswordVisible, // Toggle for hiding/revealing password
+                obscureText: !_isPasswordVisible,
+                onChanged: _validatePassword,
                 decoration: InputDecoration(
                   labelText: 'Enter Your New Password',
                   suffixIcon: IconButton(
@@ -274,54 +265,28 @@ final digest = sha256.convert(bytes);*/
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color:
-                          Color.fromARGB(201, 3, 152, 85), // Green border color
+                      color: Color.fromARGB(201, 3, 152, 85),
                       width: 1.5,
                     ),
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: Color.fromARGB(
-                          201, 3, 152, 85), // Green border when focused
+                      color: Color.fromARGB(201, 3, 152, 85),
                       width: 2.0,
                     ),
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.red, // Red border color for error state
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color:
-                          Colors.red, // Red border color when focused and error
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  } else if (!_isPasswordValid(value)) {
-                    return 'Password must contain 8+ characters, including uppercase, \n lowercase, number, and special character.';
-                  }
-                  return null;
-                },
               ),
               SizedBox(height: 16),
 
-              // Confirm Password Input Field with Green Border and Eye Icon
+              // Confirm Password Field
               TextFormField(
                 controller: _confirmPasswordController,
-                obscureText:
-                    !_isConfirmPasswordVisible, // Toggle for hiding/revealing password
+                obscureText: !_isConfirmPasswordVisible,
                 decoration: InputDecoration(
-                  labelText: 'Re-enter your new password',
+                  labelText: 'Confirm Password',
                   suffixIcon: IconButton(
                     icon: Icon(
                       _isConfirmPasswordVisible
@@ -331,78 +296,99 @@ final digest = sha256.convert(bytes);*/
                     ),
                     onPressed: () {
                       setState(() {
-                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                        _isConfirmPasswordVisible =
+                            !_isConfirmPasswordVisible;
                       });
                     },
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color:
-                          Color.fromARGB(201, 3, 152, 85), // Green border color
+                      color: Color.fromARGB(201, 3, 152, 85),
                       width: 1.5,
                     ),
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: Color.fromARGB(
-                          201, 3, 152, 85), // Green border when focused
+                      color: Color.fromARGB(201, 3, 152, 85),
                       width: 2.0,
                     ),
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.red, // Red border color for error state
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color:
-                          Colors.red, // Red border color when focused and error
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10), // Rounded corners
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please confirm your password';
-                  } else if (value != _passwordController.text) {
-                    return 'Passwords do not match';
-                  }
-                  return null;
-                },
+            validator: (value) {
+              if (value != _passwordController.text) {
+                return null;  // Don't return the error directly
+              }
+              return null;  // Will be handled below
+            },
+          ),
+          if (_confirmPasswordController.text.isNotEmpty && _passwordController.text != _confirmPasswordController.text) 
+            Container(
+              margin: EdgeInsets.only(top: 8),
+              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.red), // Red border for error
+                borderRadius: BorderRadius.circular(10),
               ),
-              SizedBox(height: 32),
+              child: Text(
+                'Passwords do not match',
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: Colors.red,
+                ),
+              ),
+            ),
 
-              // Update Button with Green Background
+              SizedBox(height: 24),
+
+              // Password requirements section inserted here
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Password must:',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      //fontWeight: FontWeight.bold,
+                      color: Color(0xFF211D1D), // Customize as needed
+                    ),
+                  ),
+                  SizedBox(height: 8), 
+                  
+                  _buildRequirementText('Contain at least 8 characters', hasMinLength),
+                  _buildRequirementText(
+                      'Contain both uppercase and lowercase letters', hasUpperLowerCase),
+                  _buildRequirementText('Contain at least one number', hasNumber),
+                  _buildRequirementText(
+                      'Contain at least one special character (!@#\$%^&*)',
+                      hasSpecialChar),
+                ],
+              ),
+              SizedBox(height: 30),
+
+              // Update Password Button
               SizedBox(
                 width: double.infinity,
+                height: 50,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Show confirmation dialog before proceeding with password change
                     if (_formKey.currentState!.validate()) {
-                      _showConfirmationDialog();
+                      _showConfirmationDialog(); 
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Color.fromARGB(201, 3, 152, 85), // Green background
+                    backgroundColor: Color.fromARGB(201, 3, 152, 85),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(15.0), // Rounded corners
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    padding: EdgeInsets.symmetric(
-                        vertical: 16), // Add vertical padding
                   ),
                   child: Text(
-                    'Update',
+                    'Update Password',
                     style: GoogleFonts.poppins(
                       fontSize: 18,
-                      color: Colors.white, // White text
+                      color: Color(0xFFFAFAFF),
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
@@ -411,7 +397,33 @@ final digest = sha256.convert(bytes);*/
           ),
         ),
       ),
-      )
+    ),
+  );
+}
+
+  // Helper method to build password requirement text with dynamic color and GoogleFonts.poppins
+  Widget _buildRequirementText(String text, bool isValid) {
+    Color textColor;
+
+    // Change the text color based on validation
+    if (!hasUserTyped) {
+      textColor = Colors.grey; // Grey if the user hasn't typed
+    } else if (isValid) {
+      textColor = Colors.green; // Green if the condition is met
+    } else {
+      textColor = Colors.red; // Red if the condition is not met
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Text(
+        text,
+        style: GoogleFonts.poppins(  // Use GoogleFonts.poppins here
+          fontSize: 14,
+          color: textColor,
+        ),
+      ),
     );
   }
+
 }
