@@ -128,175 +128,208 @@ class _LoginState extends State<Login> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        resizeToAvoidBottomInset:
-            true, // Prevent overflow when keyboard appears
-        backgroundColor: Color(0xFFF3F3F3),
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          iconTheme: IconThemeData(color: Colors.black), // Back arrow color
-          automaticallyImplyLeading: true,
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  // Center the logo
-                  child: Image.asset(
-                    'assets/image/SAIRLogoWhiteMarker.png',
-                    height: 200,
-                  ),
+    return Scaffold(
+      backgroundColor: Color(0xFFF3F3F3),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Green Container with Welcome Message
+            Container(
+              height: 600,
+              decoration: BoxDecoration(
+                color: Color.fromARGB(202, 3, 152, 85),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(60),
+                  bottomRight: Radius.circular(60),
                 ),
-                const SizedBox(height: 20.0),
-                Text(
-                  "Welcome to SAIR,\nGlad to see you again!",
-                  style: GoogleFonts.poppins(
-                    color: Color.fromARGB(202, 3, 152, 85),
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/icons/SAIRLogoWhiteMarker.png',
+                    height: 80, // Adjust the size of the logo
                   ),
-                  textAlign: TextAlign.left,
-                ),
-                const SizedBox(height: 44.0),
-                // Phone Number Input Field with Icon
-                TextFormField(
-                  controller: _phoneController,
-                  decoration: InputDecoration(
-                    labelText: 'Enter your number with country code',
-                    prefixIcon: Icon(
-                      Icons.phone,
-                      color: _isPhoneError
-                          ? Colors.red
-                          : Color.fromARGB(201, 3, 152, 85),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: _isPhoneError
-                            ? Colors.red
-                            : Color.fromARGB(201, 3, 152, 85),
-                        width: 1.5,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: _isPhoneError
-                            ? Colors.red
-                            : Color.fromARGB(201, 3, 152, 85),
-                        width: 2.0,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  validator: validatePhoneNumber,
-                  keyboardType: TextInputType.phone,
-                ),
-                const SizedBox(height: 15),
-                // Password Input Field with Icon
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: !_isPasswordVisible,
-                  decoration: InputDecoration(
-                    labelText: 'Enter Your Password',
-                    prefixIcon: Icon(
-                      Icons.lock,
-                      color: _isPasswordError
-                          ? Colors.red
-                          : Color.fromARGB(201, 3, 152, 85),
-                    ),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isPasswordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                        color: Colors.grey,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
-                      },
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: _isPasswordError
-                            ? Colors.red
-                            : Color.fromARGB(201, 3, 152, 85),
-                        width: 1.5,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: _isPasswordError
-                            ? Colors.red
-                            : Color.fromARGB(201, 3, 152, 85),
-                        width: 2.0,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12.0),
-                // Error Message Display
-                if (errorMessage != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: Text(
-                      errorMessage!,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.red,
-                        height: 1.2,
-                      ),
-                    ),
-                  ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Forgotpass()));
-                  },
-                  child: Text(
-                    "Forgot your password?",
+                  const SizedBox(height: 15),
+                  Text(
+                    "Welcome to SAIR,",
                     style: GoogleFonts.poppins(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      fontSize: 14,
+                      color: Colors.white,
+                      fontSize: 22, // Adjusted font size
+                      fontWeight: FontWeight.bold,
                     ),
+                    textAlign: TextAlign.center,
                   ),
-                ),
-                const SizedBox(height: 88.0),
-                Container(
-                  width: double.infinity,
-                  child: RawMaterialButton(
-                    fillColor: Color.fromARGB(202, 3, 152, 85),
-                    elevation: 0.0,
-                    padding: const EdgeInsets.symmetric(vertical: 20.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
+                  Text(
+                    "Glad to see you again!",
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 22, // Adjusted font size
+                      fontWeight: FontWeight.bold,
                     ),
-                    onPressed: login,
-                    child: Text(
-                      "Login",
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+            //const SizedBox(height: 20), ////////////////////////////////////
+            
+            // Black Box for Form Fields and Login Button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20), // Padding around the black box container
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white, // Black background color
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20), // Padding inside the black box container
+                child: Column(
+                  children: [
+                    // Phone Input
+                    TextFormField(
+                      controller: _phoneController,
+                      decoration: InputDecoration(
+                        labelText: 'Enter Your Phone Number',
+                        labelStyle: TextStyle(color: Colors.black),
+                        prefixIcon: Icon(
+                          Icons.phone,
+                          color: _isPhoneError
+                              ? Colors.red
+                              : Color.fromARGB(201, 3, 152, 85),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(vertical: 15), // Padding inside the phone input field
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: _isPhoneError
+                                ? Colors.red
+                                : Color.fromARGB(201, 3, 152, 85), // Adjusted border color
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: _isPhoneError
+                                ? Colors.red
+                                : Color.fromARGB(201, 3, 152, 85),
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      keyboardType: TextInputType.phone,
+                      style: TextStyle(color: Colors.black), // White text
+                    ),
+                    const SizedBox(height: 20),
+                    // Password Input
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: !_isPasswordVisible,
+                      decoration: InputDecoration(
+                        labelText: 'Enter Your Password',
+                        labelStyle: TextStyle(color: Colors.black),
+                        prefixIcon: Icon(
+                          Icons.lock,
+                          color: _isPasswordError
+                              ? Colors.red
+                              : Color.fromARGB(201, 3, 152, 85),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(vertical: 15), // Padding inside the password input field
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: _isPasswordError
+                                ? Colors.red
+                                : Color.fromARGB(201, 3, 152, 85), // Adjusted border color
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: _isPasswordError
+                                ? Colors.red
+                                : Color.fromARGB(201, 3, 152, 85),
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                      ),
+                      style: TextStyle(color: Colors.black), // White text
+                    ),
+                    const SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Forgotpass()),
+                        );
+                      },
+                      child: Text(
+                        "Forgot Password?",
+                        style: GoogleFonts.poppins(
+                          color: Color.fromARGB(202, 3, 152, 85),
+                          fontSize: 14,
+                        ),
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 20),
+                    // Login Button
+                    Container(
+                      width: double.infinity,
+                      child: RawMaterialButton(
+                        fillColor: Color.fromARGB(202, 3, 152, 85),
+                        elevation: 0.0,
+                        padding: const EdgeInsets.symmetric(vertical: 18.0), // Padding inside the login button
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25.0),
+                        ),
+                        onPressed: () {
+                          login();
+                        },
+                        child: Text(
+                          "Login",
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (errorMessage != null) ...[
+                      const SizedBox(height: 20),
+                      Text(
+                        errorMessage!,
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 14.0,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
