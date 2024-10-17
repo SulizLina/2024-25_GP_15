@@ -22,6 +22,24 @@ class _EditpasswordpageState extends State<Editpasswordpage> {
   bool _isPasswordVisible = false; // For toggling password visibility
   bool _isConfirmPasswordVisible = false;
 
+  // Password requirement flags
+  bool hasMinLength = false;
+  bool hasUpperLowerCase = false;
+  bool hasNumber = false;
+  bool hasSpecialChar = false;
+
+  bool hasUserTyped = false; // Flag to check if user has started typing
+
+  // Function to validate password dynamically
+  void _validatePassword(String password) {
+    setState(() {
+      hasUserTyped = true;
+      hasMinLength = password.length >= 8;
+      hasUpperLowerCase = password.contains(RegExp(r'(?=.*[a-z])(?=.*[A-Z])'));
+      hasNumber = password.contains(RegExp(r'[0-9]'));
+      hasSpecialChar = password.contains(RegExp(r'[!@#\$%^&*_\-]'));
+    });
+  }
   // Function to show the confirmation dialog before updating the password
   void _showConfirmationDialog() {
     showDialog(
@@ -68,6 +86,7 @@ class _EditpasswordpageState extends State<Editpasswordpage> {
     );
   }
 
+/*
   // Function to validate password strength
   bool _isPasswordValid(String password) {
     final RegExp passwordPattern = RegExp(
@@ -75,6 +94,7 @@ class _EditpasswordpageState extends State<Editpasswordpage> {
     );
     return passwordPattern.hasMatch(password);
   }
+ */
 
   // Function to handle password update
   Future<void> _changePassword() async {
@@ -118,8 +138,12 @@ final digest = sha256.convert(bytes);*/
                 ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pop(); // Close the dialog
-                    Navigator.pushNamed(
-                        context, 'profilepage'); // Navigate to the profile page
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                Profilepage(driverId: widget.driverId)),
+                      ); // Navigate to the profile page
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color.fromARGB(201, 3, 152, 85),
@@ -133,11 +157,6 @@ final digest = sha256.convert(bytes);*/
             );
           },
         );
-
-     //   } else {
-        // Handle the case where the user is not logged in
-       // print('User is not logged in.');
-    //    }
      }
       catch (e) {
         // Handle errors during password update
@@ -211,6 +230,7 @@ final digest = sha256.convert(bytes);*/
         ],
       ),
     ),
+    resizeToAvoidBottomInset: true, // Ensures content adjusts when keyboard is shown
       body: Container(
         width: double.infinity,
         padding: const EdgeInsets.only(top: 16.0),
@@ -251,6 +271,7 @@ final digest = sha256.convert(bytes);*/
                   controller: _passwordController,
                   obscureText:
                       !_isPasswordVisible, // Toggle for hiding/revealing password
+                  onChanged: _validatePassword,
                   decoration: InputDecoration(
                     labelText: 'Enter Your New Password',
                     suffixIcon: IconButton(
@@ -305,9 +326,7 @@ final digest = sha256.convert(bytes);*/
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your password';
-                    } else if (!_isPasswordValid(value)) {
-                      return 'Password must contain 8+ characters, including uppercase, \n lowercase, number, and special character.';
-                    }
+                    } 
                     return null;
                   },
                 ),
@@ -379,6 +398,30 @@ final digest = sha256.convert(bytes);*/
                     return null;
                   },
                 ),
+                SizedBox(height: 24),
+
+                                // Password requirements section
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Password must:',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        color: Color(0xFF211D1D), // Customize as needed
+                      ),
+                    ),
+                    SizedBox(height: 8), 
+                    
+                    _buildRequirementText('Contain at least 8 characters', hasMinLength),
+                    _buildRequirementText(
+                        'Contain both uppercase and lowercase letters', hasUpperLowerCase),
+                    _buildRequirementText('Contain at least one number', hasNumber),
+                    _buildRequirementText(
+                        'Contain at least one special character (!@#\$%^&*)',
+                        hasSpecialChar),
+                  ],
+                ),
                 SizedBox(height: 32),
 
                 // Update Button with Green Background
@@ -413,6 +456,30 @@ final digest = sha256.convert(bytes);*/
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+    // Helper method to build password requirement text with dynamic color and GoogleFonts.poppins
+  Widget _buildRequirementText(String text, bool isValid) {
+    Color textColor;
+
+    // Change the text color based on validation
+    if (!hasUserTyped) {
+      textColor = Colors.grey; // Grey if the user hasn't typed
+    } else if (isValid) {
+      textColor = Colors.green; // Green if the condition is met
+    } else {
+      textColor = Colors.red; // Red if the condition is not met
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Text(
+        text,
+        style: GoogleFonts.poppins(  // Use GoogleFonts.poppins here
+          fontSize: 14,
+          color: textColor,
         ),
       ),
     );

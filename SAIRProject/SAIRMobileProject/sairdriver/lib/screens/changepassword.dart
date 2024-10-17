@@ -160,7 +160,7 @@ Widget build(BuildContext context) {
           SizedBox(width: 10), // Space between arrow and text
           Expanded( // Allows the text to take up remaining space
             child: Text(
-              "Reset Your Password", // Adjust the text as needed
+              "Set Your Password", // Adjust the text as needed
               style: GoogleFonts.poppins(
                 fontSize: 23, // Font size to match the image
                 fontWeight: FontWeight.bold,
@@ -207,7 +207,7 @@ Widget build(BuildContext context) {
                   'Write Your New Password Below.',
                   style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
                 ),
-                SizedBox(height: 14),
+                SizedBox(height: 20),
 
                 // New Password Input Field with Green Border and Eye Icon
                 TextFormField(
@@ -356,7 +356,7 @@ Widget build(BuildContext context) {
                         hasSpecialChar),
                   ],
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 32),
 
                 // Update Button with Green Background
                 SizedBox(
@@ -420,5 +420,4 @@ Widget build(BuildContext context) {
       ),
     );
   }
-
 }
