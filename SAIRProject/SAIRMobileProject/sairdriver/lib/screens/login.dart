@@ -152,7 +152,7 @@ class _LoginState extends State<Login> {
               children: [
                 Image.asset(
                   'assets/icons/SAIRLogoWhiteMarker.png',
-                  height: 80, // Adjust the size of the logo
+                  height: 100, // Adjust the size of the logo
                 ),
                 const SizedBox(height: 15),
                 Text(
@@ -195,14 +195,14 @@ class _LoginState extends State<Login> {
                       controller: _phoneController,
                       decoration: InputDecoration(
                         labelText: 'Enter Your Phone Number',
-                        labelStyle: const TextStyle(color: Colors.black),
+                        labelStyle: GoogleFonts.poppins(color: Colors.black, fontSize: 15), // Match font size and font
                         prefixIcon: Icon(
                           Icons.phone,
                           color: _isPhoneError
                               ? Colors.red
                               : const Color.fromARGB(201, 3, 152, 85),
                         ),
-                        contentPadding: const EdgeInsets.symmetric(vertical: 15),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 10), // Match the padding
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                             color: _isPhoneError
@@ -223,7 +223,7 @@ class _LoginState extends State<Login> {
                         ),
                       ),
                       keyboardType: TextInputType.phone,
-                      style: const TextStyle(color: Colors.black, fontSize: 15,),
+                      style: GoogleFonts.poppins(color: Colors.black, fontSize: 15), // Match the font style
                     ),
                     const SizedBox(height: 20),
                     // Password Input
@@ -232,7 +232,7 @@ class _LoginState extends State<Login> {
                       obscureText: !_isPasswordVisible,
                       decoration: InputDecoration(
                         labelText: 'Enter Your Password',
-                        labelStyle: const TextStyle(color: Colors.black, fontSize: 15),
+                        labelStyle: GoogleFonts.poppins(color: Colors.black, fontSize: 15, ),
                         prefixIcon: Icon(
                           Icons.lock,
                           color: _isPasswordError
@@ -269,10 +269,10 @@ class _LoginState extends State<Login> {
                                 : const Color.fromARGB(201, 3, 152, 85),
                             width: 2.0,
                           ),
-                          borderRadius: BorderRadius.circular(25),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      style: const TextStyle(color: Colors.black, fontSize: 14,),
+                      style: GoogleFonts.poppins(color: Colors.black, fontSize: 14,),
                     ),
                     const SizedBox(height: 10),
                     GestureDetector(
@@ -298,7 +298,7 @@ class _LoginState extends State<Login> {
                       child: RawMaterialButton(
                         fillColor: const Color.fromARGB(202, 3, 152, 85),
                         elevation: 0.0,
-                        padding: const EdgeInsets.symmetric(vertical: 10.0), // Decrease vertical padding
+                        padding: const EdgeInsets.symmetric(vertical: 15.0), // Match this value with the text fields' padding
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
