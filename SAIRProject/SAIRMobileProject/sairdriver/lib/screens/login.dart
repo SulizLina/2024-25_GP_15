@@ -132,61 +132,62 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF3F3F3),
+      backgroundColor: const Color(0xFFF3F3F3),
       body: SingleChildScrollView(
-        child: Column(
+        child:  Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Green Container with Welcome Message
-            Container(
-              height: 600,
-              decoration: BoxDecoration(
-                color: Color.fromARGB(202, 3, 152, 85),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(60),
-                  bottomRight: Radius.circular(60),
-                ),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/icons/SAIRLogoWhiteMarker.png',
-                    height: 80, // Adjust the size of the logo
-                  ),
-                  const SizedBox(height: 15),
-                  Text(
-                    "Welcome to SAIR,",
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 22, // Adjusted font size
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  Text(
-                    "Glad to see you again!",
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 22, // Adjusted font size
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+          // Green Container with Welcome Message
+          Container(
+            height: MediaQuery.of(context).size.height * 0.6, // Adjust height as needed
+            decoration: BoxDecoration(
+              color: Color.fromARGB(202, 3, 152, 85), // Green color
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(60), // Rounded corners for bottom left
+                bottomRight: Radius.circular(60), // Rounded corners for bottom right
               ),
             ),
-            //const SizedBox(height: 20), ////////////////////////////////////
-            
-            // Black Box for Form Fields and Login Button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20), // Padding around the black box container
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white, // Black background color
-                  borderRadius: BorderRadius.circular(25),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/icons/SAIRLogoWhiteMarker.png',
+                  height: 80, // Adjust the size of the logo
                 ),
-                padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20), // Padding inside the black box container
+                const SizedBox(height: 15),
+                Text(
+                  "Welcome to SAIR,",
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                Text(
+                  "Glad to see you again!",
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+
+            // Black Box for Form Fields and Login Button
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                margin: const EdgeInsets.only(bottom: 50), // Adjust position
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20), // Rounded corners
+                ),
+                width: MediaQuery.of(context).size.width * 0.85, // Adjust width
                 child: Column(
                   children: [
                     // Phone Input
@@ -194,19 +195,19 @@ class _LoginState extends State<Login> {
                       controller: _phoneController,
                       decoration: InputDecoration(
                         labelText: 'Enter Your Phone Number',
-                        labelStyle: TextStyle(color: Colors.black),
+                        labelStyle: const TextStyle(color: Colors.black),
                         prefixIcon: Icon(
                           Icons.phone,
                           color: _isPhoneError
                               ? Colors.red
-                              : Color.fromARGB(201, 3, 152, 85),
+                              : const Color.fromARGB(201, 3, 152, 85),
                         ),
-                        contentPadding: EdgeInsets.symmetric(vertical: 15), // Padding inside the phone input field
+                        contentPadding: const EdgeInsets.symmetric(vertical: 15),
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                             color: _isPhoneError
                                 ? Colors.red
-                                : Color.fromARGB(201, 3, 152, 85), // Adjusted border color
+                                : const Color.fromARGB(201, 3, 152, 85),
                             width: 1.5,
                           ),
                           borderRadius: BorderRadius.circular(10),
@@ -215,14 +216,14 @@ class _LoginState extends State<Login> {
                           borderSide: BorderSide(
                             color: _isPhoneError
                                 ? Colors.red
-                                : Color.fromARGB(201, 3, 152, 85),
+                                : const Color.fromARGB(201, 3, 152, 85),
                             width: 2.0,
                           ),
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                       keyboardType: TextInputType.phone,
-                      style: TextStyle(color: Colors.black), // White text
+                      style: const TextStyle(color: Colors.black, fontSize: 15,),
                     ),
                     const SizedBox(height: 20),
                     // Password Input
@@ -231,14 +232,14 @@ class _LoginState extends State<Login> {
                       obscureText: !_isPasswordVisible,
                       decoration: InputDecoration(
                         labelText: 'Enter Your Password',
-                        labelStyle: TextStyle(color: Colors.black),
+                        labelStyle: const TextStyle(color: Colors.black, fontSize: 15),
                         prefixIcon: Icon(
                           Icons.lock,
                           color: _isPasswordError
                               ? Colors.red
-                              : Color.fromARGB(201, 3, 152, 85),
+                              : const Color.fromARGB(201, 3, 152, 85),
                         ),
-                        contentPadding: EdgeInsets.symmetric(vertical: 15), // Padding inside the password input field
+                        contentPadding: const EdgeInsets.symmetric(vertical: 10),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _isPasswordVisible
@@ -256,22 +257,22 @@ class _LoginState extends State<Login> {
                           borderSide: BorderSide(
                             color: _isPasswordError
                                 ? Colors.red
-                                : Color.fromARGB(201, 3, 152, 85), // Adjusted border color
+                                : const Color.fromARGB(201, 3, 152, 85),
                             width: 1.5,
                           ),
-                          borderRadius: BorderRadius.circular(25),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                             color: _isPasswordError
                                 ? Colors.red
-                                : Color.fromARGB(201, 3, 152, 85),
+                                : const Color.fromARGB(201, 3, 152, 85),
                             width: 2.0,
                           ),
                           borderRadius: BorderRadius.circular(25),
                         ),
                       ),
-                      style: TextStyle(color: Colors.black), // White text
+                      style: const TextStyle(color: Colors.black, fontSize: 14,),
                     ),
                     const SizedBox(height: 10),
                     GestureDetector(
@@ -285,7 +286,7 @@ class _LoginState extends State<Login> {
                       child: Text(
                         "Forgot Password?",
                         style: GoogleFonts.poppins(
-                          color: Color.fromARGB(202, 3, 152, 85),
+                          color: const Color.fromARGB(202, 3, 152, 85),
                           fontSize: 14,
                         ),
                       ),
@@ -295,36 +296,35 @@ class _LoginState extends State<Login> {
                     Container(
                       width: double.infinity,
                       child: RawMaterialButton(
-                        fillColor: Color.fromARGB(202, 3, 152, 85),
+                        fillColor: const Color.fromARGB(202, 3, 152, 85),
                         elevation: 0.0,
-                        padding: const EdgeInsets.symmetric(vertical: 18.0), // Padding inside the login button
+                        padding: const EdgeInsets.symmetric(vertical: 10.0), // Decrease vertical padding
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25.0),
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        onPressed: () {
-                          login();
-                        },
+                        onPressed: login,
                         child: Text(
                           "Login",
                           style: GoogleFonts.poppins(
                             color: Colors.white,
-                            fontSize: 18.0,
+                            fontSize: 15,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                     ),
-                    if (errorMessage != null) ...[
-                      const SizedBox(height: 20),
-                      Text(
-                        errorMessage!,
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 14.0,
+                    if (errorMessage != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 15),
+                        child: Text(
+                          errorMessage!,
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 16,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
-                    ],
                   ],
                 ),
               ),
@@ -334,4 +334,27 @@ class _LoginState extends State<Login> {
       ),
     );
   }
+}
+
+// Clipper for custom curved green background
+class BottomWaveClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    var path = Path();
+    path.lineTo(0.0, size.height - 100); // Starting point of the curve
+
+    var firstControlPoint = Offset(size.width / 2, size.height);
+    var firstEndPoint = Offset(size.width, size.height - 100);
+
+    path.quadraticBezierTo(
+        firstControlPoint.dx, firstControlPoint.dy, firstEndPoint.dx, firstEndPoint.dy);
+
+    path.lineTo(size.width, 0.0); // Closing the path
+    path.close();
+
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
