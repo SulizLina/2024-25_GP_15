@@ -330,24 +330,6 @@ class _ChangepasswordState extends State<Changepassword> {
                   return null;
                 },
               ),
-               /*
-               if (_confirmPasswordController.text.isNotEmpty && _passwordController.text != _confirmPasswordController.text) 
-            Container(
-              margin: EdgeInsets.only(top: 8),
-              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.red), // Red border for error
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                'Passwords do not match',
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  color: Colors.red,
-                ),
-              ),
-            ),
-            */
               SizedBox(height: 24),
 
               // Password requirements section inserted here
