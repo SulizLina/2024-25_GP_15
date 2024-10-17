@@ -40,52 +40,6 @@ class _ChangepasswordState extends State<Changepassword> {
     });
   }
 
-  // Function to show the confirmation dialog before updating the password
-  void _showConfirmationDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            'Confirm Password Change',
-            style: GoogleFonts.poppins(
-              fontWeight: FontWeight.bold,
-              color: Color.fromARGB(201, 3, 152, 85),
-            ),
-          ),
-          content: Text(
-            'Are you sure you want to change your password?',
-            style: GoogleFonts.poppins(fontSize: 16),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: Text(
-                'Cancel',
-                style: GoogleFonts.poppins(color: Colors.red),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                _changePassword(); // Proceed with password update
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(201, 3, 152, 85),
-              ),
-              child: Text(
-                'Confirm',
-                style: GoogleFonts.poppins(color: Colors.white),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
     // Function to handle password update
   Future<void> _changePassword() async {
     if (_formKey.currentState!.validate()) {
@@ -376,6 +330,7 @@ class _ChangepasswordState extends State<Changepassword> {
                   return null;
                 },
               ),
+               /*
                if (_confirmPasswordController.text.isNotEmpty && _passwordController.text != _confirmPasswordController.text) 
             Container(
               margin: EdgeInsets.only(top: 8),
@@ -392,7 +347,7 @@ class _ChangepasswordState extends State<Changepassword> {
                 ),
               ),
             ),
-            
+            */
               SizedBox(height: 24),
 
               // Password requirements section inserted here
@@ -427,7 +382,7 @@ class _ChangepasswordState extends State<Changepassword> {
                   onPressed: () {
                     // Show confirmation dialog before proceeding with password change
                     if (_formKey.currentState!.validate()) {
-                      _showConfirmationDialog();
+                      _changePassword();
                     }
                   },
                   style: ElevatedButton.styleFrom(
