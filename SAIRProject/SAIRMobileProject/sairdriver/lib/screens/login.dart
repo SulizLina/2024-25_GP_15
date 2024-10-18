@@ -3,8 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sairdriver/screens/Forgotpass.dart';
-import 'package:sairdriver/messages/phone_validator.dart';
 import 'login_otp.dart';
 
 class Login extends StatefulWidget {
@@ -21,6 +19,7 @@ class _LoginState extends State<Login> {
   String? errorMessage;
   bool _isPhoneError = false;
   bool _isPasswordError = false;
+
   @override
   void initState() {
     _phoneController = TextEditingController();
@@ -61,7 +60,6 @@ class _LoginState extends State<Login> {
 
   // Login method that checks for valid credentials and sends OTP
   Future<void> login() async {
-    // Validate fields before proceeding
     validateFields();
     if (errorMessage != null) {
       return; // Stop login if validation fails
@@ -69,7 +67,6 @@ class _LoginState extends State<Login> {
 
     try {
       final db = FirebaseFirestore.instance;
-      // Retrieve the phone number from Firestore
       final driverDoc = await db
           .collection('Driver')
           .where('PhoneNumber', isEqualTo: _phoneController.text)
@@ -85,7 +82,6 @@ class _LoginState extends State<Login> {
         return;
       }
 
-      // Retrieve the correct password from Firestore
       final storedPassword = driverDoc.docs.first.data()['Password'];
 
       if (storedPassword != _passwordController.text) {
@@ -97,14 +93,11 @@ class _LoginState extends State<Login> {
         return;
       }
 
-      // If both phone and password are correct, proceed with OTP verification
       final phone = _phoneController.text;
 
       await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: phone,
-        verificationCompleted: (PhoneAuthCredential credential) {
-          // Handle verification completion if necessary
-        },
+        verificationCompleted: (PhoneAuthCredential credential) {},
         verificationFailed: (FirebaseAuthException error) {
           log(error.toString());
         },
@@ -138,15 +131,12 @@ class _LoginState extends State<Login> {
           children: [
             // Green Container with Welcome Message
             Container(
-              height: MediaQuery.of(context).size.height *
-                  0.6, // Adjust height as needed
-              decoration: BoxDecoration(
-                color: Color.fromARGB(202, 3, 152, 85), // Green color
+              height: MediaQuery.of(context).size.height * 0.6,
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(202, 3, 152, 85),
                 borderRadius: BorderRadius.only(
-                  bottomLeft:
-                      Radius.circular(60), // Rounded corners for bottom left
-                  bottomRight:
-                      Radius.circular(60), // Rounded corners for bottom right
+                  bottomLeft: Radius.circular(60),
+                  bottomRight: Radius.circular(60),
                 ),
               ),
               child: Column(
@@ -154,7 +144,7 @@ class _LoginState extends State<Login> {
                 children: [
                   Image.asset(
                     'assets/icons/SAIRLogoWhiteMarker.png',
-                    height: 100, // Adjust the size of the logo
+                    height: 100,
                   ),
                   const SizedBox(height: 15),
                   Text(
@@ -178,172 +168,142 @@ class _LoginState extends State<Login> {
                 ],
               ),
             ),
-            const SizedBox(height: 30),
-            // Black Box for Form Fields and Login Button
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-                margin: const EdgeInsets.only(bottom: 50), // Adjust position
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFAFAFF),
-                  borderRadius: BorderRadius.circular(20), // Rounded corners
-                ),
-                width: MediaQuery.of(context).size.width * 0.85, // Adjust width
-                child: Column(
-                  children: [
-                    // Phone Input
-                    TextFormField(
-                      controller: _phoneController,
-                      decoration: InputDecoration(
-                        labelText: 'Enter Your Phone Number with contry code',
-                        labelStyle: GoogleFonts.poppins(
-                            color: Colors.black,
-                            fontSize: 15), // Match font size and font
-                        prefixIcon: Icon(
-                          Icons.phone,
+            const SizedBox(height: 50),
+            // Input Fields and Login Button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30.0),
+              child: Column(
+                children: [
+                  // Phone Input
+                  TextFormField(
+                    controller: _phoneController,
+                    decoration: InputDecoration(
+                      labelText: 'Enter Your Phone Number with country code',
+                      labelStyle: GoogleFonts.poppins(
+                          color: Colors.black, fontSize: 13),
+                      prefixIcon: Icon(
+                        Icons.phone,
+                        color: _isPhoneError
+                            ? Colors.red
+                            : const Color.fromARGB(201, 3, 152, 85),
+                      ),
+                      contentPadding:
+                          const EdgeInsets.symmetric(vertical: 10),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
                           color: _isPhoneError
                               ? Colors.red
                               : const Color.fromARGB(201, 3, 152, 85),
+                          width: 1.5,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10), // Match the padding
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: _isPhoneError
-                                ? Colors.red
-                                : const Color.fromARGB(201, 3, 152, 85),
-                            width: 1.5,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: _isPhoneError
-                                ? Colors.red
-                                : const Color.fromARGB(201, 3, 152, 85),
-                            width: 2.0,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      keyboardType: TextInputType.phone,
-                      style: GoogleFonts.poppins(
-                          color: Colors.black,
-                          fontSize: 15), // Match the font style
-                    ),
-                    const SizedBox(height: 20),
-                    // Password Input
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: !_isPasswordVisible,
-                      decoration: InputDecoration(
-                        labelText: 'Enter Your Password',
-                        labelStyle: GoogleFonts.poppins(
-                          color: Colors.black,
-                          fontSize: 15,
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: _isPhoneError
+                              ? Colors.red
+                              : const Color.fromARGB(201, 3, 152, 85),
+                          width: 2.0,
                         ),
-                        prefixIcon: Icon(
-                          Icons.lock,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    keyboardType: TextInputType.phone,
+                    style: GoogleFonts.poppins(
+                        color: Colors.black, fontSize: 13),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Password Input
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: !_isPasswordVisible,
+                    decoration: InputDecoration(
+                      labelText: 'Enter Your Password',
+                      labelStyle: GoogleFonts.poppins(
+                        color: Colors.black,
+                        fontSize: 13,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.lock,
+                        color: _isPasswordError
+                            ? Colors.red
+                            : const Color.fromARGB(201, 3, 152, 85),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
                           color: _isPasswordError
                               ? Colors.red
                               : const Color.fromARGB(201, 3, 152, 85),
+                          width: 1.5,
                         ),
-                        contentPadding:
-                            const EdgeInsets.symmetric(vertical: 10),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isPasswordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: Colors.grey,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _isPasswordVisible = !_isPasswordVisible;
-                            });
-                          },
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: _isPasswordError
-                                ? Colors.red
-                                : const Color.fromARGB(201, 3, 152, 85),
-                            width: 1.5,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: _isPasswordError
-                                ? Colors.red
-                                : const Color.fromARGB(201, 3, 152, 85),
-                            width: 2.0,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      style: GoogleFonts.poppins(
-                        color: Colors.black,
-                        fontSize: 14,
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: _isPasswordError
+                              ? Colors.red
+                              : const Color.fromARGB(201, 3, 152, 85),
+                          width: 2.0,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Forgotpass()),
-                        );
-                      },
+                    style: GoogleFonts.poppins(
+                      color: Colors.black,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Login Button
+                  Container(
+                    width: double.infinity,
+                    child: RawMaterialButton(
+                      fillColor: const Color.fromARGB(202, 3, 152, 85),
+                      elevation: 0.0,
+                      padding: const EdgeInsets.symmetric(vertical: 15.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      onPressed: login,
                       child: Text(
-                        "Forgot Password?",
+                        "Login",
                         style: GoogleFonts.poppins(
-                          color: const Color.fromARGB(202, 3, 152, 85),
-                          fontSize: 14,
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    // Login Button
-                    Container(
-                      width: double.infinity,
-                      child: RawMaterialButton(
-                        fillColor: const Color.fromARGB(202, 3, 152, 85),
-                        elevation: 0.0,
-                        padding: const EdgeInsets.symmetric(
-                            vertical:
-                                15.0), // Match this value with the text fields' padding
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                  ),
+                  if (errorMessage != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 15),
+                      child: Text(
+                        errorMessage!,
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 16,
                         ),
-                        onPressed: login,
-                        child: Text(
-                          "Login",
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                    if (errorMessage != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 15),
-                        child: Text(
-                          errorMessage!,
-                          style: const TextStyle(
-                            color: Colors.red,
-                            fontSize: 16,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                  ],
-                ),
+                ],
               ),
             ),
           ],
@@ -351,27 +311,4 @@ class _LoginState extends State<Login> {
       ),
     );
   }
-}
-
-// Clipper for custom curved green background
-class BottomWaveClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    var path = Path();
-    path.lineTo(0.0, size.height - 100); // Starting point of the curve
-
-    var firstControlPoint = Offset(size.width / 2, size.height);
-    var firstEndPoint = Offset(size.width, size.height - 100);
-
-    path.quadraticBezierTo(firstControlPoint.dx, firstControlPoint.dy,
-        firstEndPoint.dx, firstEndPoint.dy);
-
-    path.lineTo(size.width, 0.0); // Closing the path
-    path.close();
-
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
