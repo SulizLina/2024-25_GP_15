@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sairdriver/screens/Forgotpass.dart';
+import 'package:sairdriver/messages/phone_validator.dart';
 import 'login_otp.dart';
 
 class Login extends StatefulWidget {
@@ -273,6 +275,25 @@ class _LoginState extends State<Login> {
                       fontSize: 14,
                     ),
                   ),
+                                      const SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Forgotpass()),
+                        );
+                      },
+                      child: Text(
+                        "Forgot Password?",
+                        style: GoogleFonts.poppins(
+                          color: const Color.fromARGB(202, 3, 152, 85),
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+
+
                   const SizedBox(height: 20),
 
                   // Login Button
