@@ -38,7 +38,12 @@ class _LoginState extends State<Login> {
   // Validation method for phone and password fields
   void validateFields() {
     setState(() {
-      _isPhoneError = _phoneController.text.isEmpty;
+     if(_phoneController.text=="+966"){
+     _isPhoneError = true; 
+     }else {
+      _isPhoneError=false;
+     }
+    
       _isPasswordError = _passwordController.text.isEmpty;
       if (!_isPhoneValid(_phoneController.text)) {
         errorMessage =
