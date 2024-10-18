@@ -8,6 +8,8 @@ import 'package:sairdriver/screens/ViolationsList.dart';
 import 'package:sairdriver/services/Violations_database.dart';
 import 'package:sairdriver/screens/RaiseCompliants.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:sairdriver/services/motorcycle_database.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 class Violationdetail extends StatefulWidget {
   final String violationId;
@@ -19,6 +21,9 @@ class Violationdetail extends StatefulWidget {
 }
 
 class _ViolationdetailState extends State<Violationdetail> {
+
+  String? plateNumber; // To hold plate number fetched from Motorcycle collection
+
   @override
   void initState() {
     super.initState();
@@ -46,6 +51,10 @@ class _ViolationdetailState extends State<Violationdetail> {
     ViolationsDatabase db = ViolationsDatabase();
     violation = await db.getViolationById(widget.violationId); // Fetch violation using the violationId
     setState(() {});
+
+    MotorcycleDatabase mdb = MotorcycleDatabase();
+    // Fetch plate number using the driver's ID
+    plateNumber = await mdb.getPlateNumberByDriverId(widget.violationId);/////!!!
   }
 
   @override
@@ -102,6 +111,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  /*
                   Text(
                     violation != null ? 'V#${violation!.id}' : '',
                     style: GoogleFonts.poppins(
@@ -109,9 +119,8 @@ class _ViolationdetailState extends State<Violationdetail> {
                       fontWeight: FontWeight.bold,
                       color: Color.fromARGB(202, 3, 152, 85),
                     ),
-                    
-                  ),
                   const SizedBox(height: 8), // Space between the ID and subtitle
+                  */
                   Text(
                     'you can raise a complaint within 30 days', // Your subtitle here
                     style: GoogleFonts.poppins(
@@ -120,16 +129,32 @@ class _ViolationdetailState extends State<Violationdetail> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-
+                
                   const SizedBox(height: 20),
-                  buildDetailSection('Driver ID:', violation?.driverId),
-                  buildDetailSection('GPS Number:', violation?.gspNumber),
-                  buildDetailSection('Motorcycle Speed:', violation?.speed.toString()),
-                  buildDetailSection('Street Speed:', violation?.Maxspeed.toString()),
-                  buildDetailSection('Price:', '${violation?.price} SAR'),
-                  buildDetailSection('Time:', violation?.getFormattedTimeOnly()),
-                  buildDetailSection('Date:', violation?.getFormattedDate()),
+                  buildDetailSection('Driver ID', violation?.driverId, HugeIcons.strokeRoundedIdentityCard),
+                  Divider(color: Colors.grey[350]),
+                  const SizedBox(height: 15),
+                  //divider
 
+                  buildDetailSection('Motorcycle Licence Plate', '${violation?.gspNumber} NOT YETT', HugeIcons.strokeRoundedCreditCard),////
+                  buildDetailSection('GPS Number', violation?.gspNumber, HugeIcons.strokeRoundedShareLocation01),
+                  buildDetailSection('Motorcycle Type', '${violation?.gspNumber} NOT YETT', HugeIcons.strokeRoundedMotorbike02),///////
+                  buildDetailSection('Motorcycle Brand', '${violation?.gspNumber} NOT YETT', HugeIcons.strokeRoundedMotorbike02),///////
+                  buildDetailSection('Motorcycle Model', '${violation?.gspNumber} NOT YETT', HugeIcons.strokeRoundedMotorbike02),///////
+                  Divider(color: Colors.grey[350]),
+                  const SizedBox(height: 15),
+                  //divider
+
+                  buildDetailSection('Violation ID', violation!.id, HugeIcons.strokeRoundedDoNotTouch02), /////////////////check!!
+                  buildDetailSection('Street Speed', '${violation?.Maxspeed} Km/h', HugeIcons.strokeRoundedNavigator02),
+                  buildDetailSection('Motorcycle Speed', '${violation?.speed} Km/h', HugeIcons.strokeRoundedDashboardSpeed02),
+                  buildDetailSection('Violation Price', '${violation?.price} SAR', HugeIcons.strokeRoundedInvoice),
+                  buildDetailSection('Time', violation?.getFormattedTimeOnly(), HugeIcons.strokeRoundedClock03),
+                  buildDetailSection('Date', violation?.getFormattedDate(), HugeIcons.strokeRoundedCalendar01),
+                  buildDetailSection('Violation Location', violation?.location, HugeIcons.strokeRoundedMapsSquare02),///////
+                  const SizedBox(height: 15),
+
+                  /*
                   // No divider after last info
                   Text(
                     'Location:',
@@ -139,8 +164,8 @@ class _ViolationdetailState extends State<Violationdetail> {
                     '${violation?.location}',
                     style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D)),
                   ),
+                  */
                   
-                  const SizedBox(height: 30),
                   Container(
                     height: 200,
                     child: GoogleMap(
@@ -158,7 +183,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                     ),
                   ),
                   const SizedBox(height: 30),
-                  ElevatedButton(
+                  ElevatedButton( /////////////pop-up like other pages!!
                   onPressed: violation != null && violation!.getFormattedDate() != 'N/A' &&
                       DateTime.parse(violation!.getFormattedDate()).isAfter(
                         DateTime.now().subtract(Duration(days: 30)),
@@ -212,14 +237,35 @@ class _ViolationdetailState extends State<Violationdetail> {
     );
   }
 
-  Widget buildDetailSection(String title, String? content) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF211D1D))),
-        Text(content ?? 'N/A', style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D))),
-        Divider(color: Colors.grey[350]),
-      ],
-    );
-  }
+Widget buildDetailSection(String title, String? content, IconData? icon) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 24, color: Color.fromARGB(255, 3, 152, 85)),  // Icon with appropriate size and color
+            const SizedBox(width: 8),  // Space between icon and text
+          ],
+          Text(
+            title,
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF211D1D),
+            ),
+          ),
+        ],
+      ),
+      Text(
+        content ?? 'N/A',
+        style: GoogleFonts.poppins(
+          fontSize: 14,
+          color: Color(0xFF211D1D),
+        ),
+      ),
+      const SizedBox(height: 20),
+    ],
+  );
+}
 }
