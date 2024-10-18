@@ -265,10 +265,11 @@ Widget build(BuildContext context) {
                 ),
                 SizedBox(height: 20),
 
-                // New Password Input Field
+                // New Password Input Field with Green Border and Eye Icon
                 TextFormField(
                   controller: _passwordController,
-                  obscureText: !_isPasswordVisible,
+                  obscureText:
+                      !_isPasswordVisible, // Toggle for hiding/revealing password
                   onChanged: _validatePassword,
                   decoration: InputDecoration(
                     labelText: 'Enter Your New Password',
@@ -287,17 +288,38 @@ Widget build(BuildContext context) {
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: Color.fromARGB(201, 3, 152, 85),
+                        color: Color.fromARGB(
+                            201, 3, 152, 85), // Green border color
                         width: 1.5,
                       ),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: Color.fromARGB(201, 3, 152, 85),
+                        color: Color.fromARGB(
+                            201, 3, 152, 85), // Green border when focused
                         width: 2.0,
                       ),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.red, // Red border color for error state
+                        width: 1.5,
+                      ),
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors
+                            .red, // Red border color when focused and error
+                        width: 2.0,
+                      ),
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
                     ),
                   ),
                   validator: (value) {
@@ -342,6 +364,22 @@ Widget build(BuildContext context) {
                         width: 2.0,
                       ),
                       borderRadius: BorderRadius.circular(10),
+                    ),errorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.red, // Red border color for error state
+                        width: 1.5,
+                      ),
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors
+                            .red, // Red border color when focused and error
+                        width: 2.0,
+                      ),
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
                     ),
                   ),
                   validator: (value) {

@@ -21,6 +21,25 @@ class _ResetpassState extends State<Resetpass> {
   bool _isPasswordVisible = false; // For toggling password visibility
   bool _isConfirmPasswordVisible = false;
 
+    // Password requirement flags
+  bool hasMinLength = false;
+  bool hasUpperLowerCase = false;
+  bool hasNumber = false;
+  bool hasSpecialChar = false;
+
+  bool hasUserTyped = false; // Flag to check if user has started typing
+
+  // Function to validate password dynamically
+  void _validatePassword(String password) {
+    setState(() {
+      hasUserTyped = true;
+      hasMinLength = password.length >= 8;
+      hasUpperLowerCase = password.contains(RegExp(r'(?=.*[a-z])(?=.*[A-Z])'));
+      hasNumber = password.contains(RegExp(r'[0-9]'));
+      hasSpecialChar = password.contains(RegExp(r'[!@#\$%^&*_\-]'));
+    });
+  }
+
   // Function to show the confirmation dialog before updating the password
   void _showConfirmationDialog() {
     showDialog(
@@ -67,6 +86,7 @@ class _ResetpassState extends State<Resetpass> {
     );
   }
 
+/*
   // Function to validate password strength
   bool _isPasswordValid(String password) {
     final RegExp passwordPattern = RegExp(
@@ -74,6 +94,7 @@ class _ResetpassState extends State<Resetpass> {
     );
     return passwordPattern.hasMatch(password);
   }
+*/
 
   // Function to handle password update
   Future<void> _changePassword() async {
@@ -132,10 +153,6 @@ final digest = sha256.convert(bytes);*/
             );
           },
         );
-        //    } else {
-        // Handle the case where the user is not logged in
-        //    print('User is not logged in.');
-        // }
       } catch (e) {
         // Handle errors during password update
         print('Failed to update password: $e');
@@ -178,12 +195,12 @@ final digest = sha256.convert(bytes);*/
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 3, 152, 85),
+      backgroundColor: Color(0xFFFAFAFF),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Color.fromARGB(255, 3, 152, 85),
         toolbarHeight: 80, // Adjust the toolbar height
-        iconTheme: const IconThemeData(color: Color(0xFF211D1D)),
+        iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
@@ -221,11 +238,10 @@ final digest = sha256.convert(bytes);*/
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Bold Green Text (Heading)
                 Text(
                   'One More Step!',
                   style: GoogleFonts.poppins(
-                    fontSize: 24,
+                    fontSize: 21,
                     fontWeight: FontWeight.bold,
                     color: Color.fromARGB(201, 3, 152, 85),
                   ),
@@ -235,7 +251,7 @@ final digest = sha256.convert(bytes);*/
                 // Subtitle text
                 Text(
                   'Write Your New Password Below.',
-                  style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
+                  style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
                 ),
                 SizedBox(height: 20),
 
@@ -244,6 +260,7 @@ final digest = sha256.convert(bytes);*/
                   controller: _passwordController,
                   obscureText:
                       !_isPasswordVisible, // Toggle for hiding/revealing password
+                  onChanged: _validatePassword,
                   decoration: InputDecoration(
                     labelText: 'Enter Your New Password',
                     suffixIcon: IconButton(
@@ -298,8 +315,6 @@ final digest = sha256.convert(bytes);*/
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your password';
-                    } else if (!_isPasswordValid(value)) {
-                      return 'Password must contain 8+ characters, including uppercase, \n lowercase, number, and special character.';
                     }
                     return null;
                   },
@@ -330,7 +345,7 @@ final digest = sha256.convert(bytes);*/
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
                         color: Color.fromARGB(
-                            201, 3, 152, 85), // Green border color
+                            201, 3, 152, 85),
                         width: 1.5,
                       ),
                       borderRadius:
@@ -372,6 +387,29 @@ final digest = sha256.convert(bytes);*/
                     return null;
                   },
                 ),
+                 SizedBox(height: 24),
+
+                // Password Requirements Section
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Password must:',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        color: Color(0xFF211D1D),
+                      ),
+                    ),
+                    SizedBox(height: 8),
+
+                    _buildRequirementText('Contain at least 8 characters', hasMinLength),
+                    _buildRequirementText(
+                        'Contain both uppercase and lowercase letters', hasUpperLowerCase),
+                    _buildRequirementText('Contain at least one number', hasNumber),
+                    _buildRequirementText(
+                        'Contain at least one special character (!@#\$%^&*)', hasSpecialChar),
+                  ],
+                ),
                 SizedBox(height: 32),
 
                 // Update Button with Green Background
@@ -406,6 +444,31 @@ final digest = sha256.convert(bytes);*/
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+    // Helper method to build password requirement text with dynamic color and GoogleFonts.poppins
+   Widget _buildRequirementText(String text, bool isValid) {
+    Color textColor;
+
+    // Change the text color based on validation
+    if (!hasUserTyped) {
+      textColor = Colors.grey; // Grey if the user hasn't typed
+    } else if (isValid) {
+      textColor = Colors.green; // Green if the condition is met
+    } else {
+      textColor = Colors.red; // Red if the condition is not met
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Text(
+        text,
+        style: GoogleFonts.poppins(  // Use GoogleFonts.poppins here
+          fontSize: 14,
+          color: textColor,
         ),
       ),
     );
