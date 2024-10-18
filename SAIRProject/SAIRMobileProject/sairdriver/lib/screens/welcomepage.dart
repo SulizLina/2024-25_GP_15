@@ -13,72 +13,80 @@ class _WelcomepageState extends State<Welcomepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:Color(0xFFF3F3F3),
-      body: Stack(
+      backgroundColor: Color(0xFFFAFAFF),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // SAIRWithLine positioned at the top-right corner
-          Align(
-            alignment: Alignment.topRight,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 20, 10,
-                  0), // Adjust padding to move it away from the edges
-              child: Image.asset(
-                'assets/image/SAIRWithLine.png',
-                height: 500, // Maintain the size
-                fit: BoxFit.contain,
+          // Green Container with Welcome Message
+          Container(
+            height: MediaQuery.of(context).size.height * 0.6, // Adjust height as needed
+            decoration: BoxDecoration(
+              color: Color.fromARGB(202, 3, 152, 85), // Green color
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(60), // Rounded corners for bottom left
+                bottomRight: Radius.circular(60), // Rounded corners for bottom right
               ),
             ),
-          ),
-          // Center column with the logo, text, and button
-          Center(
             child: Column(
-              mainAxisSize: MainAxisSize.min, // To keep it vertically centered
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Center the SAIRLogo
                 Image.asset(
-                  'assets/image/SAIRLogo.png',
-                  width: 300, // Maintain the size
-                  height: 300,
-                  fit: BoxFit.contain,
+                  'assets/icons/SAIRLogoWhiteMarker.png',
+                  height: 100, // Adjust the size of the logo
                 ),
-                const SizedBox(
-                    height: 20), // Add spacing between the logo and text
-                // Welcome text
+                const SizedBox(height: 15),
                 Text(
-                  'Welcome to SAIR!',
+                  "Welcome to SAIR,",
                   style: GoogleFonts.poppins(
-                    color: Color.fromARGB(202, 3, 152, 85),
-                    fontSize: 24,
+                    color: Colors.white,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
-                ),
-                const SizedBox(height: 20),
-                // Login button
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(202, 3, 152, 85),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 100, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
-                  onPressed: () {
-                    // Navigate to the Login page using MaterialPageRoute
-                   Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Login()),
-                    );
-                  },
-                  child: Text(
-                    'Login',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 18,
-                    ),
-                  ),
+                  textAlign: TextAlign.center,
                 ),
               ],
+            ),
+          ),
+          const SizedBox(height: 30), // Add space between green and white container
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+              margin: const EdgeInsets.only(bottom: 50), // Adjust position
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20), // Rounded corners
+              ),
+              width: MediaQuery.of(context).size.width * 0.9, // Make the white box bigger
+              child: Column(
+                children: [
+                  // Login button
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(202, 3, 152, 85),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 90, vertical: 15), // Make button wider
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    onPressed: () {
+                      // Navigate to the Login page using MaterialPageRoute
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Login()),
+                      );
+                    },
+                    child: Text(
+                      'Login',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 16, // Make text smaller
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],

@@ -132,7 +132,7 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F3F3),
+      backgroundColor: const Color(0xFFFAFAFF),
       body: SingleChildScrollView(
         child:  Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -176,7 +176,7 @@ class _LoginState extends State<Login> {
               ],
             ),
           ),
-
+          const SizedBox(height: 30),
             // Black Box for Form Fields and Login Button
             Align(
               alignment: Alignment.bottomCenter,
