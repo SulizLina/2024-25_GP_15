@@ -183,47 +183,68 @@ class _ViolationdetailState extends State<Violationdetail> {
                     ),
                   ),
                   const SizedBox(height: 30),
-                  ElevatedButton( /////////////pop-up like other pages!!
-                  onPressed: violation != null && violation!.getFormattedDate() != 'N/A' &&
-                      DateTime.parse(violation!.getFormattedDate()).isAfter(
-                        DateTime.now().subtract(Duration(days: 30)),
-                      )
-                      ? () {
-                          // Button is enabled, navigate to RaiseComplaint
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const Raisecomplaint()),
-                          );
-                        }
-                      : () { // Button is disabled, show the SnackBar
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Container(
-                                height: 90,
-                                child: Text('You can\'t raise a complaint after 30 days of the violation !'),
-                              ),
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: violation != null && violation!.getFormattedDate() != 'N/A' &&
-                        DateTime.parse(violation!.getFormattedDate()).isAfter(
-                          DateTime.now().subtract(Duration(days: 30)),
-                        )
-                        ? Color.fromARGB(202, 3, 152, 85) // Active color
-                        : Colors.grey, // Gray color if condition is not met
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                  ElevatedButton(
+  onPressed: violation != null && violation!.getFormattedDate() != 'N/A' &&
+      DateTime.parse(violation!.getFormattedDate()).isAfter(
+        DateTime.now().subtract(Duration(days: 30)),
+      )
+      ? () {
+          // Button is enabled, navigate to RaiseComplaint
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const Raisecomplaint()),
+          );
+        }
+      : () { 
+          // Button is disabled, show the success dialog
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Warning',
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                      ),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    textStyle: GoogleFonts.poppins(fontSize: 18),
-                  ),
-                  child: Text(
-                    'Raise a Complaint',
-                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
-                  ),
+                    IconButton(
+                      icon: Icon(Icons.close, color: Color(0xFF211D1D)), // Close icon in red color
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                    ),
+                  ],
                 ),
+                content: Text(
+                  'You can\'t raise a complaint after 30 days of the violation!',
+                  style: GoogleFonts.poppins(fontSize: 16),
+                ),
+              );
+            },
+          );
+        },
+          style: ElevatedButton.styleFrom(
+          backgroundColor: violation != null && violation!.getFormattedDate() != 'N/A' &&
+              DateTime.parse(violation!.getFormattedDate()).isAfter(
+                DateTime.now().subtract(Duration(days: 30)),
+              )
+              ? Color.fromARGB(202, 3, 152, 85) // Active color
+              : Colors.grey, // Gray color if condition is not met
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          textStyle: GoogleFonts.poppins(fontSize: 18),
+        ),
+        child: Text(
+          'Raise a Complaint',
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
+        ),
+      ),
 
 
                   const SizedBox(height: 20),
