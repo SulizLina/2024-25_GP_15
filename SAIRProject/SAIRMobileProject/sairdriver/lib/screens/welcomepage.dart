@@ -54,7 +54,7 @@ class _WelcomepageState extends State<Welcomepage> {
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
               margin: const EdgeInsets.only(bottom: 50), // Adjust position
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: const Color(0xFFFAFAFF),
                 borderRadius: BorderRadius.circular(20), // Rounded corners
               ),
               width: MediaQuery.of(context).size.width * 0.9, // Make the white box bigger

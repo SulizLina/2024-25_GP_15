@@ -136,46 +136,6 @@ class _LoginState extends State<Login> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-          // Green Container with Welcome Message
-          Container(
-            height: MediaQuery.of(context).size.height * 0.6, // Adjust height as needed
-            decoration: BoxDecoration(
-              color: Color.fromARGB(202, 3, 152, 85), // Green color
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(60), // Rounded corners for bottom left
-                bottomRight: Radius.circular(60), // Rounded corners for bottom right
-              ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  'assets/icons/SAIRLogoWhiteMarker.png',
-                  height: 100, // Adjust the size of the logo
-                ),
-                const SizedBox(height: 15),
-                Text(
-                  "Welcome to SAIR,",
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                Text(
-                  "Glad to see you again!",
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 30),
             // Green Container with Welcome Message
             Container(
               height: MediaQuery.of(context).size.height *
@@ -218,7 +178,7 @@ class _LoginState extends State<Login> {
                 ],
               ),
             ),
-
+            const SizedBox(height: 30),
             // Black Box for Form Fields and Login Button
             Align(
               alignment: Alignment.bottomCenter,
@@ -227,7 +187,7 @@ class _LoginState extends State<Login> {
                     const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
                 margin: const EdgeInsets.only(bottom: 50), // Adjust position
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: const Color(0xFFFAFAFF),
                   borderRadius: BorderRadius.circular(20), // Rounded corners
                 ),
                 width: MediaQuery.of(context).size.width * 0.85, // Adjust width
@@ -237,7 +197,7 @@ class _LoginState extends State<Login> {
                     TextFormField(
                       controller: _phoneController,
                       decoration: InputDecoration(
-                        labelText: 'Enter Your Phone Number',
+                        labelText: 'Enter Your Phone Number with contry code',
                         labelStyle: GoogleFonts.poppins(
                             color: Colors.black,
                             fontSize: 15), // Match font size and font
