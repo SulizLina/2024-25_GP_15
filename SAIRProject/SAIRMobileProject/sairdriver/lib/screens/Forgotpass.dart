@@ -17,6 +17,19 @@ class _Forgotpass extends State<Forgotpass> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
   String _phoneErrorText = "";
+  //Pre-filled phone number
+  @override
+  void initState() {
+    super.initState();
+    _phoneController.text = "+966"; // Prefill the phone field with +966
+  }
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    super.dispose();
+  }
+  //End of Pre-filled phone number
 
   // Validate phone number format
   bool _isPhoneValid(String phone) {
