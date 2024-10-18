@@ -67,7 +67,7 @@ class _Forgotpass extends State<Forgotpass> {
 
       if (driverDoc.docs.isEmpty) {
         setState(() {
-          _phoneErrorText = "The phone number is not registered";
+          _phoneErrorText = "Invalid phone number";
         });
         return;
       }
