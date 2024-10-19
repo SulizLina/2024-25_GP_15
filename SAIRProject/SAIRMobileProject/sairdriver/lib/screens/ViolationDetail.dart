@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'dart:ui' as ui;
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/models/violation.dart';
@@ -9,6 +10,7 @@ import 'package:sairdriver/services/Violations_database.dart';
 import 'package:sairdriver/screens/RaiseCompliants.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sairdriver/services/motorcycle_database.dart';
+import 'package:sairdriver/models/motorcycle.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 class Violationdetail extends StatefulWidget {
@@ -22,43 +24,43 @@ class Violationdetail extends StatefulWidget {
 
 class _ViolationdetailState extends State<Violationdetail> {
 
-  String? plateNumber; // To hold plate number fetched from Motorcycle collection
-
   @override
   void initState() {
     super.initState();
     fetchViolation();
     loadCustomMapIcon(); 
+    fetchMotor();
   }
 
   BitmapDescriptor? customMapIcon;
-
   Future<void> loadCustomMapIcon() async {
     customMapIcon = await getCustomMapIcon();
     setState(() {});
   }
-
   BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
   static const LatLng defaultLoc = LatLng(24.8348509, 46.5882190);
   Violation? violation;
+  Motorcycle? motorcycle;
 
-  Future<void> fetchViolation() async {
-    ViolationsDatabase db = ViolationsDatabase();
-    violation = await db.getViolationById(widget.violationId); // Fetch violation using the violationId
-    setState(() {});
 
-    MotorcycleDatabase mdb = MotorcycleDatabase();
-    // Fetch plate number using the driver's ID
-    if (widget.violationId != null) {
-    plateNumber = await mdb.getPlateNumberByDriverId(widget.violationId);
-    } else {
-        print('Violation ID is null');
-        Navigator.pop(context); 
-    }
+Future<void> fetchViolation() async {
+  ViolationsDatabase db = ViolationsDatabase();
+  violation = await db.getViolationById(widget.violationId); // Fetch violation using the violationId
 
-    plateNumber = await mdb.getPlateNumberByDriverId(widget.violationId);/////!!!
+  if (violation != null && violation!.gspNumber != null) {
+    print(violation?.gspNumber);
+    await fetchMotor(); 
   }
+  setState(() {});
+}
 
+Future<void> fetchMotor() async {
+  if (violation?.gspNumber != null) {
+    MotorcycleDatabase mdb = MotorcycleDatabase();
+    motorcycle = await mdb.getMotorcycleByGPS(violation!.gspNumber!);
+    setState(() {});
+  }
+}
   // Create a custom painter for the icon
   Future<BitmapDescriptor> getCustomMapIcon() async {
   final icon = Icons.location_on_outlined; //Solid:  location_pin
@@ -166,16 +168,14 @@ class _ViolationdetailState extends State<Violationdetail> {
                   buildDetailSection('Driver ID / Residency Number', violation?.driverId, HugeIcons.strokeRoundedIdentityCard),
                   Divider(color: Colors.grey[350]),
                   const SizedBox(height: 15),
-                  //divider
 
-                  buildDetailSection('Motorcycle Licence Plate', '$plateNumber NOT YETT', HugeIcons.strokeRoundedCreditCard),////
+                  buildDetailSection('Motorcycle Licence Plate', motorcycle?.licensePlate, HugeIcons.strokeRoundedCreditCard),////
                   buildDetailSection('GPS Serial Number', violation?.gspNumber, HugeIcons.strokeRoundedShareLocation01),
-                  buildDetailSection('Motorcycle Type', '${violation?.gspNumber} NOT YETT', HugeIcons.strokeRoundedMotorbike02),///////
-                  buildDetailSection('Motorcycle Brand', '${violation?.gspNumber} NOT YETT', HugeIcons.strokeRoundedMotorbike02),///////
-                  buildDetailSection('Motorcycle Model', '${violation?.gspNumber} NOT YETT', HugeIcons.strokeRoundedMotorbike02),///////
+                  buildDetailSection('Motorcycle Type', motorcycle?.type, HugeIcons.strokeRoundedMotorbike02),///////
+                  buildDetailSection('Motorcycle Brand', motorcycle?.brand, HugeIcons.strokeRoundedMotorbike02),///////
+                  buildDetailSection('Motorcycle Model', motorcycle?.model, HugeIcons.strokeRoundedMotorbike02),///////
                   Divider(color: Colors.grey[350]),
                   const SizedBox(height: 15),
-                  //divider
 
                   buildDetailSection('Violation ID', violation!.id, HugeIcons.strokeRoundedDoNotTouch02), /////////////////check!!
                   buildDetailSection('Street Speed', '${violation?.Maxspeed} Km/h', HugeIcons.strokeRoundedNavigator02),
@@ -186,18 +186,6 @@ class _ViolationdetailState extends State<Violationdetail> {
                   buildDetailSection('Violation Location', violation?.location, HugeIcons.strokeRoundedMapsSquare02),///////
                   const SizedBox(height: 15),
 
-                  /*
-                  // No divider after last info
-                  Text(
-                    'Location:',
-                    style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF211D1D)),
-                  ),
-                  Text(
-                    '${violation?.location}',
-                    style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D)),
-                  ),
-                  */
-                  
                   Container(
                     height: 200,
                     child: GoogleMap(
@@ -209,7 +197,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                         Marker(
                           markerId: MarkerId('violationLocationPin'), 
                           position: LatLng(latitude, longitude),
-                          icon: customMapIcon ?? BitmapDescriptor.defaultMarker,  /////////////////////Custom MArker :)))
+                          icon: customMapIcon ?? BitmapDescriptor.defaultMarker,  
                         ),
                       },
                     ),

@@ -28,6 +28,26 @@ class MotorcycleDatabase {
   return null; // Return null if no motorcycle is found
   
 }
+
+Future<Motorcycle?> getMotorcycleByGPS(String GPSNumber) async {
+  try {
+    var snapshot = await FirebaseFirestore.instance
+        .collection('Motorcycle')
+        .where('GPSnumber', isEqualTo: GPSNumber)
+        .limit(1) // Limit to one result
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      var motorcycleData = snapshot.docs.first.data() as Map<String, dynamic>;
+      return Motorcycle.fromMap(motorcycleData, snapshot.docs.first.id); // Use fromMap method
+    }
+    return null; // Return null if no motorcycle is found
+  } catch (e) {
+    print("Error fetching motorcycle info: $e");
+    return null; // Return null on error
+  }
+}
+
 /*
 Future<Object?> getViolation(String driverID) async {
   try {
@@ -48,4 +68,3 @@ Future<Object?> getViolation(String driverID) async {
     return null; // Return null in case of an error
   }*/
 }
-

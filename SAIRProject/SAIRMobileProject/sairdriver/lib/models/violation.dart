@@ -49,7 +49,7 @@ class Violation {
     return Violation(
       id: id,
       driverId: parsedJSON['DriverID'].toString(),
-      gspNumber: parsedJSON['GPSnumber'].toString(),
+      gspNumber: parsedJSON['GPSnumber']as String?,
       location: parsedJSON['location'] as String?, // Address as string
       position: parsedJSON['position'] != null
           ? GeoPoint(
