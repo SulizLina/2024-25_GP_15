@@ -28,22 +28,17 @@ class _ViolationdetailState extends State<Violationdetail> {
   void initState() {
     super.initState();
     fetchViolation();
-    //CustomMarker();
+    loadCustomMapIcon(); 
+  }
+
+  BitmapDescriptor? customMapIcon;
+
+  Future<void> loadCustomMapIcon() async {
+    customMapIcon = await getCustomMapIcon();
+    setState(() {});
   }
 
   BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
-
-  void CustomMarker() {//////////////////////NOT USE, due the size of image! :(((((((((((
-    BitmapDescriptor.fromAssetImage(
-      const ImageConfiguration(size: ui.Size(5, 5)), // Use 'ui.Size' to access the correct class
-      'assets/image/greenMapMarker.png',
-    ).then((icon) {
-      setState(() {
-        markerIcon = icon;
-      });
-    });
-  }
-
   static const LatLng defaultLoc = LatLng(24.8348509, 46.5882190);
   Violation? violation;
 
@@ -57,13 +52,39 @@ class _ViolationdetailState extends State<Violationdetail> {
     plateNumber = await mdb.getPlateNumberByDriverId(widget.violationId);/////!!!
   }
 
+  Future<BitmapDescriptor> getCustomMapIcon() async {
+  final icon = Icons.location_on_outlined; //Solid:  location_pin
+  final pictureRecorder = ui.PictureRecorder();
+  final canvas = Canvas(pictureRecorder);
+
+  const double size = 48; //icon size as the defult icon from google :)
+  final paint = Paint();
+
+  // Create a custom painter for the icon
+  TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
+  textPainter.text = TextSpan(
+    text: String.fromCharCode(icon.codePoint),
+    style: TextStyle(
+      fontSize: size,
+      fontFamily: icon.fontFamily,
+      color: Colors.green, // Customize the color of the icon
+    ),
+  );
+  textPainter.layout();
+  textPainter.paint(canvas, const Offset(0, 0));
+
+  final image = await pictureRecorder.endRecording().toImage(size.toInt(), size.toInt());
+  final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+  return BitmapDescriptor.bytes(bytes!.buffer.asUint8List());
+}
+
   @override
   Widget build(BuildContext context) {
     final latitude = violation?.position?.latitude ?? defaultLoc.latitude;
     final longitude = violation?.position?.longitude ?? defaultLoc.longitude;
 
     return Scaffold(
-            appBar: AppBar(
+      appBar: AppBar(
       automaticallyImplyLeading: false,
       elevation: 0,
       backgroundColor: Color.fromARGB(255, 3, 152, 85), // Background color
@@ -92,9 +113,10 @@ class _ViolationdetailState extends State<Violationdetail> {
         ],
       ),
     ),
+      backgroundColor: Color.fromARGB(255, 3, 152, 85),
 
       body: Container(
-        //width: double.infinity,
+        width: double.infinity,
         padding: const EdgeInsets.only(top: 16),
         decoration: const BoxDecoration(
           color: Color(0xFFF3F3F3),
@@ -177,7 +199,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                         Marker(
                           markerId: MarkerId('violationLocationPin'), 
                           position: LatLng(latitude, longitude),
-                          //icon: markerIcon, /////////////////////Custom MArker :)))
+                          icon: customMapIcon ?? BitmapDescriptor.defaultMarker,  /////////////////////Custom MArker :)))
                         ),
                       },
                     ),

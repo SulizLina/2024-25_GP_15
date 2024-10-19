@@ -200,7 +200,7 @@ final digest = sha256.convert(bytes);*/
 @override
 Widget build(BuildContext context) {
   return Scaffold(
-    backgroundColor: Color(0xFFFAFAFF),
+    backgroundColor: Color.fromARGB(255, 3, 152, 85),
     appBar: AppBar(
       automaticallyImplyLeading: false,
       elevation: 0,
@@ -231,6 +231,7 @@ Widget build(BuildContext context) {
       ),
     ),
     resizeToAvoidBottomInset: true,
+
     body: SingleChildScrollView(  // Ensures content scrolls when the keyboard appears
       child: Container(
         width: double.infinity,
