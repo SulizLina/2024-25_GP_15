@@ -22,7 +22,7 @@ class _ViolationslistState extends State<Violationslist> {
   List<bool> isHoveredList = []; // Hover state list
 
   DateTime selectDate = DateTime.now(); // Selected date for filtering
-  bool isFiltered = false; // Track if the filter is applied
+  bool isFiltered = false; // Track if filtering is active
 
   @override
   void initState() {
@@ -46,10 +46,10 @@ class _ViolationslistState extends State<Violationslist> {
             return violation.getFormattedDate().split(' ')[0] ==
                 filterDate.toString().split(' ')[0];
           }).toList();
-          isFiltered = true; // Mark that the filter is applied
+          isFiltered = true; // Set to true when filtering
         } else {
           filteredViolations = violations; // If no date filter, show all violations
-          isFiltered = false; // Mark that the filter is removed
+          isFiltered = false; // Reset filtering state
         }
         // Update the hover list to match the filtered violations length
         isHoveredList = List.generate(filteredViolations.length, (index) => false);
@@ -61,7 +61,7 @@ class _ViolationslistState extends State<Violationslist> {
 
   // Choose date using the date picker
   void _chooseDate() async {
-    if (isFiltered) {
+        if (isFiltered) {
       // Reset to show all violations if already filtered
       setState(() {
         selectDate = DateTime.now(); // Reset to current date
@@ -94,9 +94,15 @@ class _ViolationslistState extends State<Violationslist> {
 
     if (result != null) {
       setState(() {
-        selectDate = result; // Update the selected date
+        selectDate = result;
       });
       fetchViolations(filterDate: selectDate); // Fetch and filter violations by the selected date
+    } else {
+      // Reset the filter if the result is null (user canceled)
+      setState(() {
+        isFiltered = false; // Reset filtering state
+        filteredViolations = violations; // Show all violations
+      });
     }
   }
 
@@ -135,9 +141,13 @@ class _ViolationslistState extends State<Violationslist> {
             Padding(
               padding: const EdgeInsets.only(right: 5, top: 10),
               child: IconButton(
-                onPressed: _chooseDate, // Use the modified chooseDate method
-                icon: const Icon(
-                  HugeIcons.strokeRoundedFilter, // Date picker icon
+                onPressed: () {
+                  _chooseDate();
+                },
+                icon: Icon(
+                  isFiltered 
+                    ? HugeIcons.strokeRoundedFilterRemove 
+                    : HugeIcons.strokeRoundedFilter, // Change icon based on filtering state
                   color: Colors.white,
                   size: 28,
                 ),
