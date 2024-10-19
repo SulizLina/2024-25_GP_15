@@ -10,6 +10,7 @@ class driver {
   String? lname;
   String? phoneNumber;
   String? companyname;
+  String? email;
   driver({
     required this.id,
     required this.driverId,
@@ -18,6 +19,7 @@ class driver {
     required this.lname,
     required this.phoneNumber,
     required this.companyname,
+    required this.email,
   });
 
 // Factory constructor to create a driver from Firestore document
@@ -32,7 +34,8 @@ class driver {
       fname: parsedJSON['Fname'] as String?,
       lname: parsedJSON['Lname'] as String?,
       phoneNumber: parsedJSON['PhoneNumber'] as String?,
-            companyname: parsedJSON['CompanyName'] as String?,
+      companyname: parsedJSON['CompanyName'] as String?,
+      email: parsedJSON['Email'] as String?,
     );
   }
 }

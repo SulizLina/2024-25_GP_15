@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/screens/Forgotpass.dart';
 import 'package:sairdriver/messages/phone_validator.dart';
+import 'package:sairdriver/screens/emailforgotpass.dart';
 import 'login_otp.dart';
 
 class Login extends StatefulWidget {
@@ -281,7 +282,7 @@ class _LoginState extends State<Login> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const Forgotpass()),
+                              builder: (context) => const Emailforgotpass()),
                         );
                       },
                       child: Text(

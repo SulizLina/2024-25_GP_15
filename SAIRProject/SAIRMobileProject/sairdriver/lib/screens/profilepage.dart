@@ -8,7 +8,7 @@ import 'editpasswordpage.dart';
 import 'edit_phone_page.dart'; // Page for editing phone number
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'EditEmail.dart';
 class Profilepage extends StatefulWidget {
   final String driverId; // DriverID passed from previous page
 
@@ -35,6 +35,7 @@ class _ProfilepageState extends State<Profilepage> {
   TextEditingController model = TextEditingController();
   TextEditingController brand = TextEditingController();
   TextEditingController type = TextEditingController();
+    TextEditingController email = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -63,6 +64,7 @@ class _ProfilepageState extends State<Profilepage> {
         lname.text = driverInf?.lname ?? '';
         phone.text = driverInf?.phoneNumber ?? '';
         id.text = driverInf?.driverId ?? '';
+         email.text = driverInf?.email ?? '';
         gps.text =
             ((motorcycle?.gspNumber != null && motorcycle?.gspNumber != 'null')
                 ? motorcycle!.gspNumber
@@ -446,7 +448,49 @@ class _ProfilepageState extends State<Profilepage> {
                 readOnly: true,
               ),
               const SizedBox(height: 16),
-              Divider(color: Colors.grey[350]),
+              // Email field
+              TextFormField(
+                //  initialValue:
+                //    driverInf?.phoneNumber ?? '', // Fetch phone number
+                controller: email,
+
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  labelStyle:
+                      GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(202, 3, 152, 85),
+                      width: 1.5,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(202, 3, 152, 85),
+                      width: 2.0,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  suffixIcon: IconButton(
+                    icon: const Icon(
+                      Icons.edit,
+                      color: Color.fromARGB(202, 3, 152, 85),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                Editemail(driverId: widget.driverId)),
+                      );
+                    },
+                  ),
+                ),
+                style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                readOnly: true,
+              ),
+ 
               const SizedBox(height: 16),
               Text(
                 'Motorcycle Information',
