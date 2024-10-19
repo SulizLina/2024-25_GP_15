@@ -1,4 +1,4 @@
-import 'dart:ffi';
+import 'dart:ffi'; 
 import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,6 +22,7 @@ class _ViolationslistState extends State<Violationslist> {
   List<bool> isHoveredList = []; // Hover state list
 
   DateTime selectDate = DateTime.now(); // Selected date for filtering
+  bool isFiltered = false; // Track if the filter is applied
 
   @override
   void initState() {
@@ -45,8 +46,10 @@ class _ViolationslistState extends State<Violationslist> {
             return violation.getFormattedDate().split(' ')[0] ==
                 filterDate.toString().split(' ')[0];
           }).toList();
+          isFiltered = true; // Mark that the filter is applied
         } else {
           filteredViolations = violations; // If no date filter, show all violations
+          isFiltered = false; // Mark that the filter is removed
         }
         // Update the hover list to match the filtered violations length
         isHoveredList = List.generate(filteredViolations.length, (index) => false);
@@ -58,6 +61,18 @@ class _ViolationslistState extends State<Violationslist> {
 
   // Choose date using the date picker
   void _chooseDate() async {
+    if (isFiltered) {
+      // Reset to show all violations if already filtered
+      setState(() {
+        selectDate = DateTime.now(); // Reset to current date
+        filteredViolations = violations; // Show all violations
+        isFiltered = false; // Mark that the filter is removed
+        isHoveredList = List.generate(filteredViolations.length, (index) => false); // Reset hover list
+      });
+      return; // Exit early
+    }
+
+    // If no filter is applied, show the date picker
     final result = await showBoardDateTimePicker(
       context: context,
       pickerType: DateTimePickerType.date,
@@ -79,7 +94,7 @@ class _ViolationslistState extends State<Violationslist> {
 
     if (result != null) {
       setState(() {
-        selectDate = result;
+        selectDate = result; // Update the selected date
       });
       fetchViolations(filterDate: selectDate); // Fetch and filter violations by the selected date
     }
@@ -118,13 +133,11 @@ class _ViolationslistState extends State<Violationslist> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(right: 18, top: 10),
+              padding: const EdgeInsets.only(right: 5, top: 10),
               child: IconButton(
-                onPressed: () {
-                  _chooseDate();
-                },
+                onPressed: _chooseDate, // Use the modified chooseDate method
                 icon: const Icon(
-                  HugeIcons.strokeRoundedFilter,
+                  HugeIcons.strokeRoundedFilter, // Date picker icon
                   color: Colors.white,
                   size: 28,
                 ),
