@@ -49,9 +49,17 @@ class _ViolationdetailState extends State<Violationdetail> {
 
     MotorcycleDatabase mdb = MotorcycleDatabase();
     // Fetch plate number using the driver's ID
+    if (widget.violationId != null) {
+    plateNumber = await mdb.getPlateNumberByDriverId(widget.violationId);
+    } else {
+        print('Violation ID is null');
+        Navigator.pop(context); 
+    }
+
     plateNumber = await mdb.getPlateNumberByDriverId(widget.violationId);/////!!!
   }
 
+  // Create a custom painter for the icon
   Future<BitmapDescriptor> getCustomMapIcon() async {
   final icon = Icons.location_on_outlined; //Solid:  location_pin
   final pictureRecorder = ui.PictureRecorder();
@@ -60,7 +68,6 @@ class _ViolationdetailState extends State<Violationdetail> {
   const double size = 48; //icon size as the defult icon from google :)
   final paint = Paint();
 
-  // Create a custom painter for the icon
   TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
   textPainter.text = TextSpan(
     text: String.fromCharCode(icon.codePoint),
@@ -77,6 +84,9 @@ class _ViolationdetailState extends State<Violationdetail> {
   final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
   return BitmapDescriptor.bytes(bytes!.buffer.asUint8List());
 }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -158,7 +168,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                   const SizedBox(height: 15),
                   //divider
 
-                  buildDetailSection('Motorcycle Licence Plate', '${violation?.gspNumber} NOT YETT', HugeIcons.strokeRoundedCreditCard),////
+                  buildDetailSection('Motorcycle Licence Plate', '$plateNumber NOT YETT', HugeIcons.strokeRoundedCreditCard),////
                   buildDetailSection('GPS Serial Number', violation?.gspNumber, HugeIcons.strokeRoundedShareLocation01),
                   buildDetailSection('Motorcycle Type', '${violation?.gspNumber} NOT YETT', HugeIcons.strokeRoundedMotorbike02),///////
                   buildDetailSection('Motorcycle Brand', '${violation?.gspNumber} NOT YETT', HugeIcons.strokeRoundedMotorbike02),///////
