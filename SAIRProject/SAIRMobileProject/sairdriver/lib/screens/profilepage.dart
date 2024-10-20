@@ -121,59 +121,89 @@ class _ProfilepageState extends State<Profilepage> {
               ),
               tooltip: 'Log Out',
               onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text(
-                        'Logout',
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(202, 3, 152, 85),
-                        ),
-                      ),
-                      content: Text(
-                        'Are you sure that you want to logout?',
-                        style: GoogleFonts.poppins(fontSize: 16),
-                      ),
-                      actions: <Widget>[
-                        // Cancel Button
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context)
-                                .pop(); // Close the dialog without logging out
-                          },
-                          child: Text(
-                            'Cancel',
-                            style: GoogleFonts.poppins(color: Colors.grey),
-                          ),
-                        ),
-                        // Logout Button
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(); // Close the dialog
-                            FirebaseAuth.instance
-                                .signOut(); // Firebase sign-out
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const Welcomepage()), // Navigate to the welcome page
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Colors.red, // Red to emphasize the action
-                          ),
-                          child: Text(
-                            'Logout',
-                            style: GoogleFonts.poppins(color: Colors.white),
-                          ),
-                        ),
-                      ],
+            showDialog(
+  context: context,
+  builder: (BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Container(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Logout",
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(202, 3, 152, 85),
+              ),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Are you sure that you want to logout?',
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                // Cancel Button
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog without logging out
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey, // Grey background for the Cancel button
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'Cancel',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                // Logout Button
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                    FirebaseAuth.instance.signOut(); // Firebase sign-out
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Welcomepage()), // Navigate to the welcome page
                     );
                   },
-                );
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red, // Red background for the Logout button
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'Logout',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  },
+);
+
               },
             ),
 
