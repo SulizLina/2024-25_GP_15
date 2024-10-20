@@ -76,11 +76,34 @@ class _MyBottomNavState extends State<BottomNavBar> {
   // Bottom NavBar Items with dynamic line
   List<PersistentBottomNavBarItem> _navbarItem() {
     return [
-      _customNavBarItem(
-        HugeIcons.strokeRoundedMotorbike01,
-        'Crashes',
-        0,
+    PersistentBottomNavBarItem(
+      icon: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Conditionally add the top border when the icon is active
+          if (_controller.index == 0)
+            Positioned(
+              top: 0,
+              child: Container(
+                height: 2.0,
+                width: 40.0,
+                color: Color.fromARGB(202, 3, 152, 85),
+              ),
+            ),
+          // The custom motorcycle image for the first tab
+          Image.asset(
+            'assets/icons/CrashIcon.png', // Path to your custom icon
+            color: _controller.index == 0
+                ? Color.fromARGB(202, 3, 152, 85)
+                : Color(0xFF8E8E8E),
+            width: 50,
+            height: 50,
+          ),
+        ],
       ),
+      activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
+      inactiveColorPrimary: Colors.grey[600],
+    ),
       _customNavBarItem(
         HugeIcons.strokeRoundedDoNotTouch02,
         'Violations',
