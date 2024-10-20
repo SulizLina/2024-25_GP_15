@@ -107,8 +107,9 @@ class _HomeState extends State<Home> {
               ),
               const SizedBox(height: 35),
               buildReminderItem(
-                icon: HugeIcons.strokeRoundedCricketHelmet, 
+                imagePath: 'assets/icons/helmet2.png', // Path to your PNG image
                 title: "Protect Your Head",
+                subtitle: "Don't forget your helmet!",
               ),
               const SizedBox(height: 35),
               buildReminderItem(
@@ -124,8 +125,9 @@ class _HomeState extends State<Home> {
               ),
               const SizedBox(height: 35),
               buildReminderItem(
-                icon: HugeIcons.strokeRoundedConfiguration01, 
+                icon: HugeIcons.strokeRoundedRepair, 
                 title: "Check Your Motorcycle",
+                subtitle: "Inspect Your Motorcycle: Tires, Lights, and More Before Each Ride"
               ),
             ],
           ),
@@ -134,18 +136,35 @@ class _HomeState extends State<Home> {
     );
   }
 
-// Helper method to create each reminder item with icon and text
-Widget buildReminderItem({required IconData icon, required String title, String? subtitle}) {
+// Helper method to create each reminder item with icon/image and text
+Widget buildReminderItem({
+  IconData? icon,
+  String? imagePath,
+  required String title,
+  String? subtitle,
+}) {
   return Row(
-    crossAxisAlignment: CrossAxisAlignment.start, // Aligns the row contents to the start
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Align(
-        alignment: Alignment.centerLeft, // Align icon to start
-        child: Icon(
-          icon, // Use the passed icon
-          size: 50,
-          color: Color.fromARGB(255, 3, 152, 85),
-        ),
+        alignment: Alignment.centerLeft, 
+        child: imagePath != null
+            ? ColorFiltered(
+                colorFilter: ColorFilter.mode(
+                  Color.fromARGB(255, 3, 152, 85), // Desired color
+                  BlendMode.srcIn, 
+                ),
+                child: Image.asset(
+                  imagePath, 
+                  width: 50, 
+                  height: 50, 
+                ),
+              )
+            : Icon(
+                icon, // Use the passed icon
+                size: 50,
+                color: Color.fromARGB(255, 3, 152, 85),
+              ),
       ),
       const SizedBox(width: 20),
       Expanded(
