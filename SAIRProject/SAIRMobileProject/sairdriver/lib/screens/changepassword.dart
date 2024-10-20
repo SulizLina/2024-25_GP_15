@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sairdriver/screens/bottom_nav_bar.dart';
+import 'package:sairdriver/screens/regulationOnboarding.dart';
 import 'package:sairdriver/screens/home.dart'; // For Firebase Authentication
 import 'package:sairdriver/messages/success.dart';
 import 'package:sairdriver/messages/success.dart';
+
+
 class Changepassword extends StatefulWidget {
   final String driverId; // DriverID passed from previous page
   const Changepassword({required this.driverId});
@@ -68,7 +71,7 @@ class _ChangepasswordState extends State<Changepassword> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => BottomNavBar(driverId: widget.driverId),
+              builder: (context) => RegulationOnboarding(driverId: widget.driverId),
             ),
           );
         });
