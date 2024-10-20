@@ -177,7 +177,7 @@ Future<void> fetchMotor() async {
                   Divider(color: Colors.grey[350]),
                   const SizedBox(height: 15),
 
-                  buildDetailSection('Violation ID', violation!.id, HugeIcons.strokeRoundedDoNotTouch02), /////////////////check!!
+                  buildDetailSection('Violation ID', violation!.Vid, HugeIcons.strokeRoundedDoNotTouch02), /////////////////check!!
                   buildDetailSection('Street Speed', '${violation?.Maxspeed} Km/h', HugeIcons.strokeRoundedNavigator02),
                   buildDetailSection('Motorcycle Speed', '${violation?.speed} Km/h', HugeIcons.strokeRoundedDashboardSpeed02),
                   buildDetailSection('Violation Price', '${violation?.price} SAR', HugeIcons.strokeRoundedInvoice),
