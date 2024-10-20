@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // For Firebase Firestore
 import 'package:firebase_auth/firebase_auth.dart'; // For Firebase Authentication
 import 'package:sairdriver/messages/error_messages.dart';
-import 'package:sairdriver/messages/success_dialog.dart';
 import 'package:sairdriver/messages/phone_validator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/screens/bottom_nav_bar.dart';
@@ -10,7 +9,8 @@ import 'package:sairdriver/screens/profilepage.dart';
 
 class EditPhonePage extends StatefulWidget {
   final String driverId; // DriverID passed from previous page
-  EditPhonePage({required this.driverId});
+  const EditPhonePage({required this.driverId});
+
   @override
   _EditPhonePageState createState() => _EditPhonePageState();
 }
@@ -19,7 +19,7 @@ class _EditPhonePageState extends State<EditPhonePage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _phoneController = TextEditingController();
   String? errorMessage;
-  //Pre-filled phone number
+
   @override
   void initState() {
     super.initState();
@@ -31,7 +31,6 @@ class _EditPhonePageState extends State<EditPhonePage> {
     _phoneController.dispose();
     super.dispose();
   }
-  //End of Pre-filled phone number
 
   // Function to check if phone number is taken
   Future<bool> isPhoneNumberTaken(String phoneNumber) async {
@@ -51,7 +50,7 @@ class _EditPhonePageState extends State<EditPhonePage> {
         // Update phone number in the Firestore document for the user
         await FirebaseFirestore.instance
             .collection('Driver')
-            .doc(widget.driverId) // Use currentUser.uid
+            .doc(widget.driverId)
             .update({
           'PhoneNumber': phoneNumber,
         });
@@ -67,41 +66,56 @@ class _EditPhonePageState extends State<EditPhonePage> {
     }
   }
 
-  // Function to show success dialog and navigate to profile page
+  // Function to show success dialog
   void showSuccessDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text(
-            'Success',
-            style: GoogleFonts.poppins(
-              fontWeight: FontWeight.bold,
-              color: Color.fromARGB(201, 3, 152, 85),
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Done Successfully!",
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 20),
+                Text(
+                  "Your phone number has been updated successfully!",
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Close dialog
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color.fromARGB(201, 3, 152, 85),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    "OK",
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          content: Text(
-            'Phone number updated successfully.',
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-            ),
-          ),
-          actions: <Widget>[
-            // OK Button
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    Color.fromARGB(201, 3, 152, 85), // Green background color
-              ),
-              child: Text(
-                'OK',
-                style: GoogleFonts.poppins(color: Colors.white),
-              ),
-            ),
-          ],
         );
       },
     );
@@ -139,9 +153,9 @@ class _EditPhonePageState extends State<EditPhonePage> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
-        backgroundColor: Color.fromARGB(255, 3, 152, 85), // Background color
-        toolbarHeight: 100, // Adjusted toolbar height for the row layout
-        iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)), // Arrow color
+        backgroundColor: Color.fromARGB(255, 3, 152, 85),
+        toolbarHeight: 100,
+        iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)),
         title: Row(
           children: [
             IconButton(
@@ -150,17 +164,16 @@ class _EditPhonePageState extends State<EditPhonePage> {
                 Navigator.pop(context); // Navigate back
               },
             ),
-            SizedBox(width: 10), // Space between arrow and text
+            SizedBox(width: 10),
             Expanded(
-              // Allows the text to take up remaining space
               child: Text(
-                "Update Phone Number", // Adjust the text as needed
+                "Update Phone Number",
                 style: GoogleFonts.poppins(
-                  fontSize: 23, // Font size to match the image
+                  fontSize: 23,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFFAFAFF), // Color for the text
+                  color: Color(0xFFFAFAFF),
                 ),
-                textAlign: TextAlign.start, // Align text to the start
+                textAlign: TextAlign.start,
               ),
             ),
           ],
@@ -172,8 +185,8 @@ class _EditPhonePageState extends State<EditPhonePage> {
         decoration: const BoxDecoration(
           color: Color(0xFFF3F3F3),
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30), // Rounded top-left corner
-            topRight: Radius.circular(30), // Rounded top-right corner
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
           ),
         ),
         child: Padding(
@@ -191,17 +204,12 @@ class _EditPhonePageState extends State<EditPhonePage> {
                     color: Color.fromARGB(201, 3, 152, 85),
                   ),
                 ),
-                SizedBox(height: 8), // Space between heading and input field
-
-                // Subtitle text
+                SizedBox(height: 8),
                 Text(
                   'Write Your New Phone Number Below.',
                   style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
                 ),
                 SizedBox(height: 20),
-
-                SizedBox(height: 10),
-                // Phone Number Input Field with Green Border or Red on Error
                 TextFormField(
                   controller: _phoneController,
                   decoration: InputDecoration(
@@ -216,9 +224,8 @@ class _EditPhonePageState extends State<EditPhonePage> {
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
                         color: errorMessage == null
-                            ? Color.fromARGB(
-                                201, 3, 152, 85) // Green border if no error
-                            : Colors.red, // Red border if there is an error
+                            ? Color.fromARGB(201, 3, 152, 85)
+                            : Colors.red,
                         width: 2.0,
                       ),
                       borderRadius: BorderRadius.circular(10),
@@ -240,32 +247,26 @@ class _EditPhonePageState extends State<EditPhonePage> {
                     errorStyle: TextStyle(
                       fontSize: 12,
                       color: Colors.red,
-                      height: 1.2, // Same error style as in validatePhoneNumber
+                      height: 1.2,
                     ),
                   ),
                   keyboardType: TextInputType.phone,
-                  validator: validatePhoneNumber, // Phone validator logic
+                  validator: validatePhoneNumber,
                 ),
                 SizedBox(height: 10),
-                // Error Message Display
                 if (errorMessage != null)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: Text(
                       errorMessage!,
                       style: TextStyle(
-                        fontSize:
-                            12, // Same font size as in validatePhoneNumber
-                        color: Colors.red, // Red color for the error
-                        height:
-                            1.2, // Same line height as in validatePhoneNumber
+                        fontSize: 12,
+                        color: Colors.red,
+                        height: 1.2,
                       ),
                     ),
                   ),
-                SizedBox(
-                  height: 30,
-                ),
-                // Update Button with Green Background
+                SizedBox(height: 30),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -273,17 +274,15 @@ class _EditPhonePageState extends State<EditPhonePage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color.fromARGB(201, 3, 152, 85),
                       shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(15.0), // Rounded corners
+                        borderRadius: BorderRadius.circular(15.0),
                       ),
-                      padding: EdgeInsets.symmetric(
-                          vertical: 16), // Add vertical padding
+                      padding: EdgeInsets.symmetric(vertical: 16),
                     ),
                     child: Text(
                       'Update',
                       style: GoogleFonts.poppins(
                         fontSize: 18,
-                        color: Colors.white, // White text
+                        color: Colors.white,
                       ),
                     ),
                   ),

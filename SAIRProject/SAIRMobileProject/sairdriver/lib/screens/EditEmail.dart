@@ -120,7 +120,7 @@ class _EditemailState extends State<Editemail> {
       DocumentSnapshot docSnapshot = await docRef.get();
       if (!docSnapshot.exists) {
         setState(() {
-          _emailErrorText = "Driver record not found in the database.";
+          _emailErrorText = "Driver is not registered";
         });
         return;
       }
