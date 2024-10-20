@@ -18,122 +18,138 @@ class _EditemailState extends State<Editemail> {
   final _formKey = GlobalKey<FormState>();
   String? _emailErrorText;
   bool _isUpdating = false;
-
+bool ver = false;
   bool isValidEmail(String email) {
     final emailRegex = RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
     return emailRegex.hasMatch(email);
   }
+Future<void> _changeEmail() async {
+  final newEmail = _emailController.text.trim();
 
-  Future<void> _changeEmail() async {
-    final newEmail = _emailController.text.trim();
+  if (!_formKey.currentState!.validate()) {
+    return;
+  }
 
-    if (!_formKey.currentState!.validate()) {
+  setState(() {
+    _isUpdating = true;
+    _emailErrorText = null; // Clear any previous error
+  });
+
+  try {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    // Check if the new email is already in use
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('Driver')
+        .where('Email', isEqualTo: newEmail)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      setState(() {
+        _emailErrorText = "This email is already taken.";
+        _isUpdating = false;
+      });
       return;
     }
 
-    setState(() {
-      _isUpdating = true;
-      _emailErrorText = null; // Clear any previous error
-    });
+    // Confirm email change
+    ConfirmationDialog.show(
+      context,
+      "Confirm Email Change",
+      "Are you sure you want to change your email?",
+      () async {
+        try {
+          // Send email verification to the new email address
+          await user?.verifyBeforeUpdateEmail(newEmail);
 
-    try {
-      User? user = FirebaseAuth.instance.currentUser;
+          // Show a message indicating that a confirmation email was sent
+          SuccessMessageDialog.show(
+            context,
+            "A confirmation message has been sent to your new email. Please verify your email.",
+          );
 
-      // Check if the new email is already in use
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('Driver')
-          .where('Email', isEqualTo: newEmail)
-          .get();
+          // Wait for email verification
+          bool isVerified = await _waitForEmailVerification(user);
 
-      if (querySnapshot.docs.isNotEmpty) {
-        setState(() {
-          _emailErrorText = "This email is already taken.";
-          _isUpdating = false;
-        });
-        return;
-      }
-
-      // Confirm email change
-      ConfirmationDialog.show(
-        context,
-        "Confirm Email Change",
-        "Are you sure you want to change your email?",
-        () async {
-          try {
-            // Send email verification to the new email address
-            await user?.verifyBeforeUpdateEmail(newEmail);
-
-            // Show success message dialog
-            SuccessMessageDialog.show(
-              context,
-              "A confirmation message has been sent to your new email. Please check your email for verification.",
-            );
-
-            // Wait for email verification
-            await _waitForEmailVerification(user);
-
-            // Update email in Firestore
+          if (isVerified) {
+            // If verified, update the email in Firestore
             await _updateEmailInFirestore(newEmail);
-          } catch (e) {
+          } else {
             setState(() {
-              _emailErrorText = "Something went wrong: ${e.toString()}";
-            });
-          } finally {
-            setState(() {
-              _isUpdating = false;
+              _emailErrorText = "Email verification failed. Please try again.";
             });
           }
-        },
-        onCancel: () {
-          // Reset loading state if the user cancels
+        } catch (e) {
+          setState(() {
+            _emailErrorText = "Something went wrong: ${e.toString()}";
+          });
+        } finally {
           setState(() {
             _isUpdating = false;
           });
-        },
-      );
-    } catch (e) {
-      setState(() {
-        _emailErrorText = "Something went wrong. Please try again later.";
-        _isUpdating = false;
-      });
-    }
+        }
+      },
+      onCancel: () {
+        // Reset loading state if the user cancels
+        setState(() {
+          _isUpdating = false;
+        });
+      },
+    );
+  } catch (e) {
+    setState(() {
+      _emailErrorText = "Something went wrong. Please try again later.";
+      _isUpdating = false;
+    });
   }
+}
 
-  Future<void> _waitForEmailVerification(User? user) async {
+Future<bool> _waitForEmailVerification(User? user) async {
+  await user?.reload();
+  user = FirebaseAuth.instance.currentUser;
+
+  // Wait for the user to verify the email for up to 5 minutes
+  for (int i = 0; i < 60; i++) { // Retry for up to 5 minutes (60 attempts, 5 seconds each)
+    if (user?.emailVerified ?? false) {
+      ver = true;
+      return true;
+    }
+    await Future.delayed(const Duration(seconds: 5));
     await user?.reload();
     user = FirebaseAuth.instance.currentUser;
-
-    while (!(user?.emailVerified ?? false)) {
-      await Future.delayed(const Duration(seconds: 5));
-      await user?.reload();
-      user = FirebaseAuth.instance.currentUser;
-    }
   }
 
-  Future<void> _updateEmailInFirestore(String newEmail) async {
-    try {
-      // Use widget.driverId for the document reference
-      DocumentReference docRef =
-          FirebaseFirestore.instance.collection('Driver').doc(widget.driverId);
+  // Return false if not verified within the timeout period
+  return false;
+}
 
-      // Check if the document exists
-      DocumentSnapshot docSnapshot = await docRef.get();
-      if (!docSnapshot.exists) {
-        setState(() {
-          _emailErrorText = "Driver is not registered";
-        });
-        return;
-      }
+Future<void> _updateEmailInFirestore(String newEmail) async {
+  try {
+    // Use widget.driverId for the document reference
+    DocumentReference docRef =
+        FirebaseFirestore.instance.collection('Driver').doc(widget.driverId);
 
-      // Update the email in Firestore
-      await docRef.update({'Email': newEmail});
-    } catch (e) {
+    // Check if the document exists
+    DocumentSnapshot docSnapshot = await docRef.get();
+    if (!docSnapshot.exists) {
       setState(() {
-        _emailErrorText =
-            "Failed to update email in the database. Error: ${e.toString()}";
+        _emailErrorText = "Driver is not registered.";
       });
+      return;
     }
+
+    // Update the email in Firestore only if the verification is confirmed
+    if (_emailErrorText == null && ver) {
+      await docRef.update({'Email': newEmail});
+    }
+  } catch (e) {
+    setState(() {
+      _emailErrorText = "Failed to update email in the database. Error: ${e.toString()}";
+    });
   }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
