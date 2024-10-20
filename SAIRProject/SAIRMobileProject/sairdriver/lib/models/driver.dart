@@ -28,7 +28,7 @@ class driver {
     Map<String, dynamic> parsedJSON = document.data() as Map<String, dynamic>;
 
     return driver(
-      id: id,
+      id: parsedJSON['DriverID'] as String?,
       driverId: parsedJSON['DriverID'].toString(),
       gspNumber: parsedJSON['GPSnumber'].toString(),
       fname: parsedJSON['Fname'] as String?,

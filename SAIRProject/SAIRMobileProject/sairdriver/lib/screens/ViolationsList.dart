@@ -199,7 +199,7 @@ class _ViolationslistState extends State<Violationslist> {
                         ),
                         child: ListTile(
                           title: Text(
-                            'V#${violation.id}', // From DB
+                            'V#${violation.Vid}', // From DB
                             style: GoogleFonts.poppins(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,

@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class Violation {
-  String? id; // Violation ID
+  String? Vid; // Violation ID
   String? driverId;
   String? gspNumber;
   int? Maxspeed; // Maximum speed limit
@@ -15,7 +15,7 @@ class Violation {
   int? time; // Time and date 
 
   Violation({
-    required this.id,
+    required this.Vid,
     required this.driverId,
     required this.gspNumber,
     required this.location,
@@ -43,11 +43,10 @@ class Violation {
 
   // Factory constructor to create a Violation from Firestore document
   factory Violation.fromJson(DocumentSnapshot document) {
-    String id = document.id;
     Map<String, dynamic> parsedJSON = document.data() as Map<String, dynamic>;
 
     return Violation(
-      id: id,
+      Vid: parsedJSON['ViolationID']as String?,
       driverId: parsedJSON['DriverID'].toString(),
       gspNumber: parsedJSON['GPSnumber']as String?,
       location: parsedJSON['location'] as String?, // Address as string
