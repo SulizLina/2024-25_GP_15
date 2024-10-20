@@ -6,7 +6,7 @@ import 'package:sairdriver/messages/success.dart';
 import 'package:sairdriver/messages/confirm.dart';
 
 class Editemail extends StatefulWidget {
-  final String driverId; // DriverID passed from the previous page
+  final String driverId;
   const Editemail({required this.driverId});
 
   @override
@@ -18,13 +18,41 @@ class _EditemailState extends State<Editemail> {
   final _formKey = GlobalKey<FormState>();
   String? _emailErrorText;
   bool _isUpdating = false;
-bool ver = false;
+
   bool isValidEmail(String email) {
     final emailRegex = RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
     return emailRegex.hasMatch(email);
   }
-Future<void> _changeEmail() async {
-  final newEmail = _emailController.text.trim();
+Future<void> _waitForEmailVerification(User? user, {Duration timeout = const Duration(minutes: 2)}) async {
+  final stopwatch = Stopwatch()..start();
+
+  // Reload the user's info
+  await user?.reload();
+  user = FirebaseAuth.instance.currentUser;
+
+  // Check every 5 seconds for email verification, with a maximum wait time
+  while (!(user?.emailVerified ?? false)) {
+    await Future.delayed(const Duration(seconds: 5));
+    await user?.reload();
+    user = FirebaseAuth.instance.currentUser;
+
+    // Stop waiting after the specified timeout
+    if (stopwatch.elapsed > timeout) {
+      break;
+    }
+  }
+
+  stopwatch.stop();
+
+  if (user?.emailVerified ?? false) {
+    print("Email verified for user: ${user?.email}");
+  } else {
+    print("Email verification timeout. Email not verified.");
+  }
+}
+
+void _changeEmail() async {
+  final newEmail = _emailController.text;
 
   if (!_formKey.currentState!.validate()) {
     return;
@@ -32,13 +60,12 @@ Future<void> _changeEmail() async {
 
   setState(() {
     _isUpdating = true;
-    _emailErrorText = null; // Clear any previous error
+    _emailErrorText = null;
   });
 
   try {
     User? user = FirebaseAuth.instance.currentUser;
 
-    // Check if the new email is already in use
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('Driver')
         .where('Email', isEqualTo: newEmail)
@@ -52,103 +79,119 @@ Future<void> _changeEmail() async {
       return;
     }
 
-    // Confirm email change
+    if (!mounted) return; // Check if the widget is still mounted
+
     ConfirmationDialog.show(
       context,
       "Confirm Email Change",
       "Are you sure you want to change your email?",
       () async {
         try {
-          // Send email verification to the new email address
           await user?.verifyBeforeUpdateEmail(newEmail);
 
-          // Show a message indicating that a confirmation email was sent
-          SuccessMessageDialog.show(
-            context,
-            "A confirmation message has been sent to your new email. Please verify your email.",
-          );
+          if (mounted) {
+            SuccessMessageDialog.show(
+              context,
+              "A confirmation message has been sent to your new email. Please verify your email.",
+            );
+          }
 
-          // Wait for email verification
-          bool isVerified = await _waitForEmailVerification(user);
+          // Wait for the email to be verified (up to 2 minutes)
+          await _waitForEmailVerification(user);
 
-          if (isVerified) {
-            // If verified, update the email in Firestore
-            await _updateEmailInFirestore(newEmail);
+          // Double-check that the email is verified
+          if (user?.emailVerified ?? false) {
+            // Only update the email in Firestore if verification was successful
+            await _updateEmailInUsersTable(user, newEmail);
           } else {
             setState(() {
-              _emailErrorText = "Email verification failed. Please try again.";
+              _emailErrorText = "Email verification failed. Please verify your email.";
             });
           }
         } catch (e) {
-          setState(() {
-            _emailErrorText = "Something went wrong: ${e.toString()}";
-          });
+          if (mounted) {
+            setState(() {
+              _emailErrorText = "Something went wrong: ${e.toString()}";
+            });
+          }
         } finally {
+          if (mounted) {
+            setState(() {
+              _isUpdating = false;
+            });
+          }
+        }
+      },
+      onCancel: () {
+        if (mounted) {
           setState(() {
             _isUpdating = false;
           });
         }
       },
-      onCancel: () {
-        // Reset loading state if the user cancels
-        setState(() {
-          _isUpdating = false;
-        });
-      },
     );
   } catch (e) {
-    setState(() {
-      _emailErrorText = "Something went wrong. Please try again later.";
-      _isUpdating = false;
-    });
-  }
-}
-
-Future<bool> _waitForEmailVerification(User? user) async {
-  await user?.reload();
-  user = FirebaseAuth.instance.currentUser;
-
-  // Wait for the user to verify the email for up to 5 minutes
-  for (int i = 0; i < 60; i++) { // Retry for up to 5 minutes (60 attempts, 5 seconds each)
-    if (user?.emailVerified ?? false) {
-      ver = true;
-      return true;
-    }
-    await Future.delayed(const Duration(seconds: 5));
-    await user?.reload();
-    user = FirebaseAuth.instance.currentUser;
-  }
-
-  // Return false if not verified within the timeout period
-  return false;
-}
-
-Future<void> _updateEmailInFirestore(String newEmail) async {
-  try {
-    // Use widget.driverId for the document reference
-    DocumentReference docRef =
-        FirebaseFirestore.instance.collection('Driver').doc(widget.driverId);
-
-    // Check if the document exists
-    DocumentSnapshot docSnapshot = await docRef.get();
-    if (!docSnapshot.exists) {
+    if (mounted) {
       setState(() {
-        _emailErrorText = "Driver is not registered.";
+        _emailErrorText = "Something went wrong. Please try again later.";
+        _isUpdating = false;
       });
+    }
+  }
+}
+
+Future<void> _updateEmailInUsersTable(User? user, String newEmail) async {
+  try {
+    // Query Firestore to find the correct document ID using the UID field
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('Driver')
+        .where('UID', isEqualTo: user?.uid)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      setState(() {
+        _emailErrorText = "Firestore error: Document with the specified UID was not found.";
+      });
+      print("Document with UID: ${user?.uid} not found in Firestore.");
       return;
     }
 
-    // Update the email in Firestore only if the verification is confirmed
-    if (_emailErrorText == null && ver) {
-      await docRef.update({'Email': newEmail});
-    }
+    // Get the document ID from the query result
+    String documentId = querySnapshot.docs.first.id;
+
+    // Update Firestore with the new email
+    await FirebaseFirestore.instance
+        .collection('Driver')
+        .doc(documentId)
+        .update({'Email': newEmail});
+
+  
+
+    // Log the successful update
+    print("Email updated successfully in Firestore for user with UID: ${user?.uid}");
   } catch (e) {
-    setState(() {
-      _emailErrorText = "Failed to update email in the database. Error: ${e.toString()}";
-    });
+    // Handle specific Firestore exceptions using FirebaseException
+    if (e is FirebaseException) {
+      setState(() {
+        _emailErrorText = "Firestore error: ${e.message}";
+      });
+    } else {
+      // General exception handling
+      setState(() {
+        _emailErrorText = "Something went wrong. Please try again later.";
+      });
+    }
+
+    // Debugging log to see the error
+    print("Error updating email in Firestore: ${e.toString()}");
+  } finally {
+    if (mounted) {
+      setState(() {
+        _isUpdating = false;
+      });
+    }
   }
 }
-
 
 
   @override
@@ -221,31 +264,28 @@ Future<void> _updateEmailInFirestore(String newEmail) async {
                     labelText: 'Enter your new email',
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: const Color.fromARGB(
-                            201, 3, 152, 85), // Green color when enabled
+                        color: const Color.fromARGB(201, 3, 152, 85),
                         width: 1.5,
                       ),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: const Color.fromARGB(
-                            201, 3, 152, 85), // Green color when focused
+                        color: const Color.fromARGB(201, 3, 152, 85),
                         width: 2.0,
                       ),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: Colors.red, // Red border when there is an error
+                        color: Colors.red,
                         width: 1.5,
                       ),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: Colors
-                            .red, // Red border when focused and there is an error
+                        color: Colors.red,
                         width: 2.0,
                       ),
                       borderRadius: BorderRadius.circular(10),
