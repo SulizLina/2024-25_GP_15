@@ -36,7 +36,7 @@ class _WelcomepageState extends State<Welcomepage> {
                 ),
                 const SizedBox(height: 15),
                 Text(
-                  "Welcome to SAIR,",
+                  "Welcome to SAIR",
                   style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontSize: 20,
