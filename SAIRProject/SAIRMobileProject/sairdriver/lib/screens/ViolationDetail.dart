@@ -63,7 +63,7 @@ Future<void> fetchMotor() async {
 }
   // Create a custom painter for the icon
   Future<BitmapDescriptor> getCustomMapIcon() async {
-  final icon = Icons.location_on_outlined; //Solid:  location_pin
+  final icon = Icons.location_pin; //Solid:  on_outlined;
   final pictureRecorder = ui.PictureRecorder();
   final canvas = Canvas(pictureRecorder);
 
