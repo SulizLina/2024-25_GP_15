@@ -40,7 +40,7 @@ class SuccessMessageDialog {
 
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF97B980),
+                    backgroundColor: Color.fromARGB(201, 3, 152, 85),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),

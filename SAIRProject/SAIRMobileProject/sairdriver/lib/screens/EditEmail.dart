@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // For Firebase Firestore
-import 'package:firebase_auth/firebase_auth.dart'; // For Firebase Authentication
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sairdriver/messages/success.dart'; // Make sure this import exists
-import 'package:sairdriver/messages/confirm.dart'; // Make sure this import exists
+import 'package:sairdriver/messages/success.dart';
+import 'package:sairdriver/messages/confirm.dart';
 
 class Editemail extends StatefulWidget {
   final String driverId; // DriverID passed from the previous page
@@ -14,19 +14,10 @@ class Editemail extends StatefulWidget {
 }
 
 class _EditemailState extends State<Editemail> {
+  final _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _confirmEmailController = TextEditingController();
-  final TextEditingController _newEmailController = TextEditingController();
-  String? errorMessage;
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _confirmEmailController.dispose();
-    _newEmailController.dispose();
-    super.dispose();
-  }
+  String? _emailErrorText;
+  bool _isUpdating = false;
 
   bool isValidEmail(String email) {
     final emailRegex = RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
@@ -34,60 +25,77 @@ class _EditemailState extends State<Editemail> {
   }
 
   Future<void> _changeEmail() async {
-    final currentEmail = _emailController.text.trim();
-    final newEmail = _newEmailController.text.trim();
-    final confirmEmail = _confirmEmailController.text.trim();
+    final newEmail = _emailController.text.trim();
 
-    if (_formKey.currentState!.validate()) {
-      try {
-        User? user = FirebaseAuth.instance.currentUser;
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
 
-        // Check if the new email is already in use
-        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-            .collection('Driver')
-            .where('Email', isEqualTo: newEmail)
-            .get();
+    setState(() {
+      _isUpdating = true;
+      _emailErrorText = null; // Clear any previous error
+    });
 
-        if (querySnapshot.docs.isNotEmpty) {
-          setState(() {
-            errorMessage = "The new email is already taken.";
-          });
-          return;
-        }
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
 
-        // Confirm email change with a dialog
-        ConfirmationDialog.show(
-          context,
-          "Confirm Email Change",
-          "Are you sure you want to change your email?",
-          () async {
-            try {
-              // Send email verification to the new email address
-              await user?.verifyBeforeUpdateEmail(newEmail);
+      // Check if the new email is already in use
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('Driver')
+          .where('Email', isEqualTo: newEmail)
+          .get();
 
-              // Show success message dialog
-              SuccessMessageDialog.show(
-                context,
-                "A confirmation message has been sent to your new email. Please check your email for confirmation.",
-              );
-
-              // Wait for the user to verify the email
-              await _waitForEmailVerification(user);
-
-              // Update email in the users table
-              await _updateEmailInUsersTable(user, newEmail);
-            } catch (e) {
-              setState(() {
-                errorMessage = "Something went wrong while updating the email.";
-              });
-            }
-          },
-        );
-      } catch (e) {
+      if (querySnapshot.docs.isNotEmpty) {
         setState(() {
-          errorMessage = "Something went wrong while updating the email.";
+          _emailErrorText = "This email is already taken.";
+          _isUpdating = false;
         });
+        return;
       }
+
+      // Confirm email change
+      ConfirmationDialog.show(
+        context,
+        "Confirm Email Change",
+        "Are you sure you want to change your email?",
+        () async {
+          try {
+            // Send email verification to the new email address
+            await user?.verifyBeforeUpdateEmail(newEmail);
+
+            // Show success message dialog
+            SuccessMessageDialog.show(
+              context,
+              "A confirmation message has been sent to your new email. Please check your email for verification.",
+            );
+
+            // Wait for email verification
+            await _waitForEmailVerification(user);
+
+            // Update email in Firestore
+            await _updateEmailInFirestore(newEmail);
+          } catch (e) {
+            setState(() {
+              _emailErrorText = "Something went wrong: ${e.toString()}";
+            });
+          } finally {
+            setState(() {
+              _isUpdating = false;
+            });
+          }
+        },
+        onCancel: () {
+          // Reset loading state if the user cancels
+          setState(() {
+            _isUpdating = false;
+          });
+        },
+      );
+    } catch (e) {
+      setState(() {
+        _emailErrorText = "Something went wrong. Please try again later.";
+        _isUpdating = false;
+      });
     }
   }
 
@@ -96,21 +104,33 @@ class _EditemailState extends State<Editemail> {
     user = FirebaseAuth.instance.currentUser;
 
     while (!(user?.emailVerified ?? false)) {
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 5));
       await user?.reload();
       user = FirebaseAuth.instance.currentUser;
     }
   }
 
-  Future<void> _updateEmailInUsersTable(User? user, String newEmail) async {
+  Future<void> _updateEmailInFirestore(String newEmail) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('Driver')
-          .doc(widget.driverId)
-          .update({'Email': newEmail});
+      // Use widget.driverId for the document reference
+      DocumentReference docRef =
+          FirebaseFirestore.instance.collection('Driver').doc(widget.driverId);
+
+      // Check if the document exists
+      DocumentSnapshot docSnapshot = await docRef.get();
+      if (!docSnapshot.exists) {
+        setState(() {
+          _emailErrorText = "Driver record not found in the database.";
+        });
+        return;
+      }
+
+      // Update the email in Firestore
+      await docRef.update({'Email': newEmail});
     } catch (e) {
       setState(() {
-        errorMessage = "Failed to update the email in the database.";
+        _emailErrorText =
+            "Failed to update email in the database. Error: ${e.toString()}";
       });
     }
   }
@@ -123,6 +143,7 @@ class _EditemailState extends State<Editemail> {
         automaticallyImplyLeading: false,
         elevation: 0,
         backgroundColor: const Color.fromARGB(255, 3, 152, 85),
+        iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)),
         toolbarHeight: 100,
         title: Row(
           children: [
@@ -174,94 +195,65 @@ class _EditemailState extends State<Editemail> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Write Your Current and New Email Below.',
+                  'Write Your New Email Below.',
                   style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
                 ),
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _emailController,
                   decoration: InputDecoration(
-                    labelText: 'Enter your current email',
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: const Color.fromARGB(201, 3, 152, 85),
-                        width: 1.5,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Your current email is required.";
-                    } else if (!isValidEmail(value)) {
-                      return "Invalid current email.";
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _newEmailController,
-                  decoration: InputDecoration(
                     labelText: 'Enter your new email',
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: const Color.fromARGB(201, 3, 152, 85),
+                        color: const Color.fromARGB(
+                            201, 3, 152, 85), // Green color when enabled
                         width: 1.5,
                       ),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Your new email is required.";
-                    } else if (!isValidEmail(value)) {
-                      return "Invalid new email.";
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _confirmEmailController,
-                  decoration: InputDecoration(
-                    labelText: 'Confirm your new email',
-                    enabledBorder: OutlineInputBorder(
+                    focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: const Color.fromARGB(201, 3, 152, 85),
+                        color: const Color.fromARGB(
+                            201, 3, 152, 85), // Green color when focused
+                        width: 2.0,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.red, // Red border when there is an error
                         width: 1.5,
                       ),
                       borderRadius: BorderRadius.circular(10),
                     ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors
+                            .red, // Red border when focused and there is an error
+                        width: 2.0,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    errorText: _emailErrorText,
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return "Please confirm your new email.";
-                    } else if (value != _newEmailController.text) {
-                      return "Emails do not match.";
+                      return "Your email is required.";
+                    } else if (!isValidEmail(value)) {
+                      return "Invalid email format.";
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 30),
-                if (errorMessage != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: Text(
-                      errorMessage!,
-                      style: const TextStyle(
-                        color: Colors.red,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
+                if (_isUpdating)
+                  const Center(child: CircularProgressIndicator()),
+                const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: _changeEmail,
+                    onPressed: _isUpdating ? null : _changeEmail,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(201, 3, 152, 85),
                       shape: RoundedRectangleBorder(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:developer';
 import 'package:sairdriver/screens/login.dart';
+import 'package:sairdriver/screens/login_email.dart';
 import 'otppage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -81,7 +82,7 @@ class _EmailforgotpassState extends State<Emailforgotpass> {
                   Navigator.pop(context); // Close dialog
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const Login()),
+                    MaterialPageRoute(builder: (context) => const LoginEmail()),
                   );
                 },
                 child: Text('OK'),
@@ -99,12 +100,6 @@ class _EmailforgotpassState extends State<Emailforgotpass> {
     }
   }
 
-  void _goToLoginPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const Login()),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -215,7 +210,7 @@ class _EmailforgotpassState extends State<Emailforgotpass> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  keyboardType: TextInputType.phone,
+                  keyboardType: TextInputType.emailAddress,
                 ),
 
                 const SizedBox(height: 30),
