@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';  
 import 'package:hugeicons/hugeicons.dart';
+import 'package:sairdriver/screens/welcomepage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Home extends StatefulWidget {
   final String driverId;  // DriverID passed from previous page
@@ -45,42 +47,139 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 3, 152, 85), 
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        elevation: 0,
-        backgroundColor: Color.fromARGB(255, 3, 152, 85), 
-        //shape: const RoundedRectangleBorder(),
-        toolbarHeight: 120, // Adjust the toolbar height
-        iconTheme: const IconThemeData(color: Color(0xFF211D1D)),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 0),//7
-              child: Image.asset(
-                'assets/image/WhiteMotorcycle.png',
-                width: 70,
-                height: 60,
-              ),
-            ),
-            Transform.translate(
-              offset: Offset(0, 10), // Move the text down by 10 pixels
-              child: Padding(
-                padding: const EdgeInsets.only(left: 2),//5
-                child: Text(
-                  "Hello $driverName !", 
-                  style: GoogleFonts.poppins(
-                    fontSize: 32.0,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-              ),
-            ),
-          ],
+appBar: AppBar(
+  automaticallyImplyLeading: false,
+  elevation: 0,
+  backgroundColor: Color.fromARGB(255, 3, 152, 85),
+  toolbarHeight: 120, // Adjust the toolbar height
+  iconTheme: const IconThemeData(color: Color(0xFF211D1D)),
+  title: Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between the logo and logout icon
+    children: [
+      // Logo on the far left
+      Padding(
+        padding: const EdgeInsets.only(left: 0),
+        child: Image.asset(
+          'assets/image/WhiteMotorcycle.png',
+          width: 70,
+          height: 60,
         ),
       ),
+
+      // Text "Hello ..." in the center
+      Transform.translate(
+        offset: Offset(0, 10), // Move the text down by 10 pixels
+        child: Padding(
+          padding: const EdgeInsets.only(left: 2), // Add left padding for alignment
+          child: Text(
+            "Hello $driverName !",
+            style: GoogleFonts.poppins(
+              fontSize: 24.0,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.left,
+          ),
+        ),
+      ),
+
+      // Logout button on the far right
+      IconButton(
+        icon: const Icon(
+          Icons.exit_to_app,
+          color: Colors.white,
+          size: 30,
+        ),
+        tooltip: 'Log Out',
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return Dialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Container(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "Logout",
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(202, 3, 152, 85),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Text(
+                        'Are you sure that you want to logout?',
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          // Cancel Button
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Close the dialog without logging out
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey, // Grey background for the Cancel button
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: Text(
+                              'Cancel',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          // Logout Button
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Close the dialog
+                              FirebaseAuth.instance.signOut(); // Firebase sign-out
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const Welcomepage()), // Navigate to the welcome page
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red, // Red background for the Logout button
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: Text(
+                              'Logout',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    ],
+  ),
+),
+
       body: Container(
         width: double.infinity,
         padding: const EdgeInsets.only(top: 16.0, left: 16),

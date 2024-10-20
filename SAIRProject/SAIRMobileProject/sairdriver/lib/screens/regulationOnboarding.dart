@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sairdriver/screens/bottom_nav_bar.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class RegulationOnboarding extends StatefulWidget {
   final String driverId;  
@@ -58,7 +59,13 @@ class _RegulationOnboardingState extends State<RegulationOnboarding> {
                 ),
               );
             },
-            child: Text("Get Started".toUpperCase()),
+            child: Text(
+              "Get Started".toUpperCase(),
+              style: GoogleFonts.poppins(
+                color: Colors.black, // Set the text color to black
+                fontWeight: FontWeight.bold, // Optional: make the text bold
+              ),
+            ),
           ),
             Spacer(),
           ],
@@ -80,7 +87,7 @@ class AnimatedDot extends StatelessWidget {
       height: 6,
       width: isActive ? 20 : 6,
       decoration: BoxDecoration(
-        color: isActive ? Color.fromARGB(255, 3, 152, 85) : Color(0xFF868686).withOpacity(0.25),
+        color: isActive ? primaryColor : Color(0xFF868686).withOpacity(0.25),
         borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
     );
@@ -104,18 +111,25 @@ class OnboardingContent extends StatelessWidget {
         Expanded(
           child: AspectRatio(
             aspectRatio: 1,
-            child: Image.asset(illustration), // Use Image.asset for PNG
+            child: Image.asset(illustration),
           ),
         ),
         SizedBox(height: 16),
         Text(
           title,
-          style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+            fontSize: 20, // Example font size
+            color: primaryColor, // Example color
+          ),
         ),
         SizedBox(height: 8),
         Text(
           text,
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            color: Colors.black,
+          ),
           textAlign: TextAlign.center,
         ),
       ],
@@ -130,17 +144,17 @@ List<Map<String, dynamic>> demoData = [
     "text": "Don't forget your helmet",
   },
   {
-    "illustration": "assets/image/OnboaringHelmet.png", 
+    "illustration": "assets/image/SpeedIconNOb.png", 
     "title": "Obey Speed Limit",
-    "text": "- 50 kilometers in residential areas.\n- 80 kilometers on main roads within cities.\n- 120 kilometers outside city limits",
+    "text": "50 kilometers in residential areas.\n80 kilometers on main roads within cities.\n120 kilometers outside city limits",
   },
   {
-    "illustration": "assets/image/OnboaringHelmet.png", 
+    "illustration": "assets/image/MotorRegu.png", 
     "title": "See and Be Seen",
     "text": "Stay visible and follow the rules.\nAvoid weaving between cars.\nYour safety matters more than rushing to your target!!",
   },
   {
-    "illustration": "assets/image/OnboaringHelmet.png", 
+    "illustration": "assets/image/checkMotorcycle.png",
     "title": "Check Your Motorcycle",
     "text": "Inspect Your Motorcycle: Tires, Lights, and More Before Each Ride",
   },

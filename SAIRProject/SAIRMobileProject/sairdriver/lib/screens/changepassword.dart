@@ -177,7 +177,7 @@ Widget build(BuildContext context) {
         width: double.infinity,
         padding: const EdgeInsets.only(top: 16),
         decoration: const BoxDecoration(
-          color: Color(0xFFFAFAFF), // White background for the content
+          color: Color(0xFFFAFAFF), 
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(30), // Rounded top-left corner
             topRight: Radius.circular(30), // Rounded top-right corner
