@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';  // Import Firestore
+import 'package:cloud_firestore/cloud_firestore.dart';  
+import 'package:hugeicons/hugeicons.dart';
 
 class Home extends StatefulWidget {
   final String driverId;  // DriverID passed from previous page
@@ -48,14 +49,14 @@ class _HomeState extends State<Home> {
         automaticallyImplyLeading: false,
         elevation: 0,
         backgroundColor: Color.fromARGB(255, 3, 152, 85), 
-        shape: const RoundedRectangleBorder(),
+        //shape: const RoundedRectangleBorder(),
         toolbarHeight: 120, // Adjust the toolbar height
         iconTheme: const IconThemeData(color: Color(0xFF211D1D)),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 7),
+              padding: const EdgeInsets.only(left: 0),//7
               child: Image.asset(
                 'assets/image/WhiteMotorcycle.png',
                 width: 70,
@@ -65,7 +66,7 @@ class _HomeState extends State<Home> {
             Transform.translate(
               offset: Offset(0, 10), // Move the text down by 10 pixels
               child: Padding(
-                padding: const EdgeInsets.only(left: 5),
+                padding: const EdgeInsets.only(left: 2),//5
                 child: Text(
                   "Hello $driverName !", 
                   style: GoogleFonts.poppins(
@@ -82,7 +83,7 @@ class _HomeState extends State<Home> {
       ),
       body: Container(
         width: double.infinity,
-        padding: const EdgeInsets.only(top: 16.0),
+        padding: const EdgeInsets.only(top: 16.0, left: 16),
         decoration: const BoxDecoration(
           color:  Color(0xFFF3F3F3),
           borderRadius: BorderRadius.only(
@@ -91,16 +92,90 @@ class _HomeState extends State<Home> {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.only(left: 16.0), // Add left padding here
-          child: Center(
-            child: Text(
-              'This is a Home page...',
-              style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
-              textAlign: TextAlign.center,
-            ),
+          padding: const EdgeInsets.only(left: 16.0, right: 16), // Add left padding here
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              Text(
+                'Stay Safe,',
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF211D1D),
+              ),
+              ),
+              const SizedBox(height: 35),
+              buildReminderItem(
+                icon: HugeIcons.strokeRoundedCricketHelmet, 
+                title: "Protect Your Head",
+              ),
+              const SizedBox(height: 35),
+              buildReminderItem(
+                icon: HugeIcons.strokeRoundedDashboardSpeed02, 
+                title: "Obey Speed Limit", 
+                subtitle: "- 50 kilometers in residential areas.\n- 80 kilometers on main roads within cities.\n- 120 kilometers outside city limits"
+              ),
+              const SizedBox(height: 35),
+              buildReminderItem(
+                icon: HugeIcons.strokeRoundedMotorbike02, 
+                title: "See And Be Seen",
+                subtitle: "Stay visible and follow the rules.\nAvoid weaving between cars\nyour safety matters more than rushing to your target!!",
+              ),
+              const SizedBox(height: 35),
+              buildReminderItem(
+                icon: HugeIcons.strokeRoundedConfiguration01, 
+                title: "Check Your Motorcycle",
+              ),
+            ],
           ),
         ),
       ),
     );
   }
+
+// Helper method to create each reminder item with icon and text
+Widget buildReminderItem({required IconData icon, required String title, String? subtitle}) {
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.start, // Aligns the row contents to the start
+    children: [
+      Align(
+        alignment: Alignment.centerLeft, // Align icon to start
+        child: Icon(
+          icon, // Use the passed icon
+          size: 50,
+          color: Color.fromARGB(255, 3, 152, 85),
+        ),
+      ),
+      const SizedBox(width: 20),
+      Expanded(
+        child: Align(
+          alignment: Alignment.centerLeft, // Align text to start
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 3, 152, 85),
+                ),
+              ),
+              if (subtitle != null) // Display subtitle if provided
+                Text(
+                  subtitle,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Color(0xFF211D1D),
+                    height: 1.5,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
 }
