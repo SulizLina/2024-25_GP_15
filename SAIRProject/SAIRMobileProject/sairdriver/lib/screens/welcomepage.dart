@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/screens/login.dart';
-
+import 'login_email.dart';
 class Welcomepage extends StatefulWidget {
   const Welcomepage({super.key});
 
@@ -72,7 +72,7 @@ class _WelcomepageState extends State<Welcomepage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const Login()),
+                              builder: (context) => const LoginEmail()),
                         );
                       },
                       child: Text(

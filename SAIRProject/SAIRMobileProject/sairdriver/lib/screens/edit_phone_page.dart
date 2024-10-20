@@ -5,6 +5,7 @@ import 'package:sairdriver/messages/error_messages.dart';
 import 'package:sairdriver/messages/success_dialog.dart';
 import 'package:sairdriver/messages/phone_validator.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sairdriver/screens/bottom_nav_bar.dart';
 import 'package:sairdriver/screens/profilepage.dart';
 
 class EditPhonePage extends StatefulWidget {
@@ -45,20 +46,20 @@ class _EditPhonePageState extends State<EditPhonePage> {
   // Function to update phone number in Firebase
   Future<void> updatePhoneNumberInFirebase(String phoneNumber) async {
     try {
-      //User? currentUser = FirebaseAuth.instance.currentUser;
-      //if (currentUser != null) {
-      // Update phone number in the Firestore document for the user
-      await FirebaseFirestore.instance
-          .collection('Driver')
-          .doc(widget.driverId) // Use currentUser.uid
-          .update({
-        'PhoneNumber': phoneNumber,
-      });
-      // } /else {
-      // setState(() {
-      // errorMessage = 'User is not logged in.';
-      // });
-      // }
+      User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        // Update phone number in the Firestore document for the user
+        await FirebaseFirestore.instance
+            .collection('Driver')
+            .doc(widget.driverId) // Use currentUser.uid
+            .update({
+          'PhoneNumber': phoneNumber,
+        });
+      } else {
+        setState(() {
+          errorMessage = 'User is not logged in.';
+        });
+      }
     } catch (e) {
       setState(() {
         errorMessage = 'Failed to update phone number. Please try again.';

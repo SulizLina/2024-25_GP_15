@@ -12,7 +12,6 @@ class Resetpass extends StatefulWidget {
   State<Resetpass> createState() => _ResetpassState();
 }
 
-////////////To enter the phone then go to the otp then chamge pass
 class _ResetpassState extends State<Resetpass> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _passwordController = TextEditingController();
@@ -21,7 +20,7 @@ class _ResetpassState extends State<Resetpass> {
   bool _isPasswordVisible = false; // For toggling password visibility
   bool _isConfirmPasswordVisible = false;
 
-    // Password requirement flags
+  // Password requirement flags
   bool hasMinLength = false;
   bool hasUpperLowerCase = false;
   bool hasNumber = false;
@@ -101,21 +100,22 @@ class _ResetpassState extends State<Resetpass> {
     if (_formKey.currentState!.validate()) {
       try {
         // Get the current user
-        // User? currentUser = FirebaseAuth.instance.currentUser;
+        //  User? currentUser = FirebaseAuth.instance.currentUser;
 
         // if (currentUser != null) {
         // Update the password in Firebase Authentication
-        //   await currentUser.updatePassword(_passwordController.text);
-/*final bytes = utf8.encode(_passwordController.text); // data being hashed
-final digest = sha256.convert(bytes);*/
+        //  await currentUser.updatePassword(_passwordController.text);
+        /*
         // Update password in Firestore (if needed)
         await FirebaseFirestore.instance
             .collection('Driver')
             .doc(widget.driverId) // Use currentUser.uid
             .update({
           'Password': _passwordController.text,
-        });
-
+        });*/
+        final newPassword = _passwordController.text;
+        User? user = FirebaseAuth.instance.currentUser;
+        await user!.updatePassword(newPassword);
         // Show success dialog once password is updated
         showDialog(
           context: context,
@@ -133,12 +133,11 @@ final digest = sha256.convert(bytes);*/
                 style: GoogleFonts.poppins(fontSize: 16),
               ),
               actions: <Widget>[
-
                 // OK Button
                 ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pop(); // Close the dialog
-                     Navigator.push(context,
+                    Navigator.push(context,
                         MaterialPageRoute(builder: (context) => const Login()));
                   },
                   style: ElevatedButton.styleFrom(
@@ -344,8 +343,7 @@ final digest = sha256.convert(bytes);*/
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: Color.fromARGB(
-                            201, 3, 152, 85),
+                        color: Color.fromARGB(201, 3, 152, 85),
                         width: 1.5,
                       ),
                       borderRadius:
@@ -387,7 +385,7 @@ final digest = sha256.convert(bytes);*/
                     return null;
                   },
                 ),
-                 SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 // Password Requirements Section
                 Column(
@@ -401,13 +399,16 @@ final digest = sha256.convert(bytes);*/
                       ),
                     ),
                     SizedBox(height: 8),
-
-                    _buildRequirementText('Contain at least 8 characters', hasMinLength),
                     _buildRequirementText(
-                        'Contain both uppercase and lowercase letters', hasUpperLowerCase),
-                    _buildRequirementText('Contain at least one number', hasNumber),
+                        'Contain at least 8 characters', hasMinLength),
                     _buildRequirementText(
-                        'Contain at least one special character (!@#\$%^&*)', hasSpecialChar),
+                        'Contain both uppercase and lowercase letters',
+                        hasUpperLowerCase),
+                    _buildRequirementText(
+                        'Contain at least one number', hasNumber),
+                    _buildRequirementText(
+                        'Contain at least one special character (!@#\$%^&*)',
+                        hasSpecialChar),
                   ],
                 ),
                 SizedBox(height: 32),
@@ -449,8 +450,8 @@ final digest = sha256.convert(bytes);*/
     );
   }
 
-    // Helper method to build password requirement text with dynamic color and GoogleFonts.poppins
-   Widget _buildRequirementText(String text, bool isValid) {
+  // Helper method to build password requirement text with dynamic color and GoogleFonts.poppins
+  Widget _buildRequirementText(String text, bool isValid) {
     Color textColor;
 
     // Change the text color based on validation
@@ -466,7 +467,8 @@ final digest = sha256.convert(bytes);*/
       padding: const EdgeInsets.only(bottom: 6),
       child: Text(
         text,
-        style: GoogleFonts.poppins(  // Use GoogleFonts.poppins here
+        style: GoogleFonts.poppins(
+          // Use GoogleFonts.poppins here
           fontSize: 14,
           color: textColor,
         ),

@@ -1,11 +1,11 @@
 // ignore_for_file: prefer_const_constructors
-import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+
 class SuccessMessageDialog {
-  static void show(BuildContext context, String successMessage, String destinationPage) {
+  static void show(BuildContext context, String successMessage) {
     showDialog(
       context: context,
       builder: (context) {
@@ -19,7 +19,7 @@ class SuccessMessageDialog {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "Done Successfully ",
+                  "Done Successfully!",
                   style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -37,10 +37,10 @@ class SuccessMessageDialog {
                 ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pop(); // Close the dialog
-                   // navigatorKey.currentState?.pushReplacementNamed(destinationPage);
+
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(202, 3, 152, 85),
+                    backgroundColor: Color(0xFF97B980),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -50,7 +50,7 @@ class SuccessMessageDialog {
                     style: GoogleFonts.poppins(
                       color: Colors.white,
                     ),
-                  ),
+                   ),
                 ),
               ],
             ),

@@ -47,24 +47,22 @@ Future<Motorcycle?> getMotorcycleByGPS(String GPSNumber) async {
     return null; // Return null on error
   }
 }
-
-/*
-Future<Object?> getViolation(String driverID) async {
+Future<Motorcycle?> getMotorcycleByDriverID(String driverID) async {
   try {
-    QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('Motorcycle') // Update table name
+    var snapshot = await FirebaseFirestore.instance
+        .collection('Motorcycle')
         .where('DriverID', isEqualTo: driverID)
-        .limit(1) // Limit the result to 1 item
+        .limit(1) // Limit to one result
         .get();
 
-    // If there is at least one document, return the first one
     if (snapshot.docs.isNotEmpty) {
-      return snapshot.docs.first.data(); // Return the first document
+      var motorcycleData = snapshot.docs.first.data() as Map<String, dynamic>;
+      return Motorcycle.fromMap(motorcycleData, snapshot.docs.first.id); // Use fromMap method
     }
-
-    return null; // Return null if no violation is found
+    return null; // Return null if no motorcycle is found
   } catch (e) {
-    print("Error fetching violation: $e");
-    return null; // Return null in case of an error
-  }*/
+    print("Error fetching motorcycle info: $e");
+    return null; // Return null on error
+  }
+}
 }
