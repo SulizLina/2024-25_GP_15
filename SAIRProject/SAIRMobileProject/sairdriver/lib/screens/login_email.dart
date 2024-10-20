@@ -99,7 +99,7 @@ class _LoginEmailState extends State<LoginEmail> {
           }
         } else {
           setState(() {
-            _loginErrorText = "Driver record not found in the database.";
+            _loginErrorText = "Invalid email or password.";
           });
         }
       } catch (e) {
