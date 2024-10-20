@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:developer';
 import 'package:sairdriver/screens/login.dart';
-import 'otppage.dart';
+import 'package:sairdriver/screens/login_email.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -42,13 +42,10 @@ class _EmailforgotpassState extends State<Emailforgotpass> {
   }
 
   void _sendResetPasswordEmail() async {
-    final email = _emailController.text;
+    final email = _emailController.text.trim();
 
-    if (email.isEmpty) {
-      setState(() {
-        _emailErrorText = "Your email is required";
-      });
-    }
+    // Validate email before sending
+    _validateEmail(email);
 
     if (_emailErrorText.isEmpty) {
       try {
@@ -66,44 +63,78 @@ class _EmailforgotpassState extends State<Emailforgotpass> {
           return;
         }
 
+        // Send password reset email
         await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
 
         // Display success message
         showDialog(
           context: context,
-          builder: (context) => AlertDialog(
-            title: Text('Success'),
-            content:
-                Text('the reset password link have been sent to your email'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context); // Close dialog
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Login()),
-                  );
-                },
-                child: Text('OK'),
+          builder: (context) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
               ),
-            ],
-          ),
+              child: Container(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Done Successfully!",
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Text(
+                      "The reset password link has been sent to your email!",
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context); // Close dialog
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => const LoginEmail()),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color.fromARGB(201, 3, 152, 85),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        "Back to Login",
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         );
 
+        // Clear the error text after successful email sending
         setState(() {
           _emailErrorText = "";
         });
+
       } catch (e) {
-        print(e);
+        setState(() {
+          _emailErrorText = "Failed to send reset email. Please try again.";
+        });
+        log("Error sending password reset email: $e");
       }
     }
-  }
-
-  void _goToLoginPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const Login()),
-    );
   }
 
   @override
@@ -124,9 +155,8 @@ class _EmailforgotpassState extends State<Emailforgotpass> {
                 Navigator.pop(context); // Navigate back
               },
             ),
-            SizedBox(width: 10), // Space between arrow and text
+            SizedBox(width: 10),
             Expanded(
-              // Allows the text to take up remaining space
               child: Text(
                 "Reset Your Password",
                 style: GoogleFonts.poppins(
@@ -142,14 +172,13 @@ class _EmailforgotpassState extends State<Emailforgotpass> {
       ),
       resizeToAvoidBottomInset: true,
       body: Container(
-        ////////////////////
         width: double.infinity,
         padding: const EdgeInsets.only(top: 16),
         decoration: const BoxDecoration(
           color: Color(0xFFFAFAFF),
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30), // Rounded top-left corner
-            topRight: Radius.circular(30), // Rounded top-right corner
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
           ),
         ),
         child: Padding(
@@ -161,22 +190,19 @@ class _EmailforgotpassState extends State<Emailforgotpass> {
               children: [
                 const SizedBox(height: 30),
                 Text(
-                  "Don't worry we got you!",
+                  "Don't worry, we got you!",
                   style: GoogleFonts.poppins(
                     fontSize: 21,
                     fontWeight: FontWeight.bold,
                     color: const Color.fromARGB(201, 3, 152, 85),
                   ),
                 ),
-                const SizedBox(
-                    height: 8), // Space between heading and input field
+                const SizedBox(height: 8),
                 Text(
-                  'Enter email to receive a reset email',
+                  'Enter your email to receive a reset email',
                   style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
                 ),
                 const SizedBox(height: 20),
-
-                // Phone Number Input Field
                 TextFormField(
                   controller: _emailController,
                   decoration: InputDecoration(
@@ -184,20 +210,17 @@ class _EmailforgotpassState extends State<Emailforgotpass> {
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
                         color: _emailErrorText.isEmpty
-                            ? const Color.fromARGB(
-                                201, 3, 152, 85) // Green if valid
-                            : Colors.red, // Red for error
+                            ? const Color.fromARGB(201, 3, 152, 85)
+                            : Colors.red,
                         width: 1.5,
                       ),
-                      borderRadius:
-                          BorderRadius.circular(10), // Rounded corners
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
                         color: _emailErrorText.isEmpty
-                            ? const Color.fromARGB(
-                                201, 3, 152, 85) // Green on focus
-                            : Colors.red, // Red for error on focus
+                            ? const Color.fromARGB(201, 3, 152, 85)
+                            : Colors.red,
                         width: 2.0,
                       ),
                       borderRadius: BorderRadius.circular(10),
@@ -205,27 +228,22 @@ class _EmailforgotpassState extends State<Emailforgotpass> {
                     errorText:
                         _emailErrorText.isNotEmpty ? _emailErrorText : null,
                     errorBorder: OutlineInputBorder(
-                      borderSide:
-                          const BorderSide(color: Colors.red, width: 1.5),
+                      borderSide: const BorderSide(color: Colors.red, width: 1.5),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
-                      borderSide:
-                          const BorderSide(color: Colors.red, width: 2.0),
+                      borderSide: const BorderSide(color: Colors.red, width: 2.0),
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  keyboardType: TextInputType.phone,
+                  keyboardType: TextInputType.emailAddress,
+                  onChanged: _validateEmail,
                 ),
-
                 const SizedBox(height: 30),
-
-                // Send OTP Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed:
-                        _sendResetPasswordEmail, // Firestore check only on button press
+                    onPressed: _sendResetPasswordEmail,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(201, 3, 152, 85),
                       shape: RoundedRectangleBorder(
@@ -237,7 +255,7 @@ class _EmailforgotpassState extends State<Emailforgotpass> {
                       'Send Email',
                       style: GoogleFonts.poppins(
                         fontSize: 18,
-                        color: Colors.white, // White text
+                        color: Colors.white,
                       ),
                     ),
                   ),

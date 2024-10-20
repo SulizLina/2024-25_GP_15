@@ -4,7 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ConfirmationDialog {
-  static void show(BuildContext context, String title, String message, Function onConfirm) {
+  static void show(
+    BuildContext context,
+    String title,
+    String message,
+    Function onConfirm, {
+    Function? onCancel, // Add the optional onCancel parameter
+  }) {
     showDialog(
       context: context,
       builder: (context) {
@@ -39,6 +45,9 @@ class ConfirmationDialog {
                     ElevatedButton(
                       onPressed: () {
                         Navigator.of(context).pop(); // Close the dialog
+                        if (onCancel != null) {
+                          onCancel(); // Call the onCancel callback if provided
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
@@ -47,24 +56,20 @@ class ConfirmationDialog {
                         ),
                       ),
                       child: Text(
-                        "cancel",
+                        "Cancel",
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                         ),
                       ),
                     ),
-
-
                     SizedBox(width: 20),
-
-
                     ElevatedButton(
                       onPressed: () {
                         onConfirm();
                         Navigator.of(context).pop(); // Close the dialog
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:  Color.fromARGB(201, 3, 152, 85),
+                        backgroundColor: Color.fromARGB(201, 3, 152, 85),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
