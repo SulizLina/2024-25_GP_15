@@ -4,7 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sairdriver/screens/bottom_nav_bar.dart';
 import 'package:sairdriver/screens/home.dart'; // For Firebase Authentication
-
+import 'package:sairdriver/messages/success.dart';
+import 'package:sairdriver/messages/success.dart';
 class Changepassword extends StatefulWidget {
   final String driverId; // DriverID passed from previous page
   const Changepassword({required this.driverId});
@@ -39,106 +40,101 @@ class _ChangepasswordState extends State<Changepassword> {
       hasSpecialChar = password.contains(RegExp(r'[!@#\$%^&*_\-]'));
     });
   }
-
     // Function to handle password update
-  Future<void> _changePassword() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        User? currentUser = FirebaseAuth.instance.currentUser;
+ Future<void> _changePassword() async {
+  if (_formKey.currentState!.validate()) {
+    try {
+      User? currentUser = FirebaseAuth.instance.currentUser;
 
-        if (currentUser != null) {
-          await currentUser.updatePassword(_passwordController.text);
+      if (currentUser != null) {
+        await currentUser.updatePassword(_passwordController.text);
 
-          await FirebaseFirestore.instance
-              .collection('Driver')
-              .doc(widget.driverId)
-              .update({
-            'Password': _passwordController.text,
-            'isDefaultPassword': false,
-          });
-          // Show success dialog once password is updated
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text(
-                  'Success',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(201, 3, 152, 85),
+        await FirebaseFirestore.instance
+            .collection('Driver')
+            .doc(widget.driverId)
+            .update({
+          'Password': _passwordController.text,
+          'isDefaultPassword': false,
+        });
+
+        // Show success dialog once password is updated
+        SuccessMessageDialog.show(
+          context,
+          'Your password has been updated successfully!',
+        );
+
+        // Navigate to the BottomNavBar after showing the dialog
+        Future.delayed(Duration(seconds: 2), () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BottomNavBar(driverId: widget.driverId),
+            ),
+          );
+        });
+      } else {
+        // Handle the case where the user is not logged in
+        print('User is not logged in.');
+      }
+    } catch (e) {
+      // Handle errors during password update
+      print('Failed to update password: $e');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Container(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Error",
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                    ),
                   ),
-                ),
-                content: Text(
-                  'Your password has been updated successfully!',
-                  style: GoogleFonts.poppins(fontSize: 16),
-                ),
-                actions: <Widget>[
-      
-                  // OK Button
+                  SizedBox(height: 20),
+                  Text(
+                    'Failed to update password. Please try again.',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pop(); // Close the dialog
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                BottomNavBar(driverId: widget.driverId)),
-                      );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(201, 3, 152, 85),
+                      backgroundColor: Colors.red,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                     child: Text(
-                      'OK',
-                      style: GoogleFonts.poppins(color: Colors.white),
+                      "OK",
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ],
-              );
-            },
+              ),
+            ),
           );
-        } else {
-          // Handle the case where the user is not logged in
-          print('User is not logged in.');
-        }
-      } catch (e) {
-        // Handle errors during password update
-        print('Failed to update password: $e');
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text(
-                'Error',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
-                ),
-              ),
-              content: Text(
-                'Failed to update password. Please try again.',
-                style: GoogleFonts.poppins(fontSize: 16),
-              ),
-              actions: <Widget>[
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                  ),
-                  child: Text(
-                    'OK',
-                    style: GoogleFonts.poppins(color: Colors.white),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      }
+        },
+      );
     }
   }
+}
+
 
 @override
 Widget build(BuildContext context) {
@@ -210,65 +206,68 @@ Widget build(BuildContext context) {
                 SizedBox(height: 20),
 
                 // New Password Input Field with Green Border and Eye Icon
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText:
-                      !_isPasswordVisible, // Toggle for hiding/revealing password
-                  onChanged: _validatePassword,
-                  decoration: InputDecoration(
-                    labelText: 'Enter Your New Password',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isPasswordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                        color: Colors.grey,
+                 TextFormField(
+                    controller: _passwordController,
+                    obscureText: !_isPasswordVisible,
+                    onChanged: _validatePassword,
+                    decoration: InputDecoration(
+                      labelText: 'Enter Your New Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
-                      },
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color:
-                            Color.fromARGB(201, 3, 152, 85), // Green border color
-                        width: 1.5,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Color.fromARGB(201, 3, 152, 85),
+                          width: 1.5,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      borderRadius: BorderRadius.circular(10), // Rounded corners
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Color.fromARGB(
-                            201, 3, 152, 85), // Green border when focused
-                        width: 2.0,
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Color.fromARGB(201, 3, 152, 85),
+                          width: 2.0,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      borderRadius: BorderRadius.circular(10), // Rounded corners
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.red, // Red border color for error state
-                        width: 1.5,
+                      errorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.red,
+                          width: 1.5,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      borderRadius: BorderRadius.circular(10), // Rounded corners
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color:
-                            Colors.red, // Red border color when focused and error
-                        width: 2.0,
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.red,
+                          width: 2.0,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      borderRadius: BorderRadius.circular(10), // Rounded corners
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your password';
+                      }
+                      // Check if the password meets all the requirements
+                      if (!hasMinLength ||
+                          !hasUpperLowerCase ||
+                          !hasNumber ||
+                          !hasSpecialChar) {
+                        return 'Your password is weak.';
+                      }
+                      return null; // Password is valid
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
-                    } 
-                    return null;
-                  },
-                ),
                 SizedBox(height: 16),
 
                 // Confirm Password Input Field with Green Border and Eye Icon
