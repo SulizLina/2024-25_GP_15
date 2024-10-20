@@ -1,15 +1,10 @@
-import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sairdriver/screens/Forgotpass.dart';
-import 'package:sairdriver/messages/phone_validator.dart';
 import 'package:sairdriver/screens/bottom_nav_bar.dart';
 import 'package:sairdriver/screens/changepassword.dart';
 import 'package:sairdriver/screens/emailforgotpass.dart';
-import 'package:sairdriver/screens/home.dart';
-import 'login_otp.dart';
 
 class LoginEmail extends StatefulWidget {
   const LoginEmail({super.key});
@@ -23,16 +18,10 @@ class _LoginEmailState extends State<LoginEmail> {
   final _passwordController = TextEditingController();
   String _emailErrorText = "";
   String _passwordErrorText = "";
+  String _loginErrorText = "";
   final db = FirebaseFirestore.instance;
   final _formKey = GlobalKey<FormState>();
-  bool isError = false;
-  User? get currentUser => FirebaseAuth.instance.currentUser;
-
-  String _loginErrorText = "";
-  bool _isPhoneError = false;
-  bool _isPasswordError = false;
   bool _isPasswordVisible = false;
-  String? errorMessage;
 
   @override
   void dispose() {
@@ -44,18 +33,16 @@ class _LoginEmailState extends State<LoginEmail> {
   void _validateEmail(String value) {
     if (value.isEmpty) {
       setState(() {
-        _emailErrorText = "Your email is required";
-        _isPhoneError = true;
+        _emailErrorText = "Please enter your email";
       });
-    } else if (!RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$').hasMatch(value)) {
+    } else if (!RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$')
+        .hasMatch(value)) {
       setState(() {
         _emailErrorText = "Invalid email";
-        _isPhoneError = true;
       });
     } else {
       setState(() {
         _emailErrorText = "";
-        _isPhoneError = false;
       });
     }
   }
@@ -63,13 +50,11 @@ class _LoginEmailState extends State<LoginEmail> {
   void _validatePassword(String value) {
     if (value.isEmpty) {
       setState(() {
-        _passwordErrorText = "Your password is required";
-        _isPasswordError = true;
+        _passwordErrorText = "Please enter your password";
       });
     } else {
       setState(() {
         _passwordErrorText = "";
-        _isPasswordError = false;
       });
     }
   }
@@ -90,32 +75,50 @@ class _LoginEmailState extends State<LoginEmail> {
 
         final driverDoc = await db
             .collection('Driver')
-            .where('Email', isEqualTo: currentUser?.email)
+            .where('Email', isEqualTo: FirebaseAuth.instance.currentUser?.email)
             .limit(1)
             .get();
 
-        final String driverId = driverDoc.docs.first.id;
-        final bool isDefaultPassword = driverDoc.docs.first.data()['isDefaultPassword'] ?? false;
+        if (driverDoc.docs.isNotEmpty) {
+          final String driverId = driverDoc.docs.first.id;
+          final bool isDefaultPassword =
+              driverDoc.docs.first.data()['isDefaultPassword'] ?? false;
 
-        if (!isDefaultPassword) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => BottomNavBar(driverId: driverId)),
-          );
+          if (!isDefaultPassword) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => BottomNavBar(driverId: driverId)),
+            );
+          } else {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => Changepassword(driverId: driverId)),
+            );
+          }
         } else {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Changepassword(driverId: driverId)),
-          );
+          setState(() {
+            _loginErrorText = "Driver record not found in the database.";
+          });
         }
       } catch (e) {
         if (e is FirebaseAuthException) {
           setState(() {
-            _loginErrorText = e.code == 'invalid-credential' ? "Invalid email or password" : "An error occurred: ${e.message}";
+         
+            _emailErrorText = "Invalid email or password";
+            _passwordErrorText = "Invalid email or password";
           });
         }
       }
     }
+  }
+
+  OutlineInputBorder _buildBorder(Color color) {
+    return OutlineInputBorder(
+      borderSide: BorderSide(color: color, width: 1.5),
+      borderRadius: BorderRadius.circular(10),
+    );
   }
 
   @override
@@ -175,29 +178,31 @@ class _LoginEmailState extends State<LoginEmail> {
                       controller: _emailController,
                       decoration: InputDecoration(
                         labelText: 'Enter Your Email',
-                        labelStyle: GoogleFonts.poppins(color: Colors.black, fontSize: 13),
+                        labelStyle: GoogleFonts.poppins(
+                            color: Colors.black, fontSize: 13),
                         prefixIcon: Icon(
                           Icons.email,
-                          color: _isPhoneError ? Colors.red : const Color.fromARGB(201, 3, 152, 85),
+                          color: _emailErrorText.isNotEmpty
+                              ? Colors.red
+                              : const Color.fromARGB(201, 3, 152, 85),
                         ),
-                        contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: _isPhoneError ? Colors.red : const Color.fromARGB(201, 3, 152, 85),
-                            width: 1.5,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: _isPhoneError ? Colors.red : const Color.fromARGB(201, 3, 152, 85),
-                            width: 2.0,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 10),
+                        enabledBorder: _buildBorder(_emailErrorText.isNotEmpty
+                            ? Colors.red
+                            : const Color.fromARGB(201, 3, 152, 85)),
+                        focusedBorder: _buildBorder(_emailErrorText.isNotEmpty
+                            ? Colors.red
+                            : const Color.fromARGB(201, 3, 152, 85)),
+                        errorBorder: _buildBorder(Colors.red),
+                        focusedErrorBorder: _buildBorder(Colors.red),
+                        errorText:
+                            _emailErrorText.isNotEmpty ? _emailErrorText : null,
                       ),
                       keyboardType: TextInputType.emailAddress,
-                      style: GoogleFonts.poppins(color: Colors.black, fontSize: 13),
+                      style: GoogleFonts.poppins(
+                          color: Colors.black, fontSize: 13),
+                      onChanged: _validateEmail,
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
@@ -205,15 +210,21 @@ class _LoginEmailState extends State<LoginEmail> {
                       obscureText: !_isPasswordVisible,
                       decoration: InputDecoration(
                         labelText: 'Enter Your Password',
-                        labelStyle: GoogleFonts.poppins(color: Colors.black, fontSize: 13),
+                        labelStyle: GoogleFonts.poppins(
+                            color: Colors.black, fontSize: 13),
                         prefixIcon: Icon(
                           Icons.lock,
-                          color: _isPasswordError ? Colors.red : const Color.fromARGB(201, 3, 152, 85),
+                          color: _passwordErrorText.isNotEmpty
+                              ? Colors.red
+                              : const Color.fromARGB(201, 3, 152, 85),
                         ),
-                        contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 10),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                            _isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                             color: Colors.grey,
                           ),
                           onPressed: () {
@@ -222,29 +233,31 @@ class _LoginEmailState extends State<LoginEmail> {
                             });
                           },
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: _isPasswordError ? Colors.red : const Color.fromARGB(201, 3, 152, 85),
-                            width: 1.5,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: _isPasswordError ? Colors.red : const Color.fromARGB(201, 3, 152, 85),
-                            width: 2.0,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                        enabledBorder: _buildBorder(
+                            _passwordErrorText.isNotEmpty
+                                ? Colors.red
+                                : const Color.fromARGB(201, 3, 152, 85)),
+                        focusedBorder: _buildBorder(
+                            _passwordErrorText.isNotEmpty
+                                ? Colors.red
+                                : const Color.fromARGB(201, 3, 152, 85)),
+                        errorBorder: _buildBorder(Colors.red),
+                        focusedErrorBorder: _buildBorder(Colors.red),
+                        errorText: _passwordErrorText.isNotEmpty
+                            ? _passwordErrorText
+                            : null,
                       ),
-                      style: GoogleFonts.poppins(color: Colors.black, fontSize: 14),
+                      style: GoogleFonts.poppins(
+                          color: Colors.black, fontSize: 14),
+                      onChanged: _validatePassword,
                     ),
                     const SizedBox(height: 10),
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const Emailforgotpass()),
+                          MaterialPageRoute(
+                              builder: (context) => const Emailforgotpass()),
                         );
                       },
                       child: Text(
@@ -276,11 +289,11 @@ class _LoginEmailState extends State<LoginEmail> {
                         ),
                       ),
                     ),
-                    if (errorMessage != null)
+                    if (_loginErrorText.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 15),
                         child: Text(
-                          errorMessage!,
+                          _loginErrorText,
                           style: const TextStyle(
                             color: Colors.red,
                             fontSize: 16,
