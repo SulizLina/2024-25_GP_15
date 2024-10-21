@@ -169,12 +169,14 @@ class _ViolationslistState extends State<Violationslist> {
           padding: const EdgeInsets.symmetric(vertical: 5),
           child: filteredViolations.isEmpty
               ? Center(
-                  child: Text(
-                    "No violations found for this date.",
-                    style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
-                    textAlign: TextAlign.center,
-                  ),
-                )
+                child: Text(
+                  isFiltered 
+                      ? "You don't have any violations for the selected date." 
+                      : "You don't have any violations.",
+                  style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
+              )
               : ListView.separated(
                   itemBuilder: (BuildContext context, int index) {
                     if (index >= filteredViolations.length) return Container(); // Safeguard
