@@ -33,7 +33,7 @@ class _ViolationslistState extends State<Violationslist> {
   Future<void> fetchViolations({DateTime? filterDate}) async {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('te2')
+          .collection('Violation')
           .where('DriverID', isEqualTo: widget.driverId)
           .get();
 
@@ -172,7 +172,7 @@ class _ViolationslistState extends State<Violationslist> {
                 child: Text(
                   isFiltered 
                       ? "You don't have any violations for the selected date." 
-                      : "You don't have any violations.",
+                      : "You don't have any violations, ride safe :)",
                   style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
                   textAlign: TextAlign.center,
                 ),

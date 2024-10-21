@@ -51,35 +51,30 @@ appBar: AppBar(
   automaticallyImplyLeading: false,
   elevation: 0,
   backgroundColor: Color.fromARGB(255, 3, 152, 85),
-  toolbarHeight: 120, // Adjust the toolbar height
+  toolbarHeight: 120,
   iconTheme: const IconThemeData(color: Color(0xFF211D1D)),
   title: Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between the logo and logout icon
+    crossAxisAlignment: CrossAxisAlignment.center,
     children: [
       // Logo on the far left
-      Padding(
-        padding: const EdgeInsets.only(left: 0),
-        child: Image.asset(
-          'assets/image/WhiteMotorcycle.png',
-          width: 70,
-          height: 60,
-        ),
+      Image.asset(
+        'assets/image/WhiteMotorcycle.png',
+        width: 70,
+        height: 60,
       ),
 
-      // Text "Hello ..." in the center
-      Transform.translate(
-        offset: Offset(0, 10), // Move the text down by 10 pixels
-        child: Padding(
-          padding: const EdgeInsets.only(left: 2), // Add left padding for alignment
-          child: Text(
-            "Hello $driverName !",
-            style: GoogleFonts.poppins(
-              fontSize: 24.0,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.left,
+      const SizedBox(width: 10), // Small gap between the logo and text
+
+      // Text "Hello ..." aligned to the left
+      Expanded(
+        child: Text(
+          "Hello $driverName !",
+          style: GoogleFonts.poppins(
+            fontSize: 24.0,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
+          textAlign: TextAlign.left, // Ensure text is aligned to the left
         ),
       ),
 
@@ -197,7 +192,7 @@ appBar: AppBar(
             children: [
               const SizedBox(height: 20),
               Text(
-                'Stay Safe,',
+                'Stay Safe, stay smart!',
               style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
