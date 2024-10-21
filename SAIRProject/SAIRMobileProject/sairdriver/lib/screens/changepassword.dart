@@ -56,7 +56,7 @@ class _ChangepasswordState extends State<Changepassword> {
             .collection('Driver')
             .doc(widget.driverId)
             .update({
-          'Password': _passwordController.text,
+
           'isDefaultPassword': false,
         });
 
