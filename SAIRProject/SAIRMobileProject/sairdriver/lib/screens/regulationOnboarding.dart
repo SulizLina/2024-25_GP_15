@@ -110,7 +110,7 @@ class OnboardingContent extends StatelessWidget {
       children: [
         Expanded(
           child: AspectRatio(
-            aspectRatio: 1,
+            aspectRatio: 1.2,// size of image
             child: Image.asset(illustration),
           ),
         ),

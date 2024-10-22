@@ -165,9 +165,6 @@ Future<void> fetchMotor() async {
                   ),
                 
                   const SizedBox(height: 20),
-                  buildDetailSection('Driver ID / Residency Number', violation?.driverId, HugeIcons.strokeRoundedIdentityCard),
-                  Divider(color: Colors.grey[350]),
-                  const SizedBox(height: 15),
 
                   buildDetailSection('Motorcycle Licence Plate', motorcycle?.licensePlate, HugeIcons.strokeRoundedCreditCard),////
                   buildDetailSection('GPS Serial Number', violation?.gspNumber, HugeIcons.strokeRoundedShareLocation01),
@@ -209,62 +206,87 @@ Future<void> fetchMotor() async {
                         DateTime.now().subtract(Duration(days: 30)),
                       )
                       ? () {
-                          // Button is enabled, navigate to RaiseComplaint
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const Raisecomplaint()),
+                          // Button is enabled, show alert about future implementation
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text(
+                                  'Complaint Form',
+                                  style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                content: Text(
+                                  'This is a complaint form that will be done in Sprint 2.',
+                                  style: GoogleFonts.poppins(fontSize: 16),
+                                ),
+                                actions: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop(); 
+                                    },
+                                    child: Text('OK'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Color.fromARGB(202, 3, 152, 85), 
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
                           );
                         }
                       : () { 
-                      // Button is disabled, show the success dialog
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Warning',
-                                  style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.red,
-                                  ),
+                          // Button is disabled, show warning dialog
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Warning',
+                                      style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.close, color: Color(0xFF211D1D)), // Close icon
+                                      onPressed: () {
+                                        Navigator.of(context).pop(); // Close the dialog
+                                      },
+                                    ),
+                                  ],
                                 ),
-                                IconButton(
-                                  icon: Icon(Icons.close, color: Color(0xFF211D1D)), // Close icon in red color
-                                  onPressed: () {
-                                    Navigator.of(context).pop(); // Close the dialog
-                                  },
+                                content: Text(
+                                  'You can\'t raise a complaint after 30 days of the violation!',
+                                  style: GoogleFonts.poppins(fontSize: 16),
                                 ),
-                              ],
-                            ),
-                            content: Text(
-                              'You can\'t raise a complaint after 30 days of the violation!',
-                              style: GoogleFonts.poppins(fontSize: 16),
-                            ),
+                              );
+                            },
                           );
                         },
-                      );
-                    },
-                      style: ElevatedButton.styleFrom(
-                      backgroundColor: violation != null && violation!.getFormattedDate() != 'N/A' &&
-                          DateTime.parse(violation!.getFormattedDate()).isAfter(
-                            DateTime.now().subtract(Duration(days: 30)),
-                          )
-                          ? Color.fromARGB(202, 3, 152, 85) // Active color
-                          : Colors.grey, // Gray color if condition is not met
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      textStyle: GoogleFonts.poppins(fontSize: 18),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: violation != null && violation!.getFormattedDate() != 'N/A' &&
+                        DateTime.parse(violation!.getFormattedDate()).isAfter(
+                          DateTime.now().subtract(Duration(days: 30)),
+                        )
+                        ? Color.fromARGB(202, 3, 152, 85) // Active color
+                        : Colors.grey, // Gray color if condition is not met
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Text(
-                      'Raise a Complaint',
-                      style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
-                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    textStyle: GoogleFonts.poppins(fontSize: 18),
                   ),
+                  child: Text(
+                    'Raise a Complaint',
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
+                  ),
+                ),
 
                   const SizedBox(height: 20),
                 ],
