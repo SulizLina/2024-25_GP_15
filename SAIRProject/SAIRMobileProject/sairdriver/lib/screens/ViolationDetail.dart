@@ -304,38 +304,37 @@ Widget buildDetailSection(String title, String? content, IconData? icon) {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Row(
-        crossAxisAlignment: CrossAxisAlignment.center, // Align icon and text vertically
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 24, color: Color.fromARGB(255, 3, 152, 85)),  // Icon size/color
-            const SizedBox(width: 8),  // Space between icon and text
+            Icon(icon, size: 24, color: Color.fromARGB(255, 3, 152, 85)),
+            const SizedBox(width: 8),
           ],
-          Expanded( // To ensure both title and content fit in the same row
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween, // Title on left, content on right
-              children: [
-                Text(
-                  title,
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF211D1D),
-                  ),
-                ),
-                Text(
-                  content ?? 'N/A',
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: Color(0xFF211D1D),
-                  ),
-                ),
-              ],
+          Expanded(
+            child: Text(
+              title,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF211D1D),
+              ),
             ),
           ),
         ],
+      ),
+      const SizedBox(height: 8),  // Space between title and content
+      Padding(
+        padding: const EdgeInsets.only(left: 32),  // Indent the content a bit for better visual hierarchy
+        child: Text(
+          content ?? 'N/A',
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            color: Color(0xFF211D1D),
+          ),
+        ),
       ),
       const SizedBox(height: 20),  // Add space below each section
     ],
   );
 }
+
 }

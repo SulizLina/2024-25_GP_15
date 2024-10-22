@@ -3,7 +3,6 @@ import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sairdriver/models/violation.dart';
-import 'package:sairdriver/services/Violations_database.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/screens/ViolationDetail.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -36,7 +35,6 @@ class _ViolationslistState extends State<Violationslist> {
           .collection('te2')
           .where('DriverID', isEqualTo: widget.driverId)
           .get();
-    print('id fetched: $widget.driverId');
       setState(() {
         violations = snapshot.docs;
         // If filterDate is provided, filter violations based on that date
@@ -172,7 +170,7 @@ class _ViolationslistState extends State<Violationslist> {
                 child: Text(
                   isFiltered 
                       ? "You don't have any violations for the selected date." 
-                      : "You don't have any violations, ride safe :)",
+                      : "You don't have any violations,\nride safe :)",
                   style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
                   textAlign: TextAlign.center,
                 ),
