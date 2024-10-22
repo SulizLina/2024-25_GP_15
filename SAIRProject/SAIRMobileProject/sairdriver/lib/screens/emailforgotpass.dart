@@ -140,7 +140,7 @@ class _EmailforgotpassState extends State<Emailforgotpass> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFAFAFF),
+      backgroundColor: Color.fromARGB(255, 3, 152, 85),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
@@ -170,7 +170,7 @@ class _EmailforgotpassState extends State<Emailforgotpass> {
           ],
         ),
       ),
-      resizeToAvoidBottomInset: true,
+      //resizeToAvoidBottomInset: true,
       body: Container(
         width: double.infinity,
         padding: const EdgeInsets.only(top: 16),
@@ -188,7 +188,6 @@ class _EmailforgotpassState extends State<Emailforgotpass> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 30),
                 Text(
                   "Don't worry, we got you!",
                   style: GoogleFonts.poppins(
