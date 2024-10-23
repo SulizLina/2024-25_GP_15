@@ -56,6 +56,129 @@ class _EditpasswordpageState extends State<Editpasswordpage> {
     );
   }
 
+  // Function to reauthenticate the user
+  Future<void> _reauthenticateUser() async {
+    final emailController = TextEditingController();
+    final passwordController = TextEditingController();
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Reauthentication Required',
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'For security reasons, please re-enter your email and password to continue.',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 20),
+                TextField(
+                  controller: emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 8),
+                TextField(
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  obscureText: true,
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        "Cancel",
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 20),
+                    ElevatedButton(
+                      onPressed: () async {
+                        try {
+                          User? user = FirebaseAuth.instance.currentUser;
+                          final credential = EmailAuthProvider.credential(
+                            email: emailController.text.trim(),
+                            password: passwordController.text.trim(),
+                          );
+
+                          await user?.reauthenticateWithCredential(credential);
+                          Navigator.of(context).pop(); // Close the dialog
+                          _changePassword(); // Retry changing the password
+                        } catch (e) {
+                          // Show error if reauthentication fails
+                          ConfirmationDialog.show(
+                            context,
+                            'Reauthentication Failed',
+                            'Please check your credentials and try again.',
+                            () {
+                              Navigator.of(context).pop(); // Close the dialog
+                            },
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color.fromARGB(201, 3, 152, 85),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        "",
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   // Function to handle password update
   Future<void> _changePassword() async {
     if (_formKey.currentState!.validate()) {
@@ -70,17 +193,22 @@ class _EditpasswordpageState extends State<Editpasswordpage> {
           'Your password has been updated successfully!',
         );
       } catch (e) {
-        // Handle errors during password update
-        print('Failed to update password: $e');
-        // Display error dialog using the same style as other dialogs
-        ConfirmationDialog.show(
-          context,
-          'Error',
-          'Failed to update password. Please try again.',
-          () {
-            Navigator.of(context).pop(); // Close the dialog
-          },
-        );
+        if (e is FirebaseAuthException && e.code == 'requires-recent-login') {
+          // If the error is due to requiring recent login, reauthenticate the user
+          await _reauthenticateUser();
+        } else {
+          // Handle other errors during password update
+          print('Failed to update password: $e');
+          // Display error dialog using the same style as other dialogs
+          ConfirmationDialog.show(
+            context,
+            'Error',
+            'Failed to update password. Please try again.',
+            () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+          );
+        }
       }
     }
   }

@@ -426,7 +426,6 @@ class _ProfilepageState extends State<Profilepage> {
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  // Inside the TextFormField for Phone Number
                   suffixIcon: IconButton(
                     icon: const Icon(
                       Icons.edit,
@@ -436,17 +435,11 @@ class _ProfilepageState extends State<Profilepage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => EditPhonePage(
+                          builder: (context) => Editpasswordpage(
                             driverId: widget.driverId,
-                            onPhoneUpdated: (newPhone) {
-                              setState(() {
-                                phone.text =
-                                    newPhone; // Update the phone number
-                              });
-                            },
-                          ),
+                         
                         ),
-                      );
+                       ) );
                     },
                   ),
                 ),
