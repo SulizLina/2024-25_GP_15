@@ -9,6 +9,7 @@ import 'edit_phone_page.dart'; // Page for editing phone number
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'EditEmail.dart';
+
 class Profilepage extends StatefulWidget {
   final String driverId; // DriverID passed from previous page
 
@@ -35,10 +36,13 @@ class _ProfilepageState extends State<Profilepage> {
   TextEditingController model = TextEditingController();
   TextEditingController brand = TextEditingController();
   TextEditingController type = TextEditingController();
-    TextEditingController email = TextEditingController();
+  TextEditingController email = TextEditingController();
   @override
   void initState() {
     super.initState();
+    setState(() {
+      fetchDriverData(); // Fetch both driver data and plate number when the page loads
+    });
     fetchDriverData(); // Fetch both driver data and plate number when the page loads
   }
 
@@ -56,7 +60,7 @@ class _ProfilepageState extends State<Profilepage> {
     driverInf = await db.getDriversnById(widget.driverId);
 
     // Fetch plate number using the driver's ID
-    motorcycle = await mdb.getMotorcycleByDriverID(driverInf?.driverId??'');
+    motorcycle = await mdb.getMotorcycleByDriverID(driverInf?.driverId ?? '');
     // Update text fields with fetched data after both driver data and plate number are retrieved
     if (mounted) {
       setState(() {
@@ -64,17 +68,17 @@ class _ProfilepageState extends State<Profilepage> {
         lname.text = driverInf?.lname ?? '';
         phone.text = driverInf?.phoneNumber ?? '';
         id.text = driverInf?.driverId ?? '';
-       //  email.text = driverInf?.email ?? '';
-       email.text = currentUser?.email??'' ; 
+        //  email.text = driverInf?.email ?? '';
+        email.text = currentUser?.email ?? '';
         gps.text =
             ((motorcycle?.gspNumber != null && motorcycle?.gspNumber != 'null')
                 ? motorcycle!.gspNumber
                 : 'No assigned GPS yet')!;
         PlateN.text = motorcycle?.licensePlate ?? 'No assigned motorcycle yet';
         CompanyName.text = driverInf?.companyname ?? '';
-      type.text= motorcycle?.type??'No assigned motorcycle yet';
-      model.text = motorcycle?.model??'No assigned motorcycle yet';
-      brand.text = motorcycle?.brand??"No assigned motorcycle yet";
+        type.text = motorcycle?.type ?? 'No assigned motorcycle yet';
+        model.text = motorcycle?.model ?? 'No assigned motorcycle yet';
+        brand.text = motorcycle?.brand ?? "No assigned motorcycle yet";
       });
     }
 
@@ -82,7 +86,6 @@ class _ProfilepageState extends State<Profilepage> {
     print('License Plate fetched: $plateNumber');
     print('brand fetched: $brand');
     print('driver id fetched: $id');
-
   }
 
   @override
@@ -121,140 +124,96 @@ class _ProfilepageState extends State<Profilepage> {
               ),
               tooltip: 'Log Out',
               onPressed: () {
-            showDialog(
-  context: context,
-  builder: (BuildContext context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Container(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              "Logout",
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(202, 3, 152, 85),
-              ),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Are you sure that you want to logout?',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                // Cancel Button
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog without logging out
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey, // Grey background for the Cancel button
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Text(
-                    'Cancel',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                // Logout Button
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
-                    FirebaseAuth.instance.signOut(); // Firebase sign-out
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const Welcomepage()), // Navigate to the welcome page
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Dialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Container(
+                        padding: EdgeInsets.all(16),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "Logout",
+                              style: GoogleFonts.poppins(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(202, 3, 152, 85),
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                            Text(
+                              'Are you sure that you want to logout?',
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                // Cancel Button
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pop(); // Close the dialog without logging out
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors
+                                        .grey, // Grey background for the Cancel button
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Cancel',
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                                // Logout Button
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pop(); // Close the dialog
+                                    FirebaseAuth.instance
+                                        .signOut(); // Firebase sign-out
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const Welcomepage()), // Navigate to the welcome page
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors
+                                        .red, // Red background for the Logout button
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Logout',
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                     );
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red, // Red background for the Logout button
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Text(
-                    'Logout',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  },
-);
-
-              },
-            ),
-
-            /*
-            IconButton(
-              icon: const Icon(
-                Icons.exit_to_app,
-                color: Colors.white,
-                size: 30,
-              ),
-              tooltip: 'Log Out',
-              onPressed: () {
-                 showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text(
-                'Logout',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
-                ),
-              ),
-              content: Text(
-                'Are you sure that you want to logout?',
-                style: GoogleFonts.poppins(fontSize: 16),
-              ),
-              actions: <Widget>[
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                  ),
-                  child: Text(
-                    'OK',
-                    style: GoogleFonts.poppins(color: Colors.white),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-                FirebaseAuth.instance.signOut();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Welcomepage()),
                 );
               },
-            ),*/
+            ),
           ],
         ),
       ),
@@ -315,8 +274,7 @@ class _ProfilepageState extends State<Profilepage> {
               const SizedBox(height: 16),
               // Last Name field
               TextFormField(
-                controller: lname,
-                //initialValue: driverInf?.lname ?? '', // Fetch last name
+                controller: lname,  
                 decoration: InputDecoration(
                   labelText: 'Last Name',
                   labelStyle:
@@ -481,10 +439,7 @@ class _ProfilepageState extends State<Profilepage> {
               const SizedBox(height: 16),
               // Email field
               TextFormField(
-                //  initialValue:
-                //    driverInf?.phoneNumber ?? '', // Fetch phone number
                 controller: email,
-
                 decoration: InputDecoration(
                   labelText: 'Email',
                   labelStyle:
@@ -503,25 +458,11 @@ class _ProfilepageState extends State<Profilepage> {
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  suffixIcon: IconButton(
-                    icon: const Icon(
-                      Icons.edit,
-                      color: Color.fromARGB(202, 3, 152, 85),
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                Editemail(driverId: widget.driverId)),
-                      );
-                    },
-                  ),
                 ),
                 style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
                 readOnly: true,
               ),
- 
+
               const SizedBox(height: 16),
               Text(
                 'Motorcycle Information',
@@ -561,7 +502,6 @@ class _ProfilepageState extends State<Profilepage> {
 
               // Plate Number field
               TextFormField(
-                // initialValue: plateNumber ?? 'Loading...', // Fetch plate number
                 controller: gps,
                 decoration: InputDecoration(
                   labelText: 'GPS Serial Number',
@@ -637,9 +577,8 @@ class _ProfilepageState extends State<Profilepage> {
                 ),
                 style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
                 readOnly: true,
-              ), 
-                           const SizedBox(height: 16),
- 
+              ),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: model,
                 decoration: InputDecoration(
