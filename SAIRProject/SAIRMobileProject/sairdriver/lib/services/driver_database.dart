@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sairdriver/models/driver.dart';
 
 class DriverDatabase {
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   Future<List<driver>> getDrivers(String driverID) async {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
@@ -13,6 +15,16 @@ class DriverDatabase {
     } catch (e) {
       print("Error fetching driver information: $e");
       return [];
+    }
+  }
+  // Method to update the phone number
+  Future<void> updatePhoneNumber(String driverId, String newPhoneNumber) async {
+    try {
+      await _firestore.collection('Driver').doc(driverId).update({
+        'phoneNumber': newPhoneNumber, // Update the phone number field
+      });
+    } catch (e) {
+      throw Exception('Failed to update phone number: $e');
     }
   }
 

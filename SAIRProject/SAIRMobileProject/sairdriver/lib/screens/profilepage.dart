@@ -61,6 +61,7 @@ class _ProfilepageState extends State<Profilepage> {
 
     // Fetch plate number using the driver's ID
     motorcycle = await mdb.getMotorcycleByDriverID(driverInf?.driverId ?? '');
+    setState(() {}); // Update the UI after fetching data
     // Update text fields with fetched data after both driver data and plate number are retrieved
     if (mounted) {
       setState(() {
@@ -81,7 +82,7 @@ class _ProfilepageState extends State<Profilepage> {
         brand.text = motorcycle?.brand ?? "No assigned motorcycle yet";
       });
     }
-
+    setState(() {}); // Update the UI after fetching data
     // Debugging print statement
     print('License Plate fetched: $plateNumber');
     print('brand fetched: $brand');
@@ -274,7 +275,7 @@ class _ProfilepageState extends State<Profilepage> {
               const SizedBox(height: 16),
               // Last Name field
               TextFormField(
-                controller: lname,  
+                controller: lname,
                 decoration: InputDecoration(
                   labelText: 'Last Name',
                   labelStyle:
@@ -349,6 +350,7 @@ class _ProfilepageState extends State<Profilepage> {
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
+                  // Inside the TextFormField for Phone Number
                   suffixIcon: IconButton(
                     icon: const Icon(
                       Icons.edit,
@@ -358,8 +360,16 @@ class _ProfilepageState extends State<Profilepage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                EditPhonePage(driverId: widget.driverId)),
+                          builder: (context) => EditPhonePage(
+                            driverId: widget.driverId,
+                            onPhoneUpdated: (newPhone) {
+                              setState(() {
+                                phone.text =
+                                    newPhone; // Update the phone number on the profile page
+                              });
+                            },
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -416,6 +426,7 @@ class _ProfilepageState extends State<Profilepage> {
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
+                  // Inside the TextFormField for Phone Number
                   suffixIcon: IconButton(
                     icon: const Icon(
                       Icons.edit,
@@ -425,9 +436,16 @@ class _ProfilepageState extends State<Profilepage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => Editpasswordpage(
-                                  driverId: widget.driverId,
-                                )),
+                          builder: (context) => EditPhonePage(
+                            driverId: widget.driverId,
+                            onPhoneUpdated: (newPhone) {
+                              setState(() {
+                                phone.text =
+                                    newPhone; // Update the phone number
+                              });
+                            },
+                          ),
+                        ),
                       );
                     },
                   ),

@@ -4,12 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart'; // For Firebase Authenticatio
 import 'package:sairdriver/messages/error_messages.dart';
 import 'package:sairdriver/messages/phone_validator.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sairdriver/screens/bottom_nav_bar.dart';
-import 'package:sairdriver/screens/profilepage.dart';
 
 class EditPhonePage extends StatefulWidget {
   final String driverId; // DriverID passed from previous page
-  const EditPhonePage({required this.driverId});
+  final Function(String) onPhoneUpdated; // Callback function to update the profile page
+
+  const EditPhonePage({required this.driverId, required this.onPhoneUpdated});
 
   @override
   _EditPhonePageState createState() => _EditPhonePageState();
@@ -54,6 +54,8 @@ class _EditPhonePageState extends State<EditPhonePage> {
             .update({
           'PhoneNumber': phoneNumber,
         });
+        // Call the callback function to update the phone number in the profile page
+        widget.onPhoneUpdated(phoneNumber);
       } else {
         setState(() {
           errorMessage = 'User is not logged in.';
@@ -99,6 +101,7 @@ class _EditPhonePageState extends State<EditPhonePage> {
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context); // Close dialog
+                    _phoneController.text="+966";
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color.fromARGB(201, 3, 152, 85),
