@@ -136,8 +136,8 @@ class _LoginEmailState extends State<LoginEmail> {
                 decoration: const BoxDecoration(
                   color: Color.fromARGB(202, 3, 152, 85),
                   borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(60),
-                    bottomRight: Radius.circular(60),
+                    bottomLeft: Radius.circular(30),
+                    bottomRight: Radius.circular(30),
                   ),
                 ),
                 child: Column(
@@ -149,16 +149,7 @@ class _LoginEmailState extends State<LoginEmail> {
                     ),
                     const SizedBox(height: 15),
                     Text(
-                      "Welcome to SAIR,",
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    Text(
-                      "Glad to see you again!",
+                      "Welcome to SAIR,\nGlad to see you again!",
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontSize: 20,

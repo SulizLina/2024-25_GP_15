@@ -23,8 +23,8 @@ class _WelcomepageState extends State<Welcomepage> {
             decoration: const BoxDecoration(
               color: Color.fromARGB(202, 3, 152, 85), // Green color
               borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(60), // Rounded corners for bottom left
-                bottomRight: Radius.circular(60), // Rounded corners for bottom right
+                bottomLeft: Radius.circular(50), // Rounded corners for bottom left
+                bottomRight: Radius.circular(50), // Rounded corners for bottom right
               ),
             ),
             child: Column(
