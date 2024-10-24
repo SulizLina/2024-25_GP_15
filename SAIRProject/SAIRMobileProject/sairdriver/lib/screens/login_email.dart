@@ -73,9 +73,12 @@ class _LoginEmailState extends State<LoginEmail> {
           password: password,
         );
 
+        final user = FirebaseAuth.instance.currentUser;
+        if (user == null) throw FirebaseAuthException(code: 'user-not-found');
+
         final driverDoc = await db
             .collection('Driver')
-            .where('Email', isEqualTo: FirebaseAuth.instance.currentUser?.email)
+            .where('UID', isEqualTo: user.uid)
             .limit(1)
             .get();
 
@@ -84,36 +87,40 @@ class _LoginEmailState extends State<LoginEmail> {
           final bool isDefaultPassword =
               driverDoc.docs.first.data()['isDefaultPassword'] ?? false;
 
+          if (!mounted) return; // Avoid state changes if widget is disposed
+
           if (!isDefaultPassword) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (context) => BottomNavBar(driverId: driverId)),
+                builder: (context) => BottomNavBar(driverId: driverId),
+              ),
             );
           } else {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (context) => Changepassword(driverId: driverId)),
+                builder: (context) => Changepassword(driverId: driverId),
+              ),
             );
           }
         } else {
-          setState(() {
-            _loginErrorText = "Invalid email or password.";
-          });
+          setState(() => _loginErrorText = "Invalid email or password.");
         }
-      } catch (e) {
-        if (e is FirebaseAuthException) {
+      } on FirebaseAuthException catch (e) {
+        if (mounted) {
           setState(() {
-         
             _emailErrorText = "Invalid email or password";
             _passwordErrorText = "Invalid email or password";
           });
         }
+      } catch (e) {
+        if (mounted) {
+          setState(() => _loginErrorText = "An unexpected error occurred.");
+        }
       }
     }
   }
-
   OutlineInputBorder _buildBorder(Color color) {
     return OutlineInputBorder(
       borderSide: BorderSide(color: color, width: 1.5),
@@ -124,7 +131,14 @@ class _LoginEmailState extends State<LoginEmail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFAFAFF),
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(202, 3, 152, 85),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -132,7 +146,7 @@ class _LoginEmailState extends State<LoginEmail> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
-                height: MediaQuery.of(context).size.height * 0.6,
+                height: MediaQuery.of(context).size.height * 0.5,
                 decoration: const BoxDecoration(
                   color: Color.fromARGB(202, 3, 152, 85),
                   borderRadius: BorderRadius.only(
