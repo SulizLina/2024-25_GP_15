@@ -125,7 +125,6 @@ class _EditPhonePageState extends State<EditPhonePage> {
     );
   }
 
-
   Future<void> _updatePhoneNumber() async {
     setState(() {
       errorMessage = null;
@@ -133,7 +132,7 @@ class _EditPhonePageState extends State<EditPhonePage> {
 
     if (_formKey.currentState != null && _formKey.currentState!.validate()) {
       String phoneNumber = cleanPhoneNumber(_phoneController.text);
-
+      _phoneController.text = phoneNumber;
       // Check if the phone number is already taken
       bool isTaken = await isPhoneNumberTaken(phoneNumber);
       if (isTaken) {
