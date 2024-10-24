@@ -7,7 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 class EditPhonePage extends StatefulWidget {
   final String driverId; // DriverID passed from previous page
-  final Function(String) onPhoneUpdated; // Callback function to update the profile page
+  final Function(String)
+      onPhoneUpdated; // Callback function to update the profile page
 
   const EditPhonePage({required this.driverId, required this.onPhoneUpdated});
 
@@ -101,7 +102,7 @@ class _EditPhonePageState extends State<EditPhonePage> {
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context); // Close dialog
-                    _phoneController.text="+966";
+                    _phoneController.text = "+966";
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color.fromARGB(201, 3, 152, 85),
@@ -124,13 +125,14 @@ class _EditPhonePageState extends State<EditPhonePage> {
     );
   }
 
-  // Function to handle phone number update
+
   Future<void> _updatePhoneNumber() async {
     setState(() {
       errorMessage = null;
     });
+
     if (_formKey.currentState != null && _formKey.currentState!.validate()) {
-      String phoneNumber = _phoneController.text;
+      String phoneNumber = cleanPhoneNumber(_phoneController.text);
 
       // Check if the phone number is already taken
       bool isTaken = await isPhoneNumberTaken(phoneNumber);
@@ -144,7 +146,7 @@ class _EditPhonePageState extends State<EditPhonePage> {
       // Update the phone number in Firebase
       await updatePhoneNumberInFirebase(phoneNumber);
 
-      // Show confirmation
+      // Show confirmation dialog
       showSuccessDialog(context);
     }
   }
