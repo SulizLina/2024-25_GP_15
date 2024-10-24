@@ -163,7 +163,7 @@ class _EditpasswordpageState extends State<Editpasswordpage> {
                         ),
                       ),
                       child: Text(
-                        "",
+                        "Reauthentication",
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                         ),
