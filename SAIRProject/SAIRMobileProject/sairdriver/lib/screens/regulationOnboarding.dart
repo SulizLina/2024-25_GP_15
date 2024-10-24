@@ -11,7 +11,8 @@ class RegulationOnboarding extends StatefulWidget {
 }
 
 class _RegulationOnboardingState extends State<RegulationOnboarding> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 0; // Track the current page index
+  bool isLastPage = false; // Track if the user is on the last page
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +28,7 @@ class _RegulationOnboardingState extends State<RegulationOnboarding> {
                 onPageChanged: (value) {
                   setState(() {
                     _selectedIndex = value;
+                    isLastPage = value == demoData.length - 1; // Check if it's the last page
                   });
                 },
                 itemBuilder: (context, index) {
@@ -51,22 +53,87 @@ class _RegulationOnboardingState extends State<RegulationOnboarding> {
             ),
             Spacer(flex: 2),
             ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => BottomNavBar(driverId: widget.driverId),
+              onPressed: () {
+                if (isLastPage) {
+                  // Navigate to the next screen if it's the last page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BottomNavBar(driverId: widget.driverId),
+                    ),
+                  );
+                } else {
+                  // Show styled dialog if the button is pressed before reaching the last page
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return Dialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20), // Rounded corners
+                        ),
+                        child: Container(
+                          padding: EdgeInsets.all(16),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "Attention!",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 20),
+                              Text(
+                                "Please complete all regulations information before proceeding.",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: 20),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(context); // Close the dialog
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color.fromARGB(201, 3, 152, 85), // Green button
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10), // Rounded button
+                                  ),
+                                ),
+                                child: Text(
+                                  "OK",
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white, // White text
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isLastPage
+                    ? Color.fromARGB(255, 3, 152, 85) // Green when active
+                    : Colors.grey, 
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
                 ),
-              );
-            },
-            child: Text(
-              "Get Started".toUpperCase(),
-              style: GoogleFonts.poppins(
-                color: Colors.black, // Set the text color to black
-                fontWeight: FontWeight.bold, // Optional: make the text bold
+              ),
+              child: Text(
+                "Get Started".toUpperCase(),
+                style: GoogleFonts.poppins(
+                  color: Colors.black, // Text color
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
             Spacer(),
           ],
         ),
