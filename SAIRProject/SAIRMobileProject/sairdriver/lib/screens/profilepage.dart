@@ -303,7 +303,7 @@ class _ProfilepageState extends State<Profilepage> {
               TextFormField(
                 controller: id,
                 decoration: InputDecoration(
-                  labelText: 'Driver ID / Residency Number',
+                  labelText: 'Driver ID (National / Residency Number) ',
                   labelStyle:
                       GoogleFonts.poppins(color: const Color(0xFF211D1D)),
                   enabledBorder: OutlineInputBorder(
