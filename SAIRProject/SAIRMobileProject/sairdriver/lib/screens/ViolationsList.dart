@@ -3,6 +3,8 @@ import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sairdriver/models/violation.dart';
+import 'package:sairdriver/models/driver.dart';
+import 'package:sairdriver/services/driver_database.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/screens/ViolationDetail.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -164,7 +166,7 @@ class _ViolationslistState extends State<Violationslist> {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 5),
+          padding: const EdgeInsets.symmetric(vertical: 15),
           child: filteredViolations.isEmpty
               ? Center(
                 child: Text(
@@ -216,6 +218,7 @@ class _ViolationslistState extends State<Violationslist> {
                                 color: Color(0xFF211D1D),
                               ),
                             ),
+                            /*
                             const SizedBox(height: 4), // Space between subtitles
                             Text(
                               'ABC 123', // Add your additional subtitle text here
@@ -224,6 +227,7 @@ class _ViolationslistState extends State<Violationslist> {
                                 color: Color(0xFF211D1D),
                               ),
                             ),
+                            */
                           ],
                         ),
                         trailing: Icon(
