@@ -87,7 +87,7 @@ class AnimatedDot extends StatelessWidget {
       height: 6,
       width: isActive ? 20 : 6,
       decoration: BoxDecoration(
-        color: isActive ? primaryColor : Color(0xFF868686).withOpacity(0.25),
+        color: isActive ? Color.fromARGB(255, 3, 152, 85) : Color(0xFF868686).withOpacity(0.25),
         borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
     );
@@ -119,8 +119,8 @@ class OnboardingContent extends StatelessWidget {
           title,
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.bold,
-            fontSize: 20, // Example font size
-            color: primaryColor, // Example color
+            fontSize: 25, 
+            color: Color.fromARGB(255, 3, 152, 85),
           ),
         ),
         SizedBox(height: 8),
@@ -159,5 +159,3 @@ List<Map<String, dynamic>> demoData = [
     "text": "Inspect Your Motorcycle: Tires, Lights, and More Before Each Ride",
   },
 ];
-
-const Color primaryColor = Color.fromARGB(255, 3, 152, 85);
