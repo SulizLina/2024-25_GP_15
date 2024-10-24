@@ -1,4 +1,3 @@
-import 'dart:ffi'; 
 import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,21 +21,44 @@ class _ViolationslistState extends State<Violationslist> {
   List<DocumentSnapshot> filteredViolations = []; // List for filtered violations based on date
   List<bool> isHoveredList = []; // Hover state list
 
+  driver? driverNat_Res;
   DateTime selectDate = DateTime.now(); // Selected date for filtering
   bool isFiltered = false; // Track if filtering is active
 
   @override
   void initState() {
     super.initState();
-    fetchViolations(); // Fetch violations on initial load
+    fetchDriverData();
   }
 
-  Future<void> fetchViolations({DateTime? filterDate}) async {
-    try {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('te2')
-          .where('DriverID', isEqualTo: widget.driverId)
-          .get();
+  Future<void> fetchDriverData() async {
+    DriverDatabase dbD = DriverDatabase();
+    driverNat_Res = await dbD.getDriversnById(widget.driverId);
+
+    if (driverNat_Res != null) {
+      print("Driver data found for ID: ${widget.driverId}, driverID: ${driverNat_Res?.driverId}");
+      await fetchViolations(); // Fetch violations when driver data is found
+    } else {
+      print("Driver data not found for ID: ${widget.driverId}");
+    }
+  }
+
+Future<void> fetchViolations({DateTime? filterDate}) async {
+  print('Attempting to fetch violations for driver ID: ${driverNat_Res?.driverId}');
+
+  if (driverNat_Res == null) {
+    print('Driver data is null, unable to fetch violations.');
+    return;
+  }
+
+  try {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('te2')
+        .where('DriverID', isEqualTo: driverNat_Res?.driverId)
+        .get();
+
+    print("Number of violations fetched: ${snapshot.docs.length}");
+
       setState(() {
         violations = snapshot.docs;
         // If filterDate is provided, filter violations based on that date
@@ -147,7 +169,7 @@ class _ViolationslistState extends State<Violationslist> {
                 icon: Icon(
                   isFiltered 
                     ? HugeIcons.strokeRoundedFilterRemove 
-                    : HugeIcons.strokeRoundedFilter, // Change icon based on filtering state
+                    : HugeIcons.strokeRoundedFilter, 
                   color: Colors.white,
                   size: 28,
                 ),
@@ -169,22 +191,19 @@ class _ViolationslistState extends State<Violationslist> {
           padding: const EdgeInsets.symmetric(vertical: 15),
           child: filteredViolations.isEmpty
               ? Center(
-                child: Text(
-                  isFiltered 
-                      ? "You don't have any violations\nfor the selected date." 
-                      : "You don't have any violations,\nride safe :)",
-                  style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
-                  textAlign: TextAlign.center,
-                ),
-              )
+                  child: Text(
+                    isFiltered
+                        ? "You don't have any violations\nfor the selected date."
+                        : "You don't have any violations,\nride safe :)",
+                    style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                )
               : ListView.separated(
                   itemBuilder: (BuildContext context, int index) {
-                    if (index >= filteredViolations.length) return Container(); // Safeguard
+                    if (index >= filteredViolations.length) return Container();
 
-                    // Convert the DocumentSnapshot to Violation
                     Violation violation = Violation.fromJson(filteredViolations[index]);
-
-                    // Get the formatted date
                     String formattedDate = violation.getFormattedDate();
 
                     return MouseRegion(
