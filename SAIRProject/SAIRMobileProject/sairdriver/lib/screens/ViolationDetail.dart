@@ -166,21 +166,21 @@ Future<void> fetchMotor() async {
                 
                   const SizedBox(height: 20),
 
-                  buildDetailSection('Motorcycle Licence Plate', motorcycle?.licensePlate, HugeIcons.strokeRoundedCreditCard),////
-                  buildDetailSection('GPS Serial Number', violation?.gspNumber, HugeIcons.strokeRoundedShareLocation01),
-                  buildDetailSection('Motorcycle Type', motorcycle?.type, HugeIcons.strokeRoundedMotorbike02),///////
-                  buildDetailSection('Motorcycle Brand', motorcycle?.brand, HugeIcons.strokeRoundedMotorbike02),///////
-                  buildDetailSection('Motorcycle Model', motorcycle?.model, HugeIcons.strokeRoundedMotorbike02),///////
+                  buildDetailSection('Motorcycle Licence Plate', motorcycle?.licensePlate ?? '', HugeIcons.strokeRoundedCreditCard),////
+                  buildDetailSection('GPS Serial Number', violation?.gspNumber ?? '', HugeIcons.strokeRoundedShareLocation01),
+                  buildDetailSection('Motorcycle Type', motorcycle?.type ?? '', HugeIcons.strokeRoundedMotorbike02),///////
+                  buildDetailSection('Motorcycle Brand', motorcycle?.brand ?? '', HugeIcons.strokeRoundedMotorbike02),///////
+                  buildDetailSection('Motorcycle Model', motorcycle?.model ?? '', HugeIcons.strokeRoundedMotorbike02),///////
                   Divider(color: Colors.grey[350]),
                   const SizedBox(height: 15),
 
-                  buildDetailSection('Violation ID', violation!.Vid, HugeIcons.strokeRoundedDoNotTouch02), /////////////////check!!
-                  buildDetailSection('Street Speed', '${violation?.Maxspeed} Km/h', HugeIcons.strokeRoundedNavigator02),
-                  buildDetailSection('Motorcycle Speed', '${violation?.speed} Km/h', HugeIcons.strokeRoundedDashboardSpeed02),
-                  buildDetailSection('Violation Price', '${violation?.price} SAR', HugeIcons.strokeRoundedInvoice),
-                  buildDetailSection('Time', violation?.getFormattedTimeOnly(), HugeIcons.strokeRoundedClock03),
-                  buildDetailSection('Date', violation?.getFormattedDate(), HugeIcons.strokeRoundedCalendar01),
-                  buildDetailSection('Violation Location', violation?.location, HugeIcons.strokeRoundedMapsSquare02),///////
+                  buildDetailSection('Violation ID', violation?.Vid ?? '', HugeIcons.strokeRoundedDoNotTouch02), /////////////////check!!
+                  buildDetailSection('Street Speed', '${violation?.Maxspeed ?? ''} Km/h', HugeIcons.strokeRoundedNavigator02),
+                  buildDetailSection('Motorcycle Speed', '${violation?.speed ?? ''} Km/h', HugeIcons.strokeRoundedDashboardSpeed02),
+                  buildDetailSection('Violation Price', '${violation?.price ?? ''} SAR', HugeIcons.strokeRoundedInvoice),
+                  buildDetailSection('Time', violation?.getFormattedTimeOnly()  ?? '', HugeIcons.strokeRoundedClock03),
+                  buildDetailSection('Date', violation?.getFormattedDate() ?? '', HugeIcons.strokeRoundedCalendar01),
+                  buildDetailSection('Violation Location', violation?.location ?? '', HugeIcons.strokeRoundedMapsSquare02),///////
                   const SizedBox(height: 15),
 
                   Container(
