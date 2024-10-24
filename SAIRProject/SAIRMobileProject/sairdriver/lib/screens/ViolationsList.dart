@@ -169,7 +169,7 @@ class _ViolationslistState extends State<Violationslist> {
               ? Center(
                 child: Text(
                   isFiltered 
-                      ? "You don't have any violations for the selected date." 
+                      ? "You don't have any violations\nfor the selected date." 
                       : "You don't have any violations,\nride safe :)",
                   style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
                   textAlign: TextAlign.center,
@@ -198,35 +198,48 @@ class _ViolationslistState extends State<Violationslist> {
                               : [],
                         ),
                         child: ListTile(
-                          title: Text(
-                            'V#${violation.Vid}', // From DB
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF211D1D),
-                            ),
+                        title: Text(
+                          'Violation ID: ${violation.Vid}', // From DB
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF211D1D),
                           ),
-                          subtitle: Text(
-                            formattedDate,
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              color: Color(0xFF211D1D),
-                            ),
-                          ),
-                          trailing: Icon(
-                            HugeIcons.strokeRoundedInformationCircle,
-                            color: Color.fromARGB(202, 3, 152, 85),
-                            size: 20,
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Violationdetail(violationId: filteredViolations[index].id),
-                              ),
-                            );
-                          },
                         ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              formattedDate,
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                color: Color(0xFF211D1D),
+                              ),
+                            ),
+                            const SizedBox(height: 4), // Space between subtitles
+                            Text(
+                              'ABC 123', // Add your additional subtitle text here
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                color: Color(0xFF211D1D),
+                              ),
+                            ),
+                          ],
+                        ),
+                        trailing: Icon(
+                          HugeIcons.strokeRoundedInformationCircle,
+                          color: Color.fromARGB(202, 3, 152, 85),
+                          size: 20,
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Violationdetail(violationId: filteredViolations[index].id),
+                            ),
+                          );
+                        },
+                      )
                       ),
                     );
                   },
