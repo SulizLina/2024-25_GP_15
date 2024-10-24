@@ -59,8 +59,8 @@ appBar: AppBar(
       // Logo on the far left
       Image.asset(
         'assets/image/WhiteMotorcycle.png',
-        width: 70,
-        height: 60,
+        width: 60,
+        height: 70,
       ),
 
       Expanded(

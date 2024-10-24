@@ -29,12 +29,12 @@ class _CrasheslistState extends State<Crasheslist> {
                   padding: EdgeInsets.only(left: 7),
                 ),
                 Transform.translate(
-                  offset: const Offset(0, 10), // Move the text down by 10 pixels to match the home page
-                  child: const Padding(
+                  offset: const Offset(0, 10), 
+                  child: Padding(
                     padding: EdgeInsets.only(left: 5),
                     child: Text(
                       "My Crashes",
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 24.0,
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -54,12 +54,12 @@ class _CrasheslistState extends State<Crasheslist> {
         decoration: const BoxDecoration(
           color: Color(0xFFF3F3F3),
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30), // Rounded top-left corner
-            topRight: Radius.circular(30), // Rounded top-right corner
+            topLeft: Radius.circular(30), 
+            topRight: Radius.circular(30), 
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.only(left: 16.0), // Add left padding here
+          padding: const EdgeInsets.all(16.0), 
           child: Center(
             child: Text(
               'This is a View crashes page.\nIt will be done in Sprint 2',

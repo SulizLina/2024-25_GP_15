@@ -60,7 +60,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints> {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.only(left: 16.0), // Add left padding here
+          padding: const EdgeInsets.all(16.0),
           child: Center(
             child: Text(
               'This is a View complaints page.\nIt will be done in Sprint 2',
