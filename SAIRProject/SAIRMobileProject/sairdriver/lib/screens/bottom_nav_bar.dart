@@ -92,12 +92,12 @@ class _MyBottomNavState extends State<BottomNavBar> {
             ),
           // The custom motorcycle image for the first tab
           Image.asset(
-            'assets/icons/bug.png', 
+            'assets/icons/bus.png', 
             color: _controller.index == 0
                 ? Color.fromARGB(202, 3, 152, 85)
-                : Color(0xFF8E8E8E),
-            width: 50,
-            height: 50,
+                :  Colors.grey[500],
+            width: 60,
+            height: 60,
           ),
         ],
       ),
