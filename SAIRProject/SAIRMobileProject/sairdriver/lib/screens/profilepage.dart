@@ -69,7 +69,7 @@ class _ProfilepageState extends State<Profilepage> {
         lname.text = driverInf?.lname ?? '';
         phone.text = driverInf?.phoneNumber ?? '';
         id.text = driverInf?.driverId ?? '';
-        //  email.text = driverInf?.email ?? '';
+
         email.text = currentUser?.email ?? '';
         gps.text =
             ((motorcycle?.gspNumber != null && motorcycle?.gspNumber != 'null')
