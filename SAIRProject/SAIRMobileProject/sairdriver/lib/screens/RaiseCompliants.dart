@@ -17,7 +17,7 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
       ),
       body: Center(
         child: Text(
-          'This is a rise complaint page.\n Will be done sprint 2',
+          'This is a rise complaint page.\nIt will be done sprint 2',
           style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
           textAlign: TextAlign.center,
         ),
