@@ -50,7 +50,7 @@ class _HomeState extends State<Home> {
       children: [
         _buildSpeedLimitRow("•", "50 kilometers in residential areas."),
         _buildSpeedLimitRow("•", "80 kilometers on main roads within cities."),
-        _buildSpeedLimitRow("•", "120 kilometers outside city limits"),
+        _buildSpeedLimitRow("•", "120 kilometers outside city limits."),
       ],
     );
   }
