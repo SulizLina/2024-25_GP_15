@@ -63,9 +63,6 @@ appBar: AppBar(
         height: 60,
       ),
 
-      const SizedBox(width: 10), // Small gap between the logo and text
-
-      // Text "Hello ..." aligned to the left
       Expanded(
         child: Text(
           "Hello $driverName !",
