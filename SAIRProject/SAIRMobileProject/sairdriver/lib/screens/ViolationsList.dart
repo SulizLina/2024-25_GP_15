@@ -53,8 +53,8 @@ Future<void> fetchViolations({DateTime? filterDate}) async {
 
   try {
     QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('te2')
-        .where('DriverID', isEqualTo: driverNat_Res?.driverId)
+        .collection('Violation')
+        .where('driverID', isEqualTo: driverNat_Res?.driverId)
         .get();
 
     print("Number of violations fetched: ${snapshot.docs.length}");

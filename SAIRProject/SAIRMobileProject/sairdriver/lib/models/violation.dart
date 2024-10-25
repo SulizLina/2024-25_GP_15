@@ -46,18 +46,18 @@ class Violation {
     Map<String, dynamic> parsedJSON = document.data() as Map<String, dynamic>;
 
     return Violation(
-      Vid: parsedJSON['ViolationID'].toString(),
-      driverId: parsedJSON['DriverID'].toString(),
+      Vid: parsedJSON['violationID'].toString(),
+      driverId: parsedJSON['driverID'].toString(),
       gspNumber: parsedJSON['GPSnumber'].toString(),
       location: parsedJSON['location'] as String?, // Address as string
       position: parsedJSON['position'] != null
           ? GeoPoint(
-              parsedJSON['position']['y'], // Latitude
-              parsedJSON['position']['x'], // Longitude
+              parsedJSON['position']['latitude'], // Latitude
+              parsedJSON['position']['longitude'], // Longitude
             )
           : null,
-      speed: parsedJSON['speed'] as int?,
-      Maxspeed: parsedJSON['MaxSpeed'] as int?, 
+      speed: parsedJSON['driverSpeed'] as int?,
+      Maxspeed: parsedJSON['streetMaxSpeed'] as int?, 
       price: parsedJSON['price'] as int?,
       time: parsedJSON['time'] as int?, // Time field
     );
