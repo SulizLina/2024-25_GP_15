@@ -433,13 +433,12 @@ class _ProfilepageState extends State<Profilepage> {
                     ),
                     onPressed: () {
                       Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Editpasswordpage(
-                            driverId: widget.driverId,
-                         
-                        ),
-                       ) );
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Editpasswordpage(
+                              driverId: widget.driverId,
+                            ),
+                          ));
                     },
                   ),
                 ),

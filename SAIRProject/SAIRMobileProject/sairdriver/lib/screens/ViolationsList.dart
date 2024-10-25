@@ -18,7 +18,8 @@ class Violationslist extends StatefulWidget {
 
 class _ViolationslistState extends State<Violationslist> {
   List<DocumentSnapshot> violations = []; // List to hold violation documents
-  List<DocumentSnapshot> filteredViolations = []; // List for filtered violations based on date
+  List<DocumentSnapshot> filteredViolations =
+      []; // List for filtered violations based on date
   List<bool> isHoveredList = []; // Hover state list
 
   driver? driverNat_Res;
@@ -36,28 +37,30 @@ class _ViolationslistState extends State<Violationslist> {
     driverNat_Res = await dbD.getDriversnById(widget.driverId);
 
     if (driverNat_Res != null) {
-      print("Driver data found for ID: ${widget.driverId}, driverID: ${driverNat_Res?.driverId}");
+      print(
+          "Driver data found for ID: ${widget.driverId}, driverID: ${driverNat_Res?.driverId}");
       await fetchViolations(); // Fetch violations when driver data is found
     } else {
       print("Driver data not found for ID: ${widget.driverId}");
     }
   }
 
-Future<void> fetchViolations({DateTime? filterDate}) async {
-  print('Attempting to fetch violations for driver ID: ${driverNat_Res?.driverId}');
+  Future<void> fetchViolations({DateTime? filterDate}) async {
+    print(
+        'Attempting to fetch violations for driver ID: ${driverNat_Res?.driverId}');
 
-  if (driverNat_Res == null) {
-    print('Driver data is null, unable to fetch violations.');
-    return;
-  }
+    if (driverNat_Res == null) {
+      print('Driver data is null, unable to fetch violations.');
+      return;
+    }
 
-  try {
-    QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('Violation')
-        .where('driverID', isEqualTo: driverNat_Res?.driverId)
-        .get();
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('Violation')
+          .where('driverID', isEqualTo: driverNat_Res?.driverId)
+          .get();
 
-    print("Number of violations fetched: ${snapshot.docs.length}");
+      print("Number of violations fetched: ${snapshot.docs.length}");
 
       setState(() {
         violations = snapshot.docs;
@@ -70,11 +73,13 @@ Future<void> fetchViolations({DateTime? filterDate}) async {
           }).toList();
           isFiltered = true; // Set to true when filtering
         } else {
-          filteredViolations = violations; // If no date filter, show all violations
+          filteredViolations =
+              violations; // If no date filter, show all violations
           isFiltered = false; // Reset filtering state
         }
         // Update the hover list to match the filtered violations length
-        isHoveredList = List.generate(filteredViolations.length, (index) => false);
+        isHoveredList =
+            List.generate(filteredViolations.length, (index) => false);
       });
     } catch (e) {
       print("Error fetching violations: $e");
@@ -83,13 +88,14 @@ Future<void> fetchViolations({DateTime? filterDate}) async {
 
   // Choose date using the date picker
   void _chooseDate() async {
-        if (isFiltered) {
+    if (isFiltered) {
       // Reset to show all violations if already filtered
       setState(() {
         selectDate = DateTime.now(); // Reset to current date
         filteredViolations = violations; // Show all violations
         isFiltered = false; // Mark that the filter is removed
-        isHoveredList = List.generate(filteredViolations.length, (index) => false); // Reset hover list
+        isHoveredList = List.generate(
+            filteredViolations.length, (index) => false); // Reset hover list
       });
       return; // Exit early
     }
@@ -118,7 +124,9 @@ Future<void> fetchViolations({DateTime? filterDate}) async {
       setState(() {
         selectDate = result;
       });
-      fetchViolations(filterDate: selectDate); // Fetch and filter violations by the selected date
+      fetchViolations(
+          filterDate:
+              selectDate); // Fetch and filter violations by the selected date
     } else {
       // Reset the filter if the result is null (user canceled)
       setState(() {
@@ -167,9 +175,9 @@ Future<void> fetchViolations({DateTime? filterDate}) async {
                   _chooseDate();
                 },
                 icon: Icon(
-                  isFiltered 
-                    ? HugeIcons.strokeRoundedFilterRemove 
-                    : HugeIcons.strokeRoundedFilter, 
+                  isFiltered
+                      ? HugeIcons.strokeRoundedFilterRemove
+                      : HugeIcons.strokeRoundedFilter,
                   color: Colors.white,
                   size: 28,
                 ),
@@ -195,7 +203,8 @@ Future<void> fetchViolations({DateTime? filterDate}) async {
                     isFiltered
                         ? "You don't have any violations\nfor the selected date."
                         : "You don't have any violations,\nride safe :)",
-                    style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
+                    style:
+                        GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
                     textAlign: TextAlign.center,
                   ),
                 )
@@ -203,41 +212,49 @@ Future<void> fetchViolations({DateTime? filterDate}) async {
                   itemBuilder: (BuildContext context, int index) {
                     if (index >= filteredViolations.length) return Container();
 
-                    Violation violation = Violation.fromJson(filteredViolations[index]);
+                    Violation violation =
+                        Violation.fromJson(filteredViolations[index]);
                     String formattedDate = violation.getFormattedDate();
 
                     return MouseRegion(
-                      onEnter: (_) => setState(() => isHoveredList[index] = true),
-                      onExit: (_) => setState(() => isHoveredList[index] = false),
+                      onEnter: (_) =>
+                          setState(() => isHoveredList[index] = true),
+                      onExit: (_) =>
+                          setState(() => isHoveredList[index] = false),
                       child: Container(
-                        padding: const EdgeInsets.all(7),
-                        decoration: BoxDecoration(
-                          color: isHoveredList[index] ? Colors.green[200] : Color(0xFFF3F3F3),
-                          borderRadius: BorderRadius.circular(30),
-                          boxShadow: isHoveredList[index]
-                              ? [const BoxShadow(color: Colors.black26, blurRadius: 5)]
-                              : [],
-                        ),
-                        child: ListTile(
-                        title: Text(
-                          'Violation ID: ${violation.Vid}', // From DB
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF211D1D),
+                          padding: const EdgeInsets.all(7),
+                          decoration: BoxDecoration(
+                            color: isHoveredList[index]
+                                ? Colors.green[200]
+                                : Color(0xFFF3F3F3),
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: isHoveredList[index]
+                                ? [
+                                    const BoxShadow(
+                                        color: Colors.black26, blurRadius: 5)
+                                  ]
+                                : [],
                           ),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              formattedDate,
+                          child: ListTile(
+                            title: Text(
+                              'Violation ID: ${violation.Vid}', // From DB
                               style: GoogleFonts.poppins(
                                 fontSize: 14,
+                                fontWeight: FontWeight.bold,
                                 color: Color(0xFF211D1D),
                               ),
                             ),
-                            /*
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  formattedDate,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 14,
+                                    color: Color(0xFF211D1D),
+                                  ),
+                                ),
+                                /*
                             const SizedBox(height: 4), // Space between subtitles
                             Text(
                               'ABC 123', // Add your additional subtitle text here
@@ -247,29 +264,31 @@ Future<void> fetchViolations({DateTime? filterDate}) async {
                               ),
                             ),
                             */
-                          ],
-                        ),
-                        trailing: Icon(
-                          HugeIcons.strokeRoundedInformationCircle,
-                          color: Color.fromARGB(202, 3, 152, 85),
-                          size: 20,
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Violationdetail(violationId: filteredViolations[index].id),
+                              ],
                             ),
-                          );
-                        },
-                      )
-                      ),
+                            trailing: Icon(
+                              HugeIcons.strokeRoundedInformationCircle,
+                              color: Color.fromARGB(202, 3, 152, 85),
+                              size: 20,
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Violationdetail(
+                                      violationId:
+                                          filteredViolations[index].id),
+                                ),
+                              );
+                            },
+                          )),
                     );
                   },
                   separatorBuilder: (BuildContext context, int index) {
                     return Divider(color: Colors.grey[350]);
                   },
-                  itemCount: filteredViolations.length, // Number of filtered violations
+                  itemCount: filteredViolations
+                      .length, // Number of filtered violations
                 ),
         ),
       ),
