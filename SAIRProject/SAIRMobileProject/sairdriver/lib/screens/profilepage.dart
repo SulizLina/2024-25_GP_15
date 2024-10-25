@@ -181,19 +181,19 @@ class _ProfilepageState extends State<Profilepage> {
                                 ElevatedButton(
                                   onPressed: () {
                                     Navigator.of(context)
-                                        .pop(); // Close the dialog
+                                        .pop(); 
                                     FirebaseAuth.instance
-                                        .signOut(); // Firebase sign-out
+                                        .signOut(); 
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              const Welcomepage()), // Navigate to the welcome page
+                                              const Welcomepage()), 
                                     );
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors
-                                        .red, // Red background for the Logout button
+                                        .red,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
                                     ),
@@ -224,8 +224,8 @@ class _ProfilepageState extends State<Profilepage> {
         decoration: const BoxDecoration(
           color: Color(0xFFF3F3F3),
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30), // Rounded top-left corner
-            topRight: Radius.circular(30), // Rounded top-right corner
+            topLeft: Radius.circular(30), 
+            topRight: Radius.circular(30), 
           ),
         ),
         child: SingleChildScrollView(
@@ -247,8 +247,6 @@ class _ProfilepageState extends State<Profilepage> {
 
               // First Name field
               TextFormField(
-                //   initialValue:
-                //         driverInf?.fname ?? '', // Fetch first name from driverInf
                 controller: fname,
                 decoration: InputDecoration(
                   labelText: 'First Name',
