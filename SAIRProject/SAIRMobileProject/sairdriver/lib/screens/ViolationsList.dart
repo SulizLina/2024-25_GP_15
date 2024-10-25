@@ -45,6 +45,14 @@ class _ViolationslistState extends State<Violationslist> {
     }
   }
 
+  Stream<QuerySnapshot> fetchViolationsStream() {
+  return FirebaseFirestore.instance
+      .collection('Violation')
+      .where('driverID', isEqualTo: driverNat_Res?.driverId)
+      .snapshots();
+}
+
+
   Future<void> fetchViolations({DateTime? filterDate}) async {
     print(
         'Attempting to fetch violations for driver ID: ${driverNat_Res?.driverId}');
@@ -64,234 +72,241 @@ class _ViolationslistState extends State<Violationslist> {
 
       setState(() {
         violations = snapshot.docs;
-        // If filterDate is provided, filter violations based on that date
         if (filterDate != null) {
           filteredViolations = violations.where((doc) {
             Violation violation = Violation.fromJson(doc);
-            return violation.getFormattedDate().split(' ')[0] ==
-                filterDate.toString().split(' ')[0];
+            return violation.getFormattedDate().split(' ')[0] == filterDate.toString().split(' ')[0];
           }).toList();
-          isFiltered = true; // Set to true when filtering
+          isFiltered = true;
         } else {
-          filteredViolations =
-              violations; // If no date filter, show all violations
-          isFiltered = false; // Reset filtering state
+          filteredViolations = violations;
+          isFiltered = false;
         }
-        // Update the hover list to match the filtered violations length
-        isHoveredList =
-            List.generate(filteredViolations.length, (index) => false);
+
+        // Update `isHoveredList` to match `filteredViolations` length
+        isHoveredList = List.generate(filteredViolations.length, (index) => false);
       });
+
     } catch (e) {
       print("Error fetching violations: $e");
     }
   }
 
   // Choose date using the date picker
-  void _chooseDate() async {
-    if (isFiltered) {
-      // Reset to show all violations if already filtered
-      setState(() {
-        selectDate = DateTime.now(); // Reset to current date
-        filteredViolations = violations; // Show all violations
-        isFiltered = false; // Mark that the filter is removed
-        isHoveredList = List.generate(
-            filteredViolations.length, (index) => false); // Reset hover list
-      });
-      return; // Exit early
-    }
-
-    // If no filter is applied, show the date picker
-    final result = await showBoardDateTimePicker(
-      context: context,
-      pickerType: DateTimePickerType.date,
-      initialDate: selectDate,
-      options: BoardDateTimeOptions(
-        languages: BoardPickerLanguages(
-          today: 'Today',
-          tomorrow: '',
-          now: 'now',
-        ),
-        startDayOfWeek: DateTime.sunday,
-        pickerFormat: PickerFormat.ymd,
-        activeColor: Color.fromARGB(255, 3, 152, 85),
-        backgroundDecoration: BoxDecoration(
-          color: Colors.white,
-        ),
-      ),
-    );
-
-    if (result != null) {
-      setState(() {
-        selectDate = result;
-      });
-      fetchViolations(
-          filterDate:
-              selectDate); // Fetch and filter violations by the selected date
-    } else {
-      // Reset the filter if the result is null (user canceled)
-      setState(() {
-        isFiltered = false; // Reset filtering state
-        filteredViolations = violations; // Show all violations
-      });
-    }
+void _chooseDate() async {
+  if (isFiltered) {
+    setState(() {
+      selectDate = DateTime.now();
+      isFiltered = false;
+    });
+    return;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  final result = await showBoardDateTimePicker(
+    context: context,
+    pickerType: DateTimePickerType.date,
+    initialDate: selectDate,
+    options: BoardDateTimeOptions(
+      languages: BoardPickerLanguages(
+        today: 'Today',
+        tomorrow: '',
+        now: 'now',
+      ),
+      startDayOfWeek: DateTime.sunday,
+      pickerFormat: PickerFormat.ymd,
+      activeColor: Color.fromARGB(255, 3, 152, 85),
+      backgroundDecoration: BoxDecoration(color: Colors.white),
+    ),
+  );
+
+  if (result != null) {
+    setState(() {
+      selectDate = result;
+      isFiltered = true;
+    });
+  } else {
+    setState(() {
+      isFiltered = false;
+    });
+  }
+}
+
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Color.fromARGB(255, 3, 152, 85),
+    appBar: AppBar(
+      automaticallyImplyLeading: false,
+      elevation: 0,
       backgroundColor: Color.fromARGB(255, 3, 152, 85),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        elevation: 0,
-        backgroundColor: Color.fromARGB(255, 3, 152, 85),
-        toolbarHeight: 120,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 7),
-                child: Transform.translate(
-                  offset: const Offset(0, 10),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 5),
-                    child: Text(
-                      "My Violations",
-                      style: GoogleFonts.poppins(
-                        fontSize: 24.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 5, top: 10),
-              child: IconButton(
-                onPressed: () {
-                  _chooseDate();
-                },
-                icon: Icon(
-                  isFiltered
-                      ? HugeIcons.strokeRoundedFilterRemove
-                      : HugeIcons.strokeRoundedFilter,
-                  color: Colors.white,
-                  size: 28,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      body: Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          color: Color(0xFFF3F3F3),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 15),
-          child: filteredViolations.isEmpty
-              ? Center(
+      toolbarHeight: 120,
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 7),
+              child: Transform.translate(
+                offset: const Offset(0, 10),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 5),
                   child: Text(
-                    isFiltered
-                        ? "You don't have any violations\nfor the selected date."
-                        : "You don't have any violations,\nride safe :)",
-                    style:
-                        GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
-                    textAlign: TextAlign.center,
+                    "My Violations",
+                    style: GoogleFonts.poppins(
+                      fontSize: 24.0,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.left,
                   ),
-                )
-              : ListView.separated(
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index >= filteredViolations.length) return Container();
-
-                    Violation violation =
-                        Violation.fromJson(filteredViolations[index]);
-                    String formattedDate = violation.getFormattedDate();
-
-                    return MouseRegion(
-                      onEnter: (_) =>
-                          setState(() => isHoveredList[index] = true),
-                      onExit: (_) =>
-                          setState(() => isHoveredList[index] = false),
-                      child: Container(
-                          padding: const EdgeInsets.all(7),
-                          decoration: BoxDecoration(
-                            color: isHoveredList[index]
-                                ? Colors.green[200]
-                                : Color(0xFFF3F3F3),
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: isHoveredList[index]
-                                ? [
-                                    const BoxShadow(
-                                        color: Colors.black26, blurRadius: 5)
-                                  ]
-                                : [],
-                          ),
-                          child: ListTile(
-                            title: Text(
-                              'Violation ID: ${violation.Vid}', // From DB
-                              style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF211D1D),
-                              ),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  formattedDate,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    color: Color(0xFF211D1D),
-                                  ),
-                                ),
-                                /*
-                            const SizedBox(height: 4), // Space between subtitles
-                            Text(
-                              'ABC 123', // Add your additional subtitle text here
-                              style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                color: Color(0xFF211D1D),
-                              ),
-                            ),
-                            */
-                              ],
-                            ),
-                            trailing: Icon(
-                              HugeIcons.strokeRoundedInformationCircle,
-                              color: Color.fromARGB(202, 3, 152, 85),
-                              size: 20,
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => Violationdetail(
-                                      violationId:
-                                          filteredViolations[index].id),
-                                ),
-                              );
-                            },
-                          )),
-                    );
-                  },
-                  separatorBuilder: (BuildContext context, int index) {
-                    return Divider(color: Colors.grey[350]);
-                  },
-                  itemCount: filteredViolations
-                      .length, // Number of filtered violations
                 ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 5, top: 10),
+            child: IconButton(
+              onPressed: () => _chooseDate(),
+              icon: Icon(
+                isFiltered
+                    ? HugeIcons.strokeRoundedFilterRemove
+                    : HugeIcons.strokeRoundedFilter,
+                color: Colors.white,
+                size: 28,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+    body: Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: Color(0xFFF3F3F3),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
         ),
       ),
-    );
-  }
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 15),
+        child: StreamBuilder<QuerySnapshot>(
+        stream: fetchViolationsStream(),
+        builder: (context, snapshot) {
+          // Show a loading indicator while waiting for data
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          // Handle errors
+          if (snapshot.hasError) {
+            return Center(child: Text("Error loading violations"));
+          }
+
+          // Ensure data is available and non-empty
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return Center(
+              child: Text(
+                isFiltered
+                    ? "You don't have any violations\nfor the selected date."
+                    : "You don't have any violations,\nride safe :)",
+                style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
+                textAlign: TextAlign.center,
+              ),
+            );
+          }
+
+          // Get the list of violations and apply filtering
+          final violations = snapshot.data!.docs;
+          final filteredList = isFiltered
+              ? violations.where((doc) {
+                  Violation violation = Violation.fromJson(doc);
+                  return violation.getFormattedDate().split(' ')[0] ==
+                      selectDate.toString().split(' ')[0];
+                }).toList()
+              : violations;
+
+          // Update `isHoveredList` to match the filtered list length
+          isHoveredList = List.generate(filteredList.length, (index) => false);
+
+          // Display message if the filtered list is empty
+          if (filteredList.isEmpty) {
+            return Center(
+              child: Text(
+                "No violations found for the selected date.",
+                style: GoogleFonts.poppins(fontSize: 18, color: Colors.grey),
+                textAlign: TextAlign.center,
+              ),
+            );
+          }
+
+          // Build the ListView for violations
+          return ListView.separated(
+            itemBuilder: (BuildContext context, int index) {
+              // Additional safety check for out-of-bounds access
+              if (index >= filteredList.length) return Container();
+
+              Violation violation = Violation.fromJson(filteredList[index]);
+              String formattedDate = violation.getFormattedDate();
+
+              return MouseRegion(
+                onEnter: (_) => setState(() => isHoveredList[index] = true),
+                onExit: (_) => setState(() => isHoveredList[index] = false),
+                child: Container(
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: isHoveredList[index] ? Colors.green[200] : Color(0xFFF3F3F3),
+                    borderRadius: BorderRadius.circular(30),
+                    boxShadow: isHoveredList[index] ? [const BoxShadow(color: Colors.black26, blurRadius: 5)] : [],
+                  ),
+                  child: ListTile(
+                    title: Text(
+                      'Violation ID: ${violation.Vid}',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF211D1D),
+                      ),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          formattedDate,
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: Color(0xFF211D1D),
+                          ),
+                        ),
+                      ],
+                    ),
+                    trailing: Icon(
+                      HugeIcons.strokeRoundedInformationCircle,
+                      color: Color.fromARGB(202, 3, 152, 85),
+                      size: 20,
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Violationdetail(
+                              violationId: filteredList[index].id),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+            separatorBuilder: (BuildContext context, int index) {
+              return Divider(color: Colors.grey[350]);
+            },
+            itemCount: filteredList.length,
+          );
+        },
+      )
+      ),
+    ),
+  );
+}
 }
