@@ -121,6 +121,7 @@ class _LoginEmailState extends State<LoginEmail> {
       }
     }
   }
+
   OutlineInputBorder _buildBorder(Color color) {
     return OutlineInputBorder(
       borderSide: BorderSide(color: color, width: 1.5),

@@ -17,19 +17,20 @@ class _WelcomepageState extends State<Welcomepage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Green Container with Welcome Message
+        
           Container(
-            height: MediaQuery.of(context).size.height * 0.6, // Adjust height as needed
+            height: MediaQuery.of(context).size.height * 0.6, 
             decoration: const BoxDecoration(
-              color: Color.fromARGB(202, 3, 152, 85), // Green color
+              color: Color.fromARGB(202, 3, 152, 85), 
               borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(30), // Rounded corners for bottom left
-                bottomRight: Radius.circular(30), // Rounded corners for bottom right
+                bottomLeft: Radius.circular(30), 
+                bottomRight: Radius.circular(30), 
               ),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                SizedBox(height: 50,),
                 Image.asset(
                   'assets/icons/SAIRLogoWhiteMarker.png',
                   height: 100, // Adjust the size of the logo
