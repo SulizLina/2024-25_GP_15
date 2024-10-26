@@ -30,6 +30,7 @@ class _ViolationslistState extends State<Violationslist> {
   driver? driverNat_Res;
   DateTime selectDate = DateTime.now(); // Selected date for filtering
   bool isFiltered = false; // Track if filtering is active
+  bool _isLoading = true; // Loading state
 
   @override
   void initState() {
@@ -81,23 +82,19 @@ class _ViolationslistState extends State<Violationslist> {
           .where('driverID', isEqualTo: driverNat_Res?.driverId)
           .get();
 
-      // Temporarily store the fetches for all violations
-      List<Future<void>> fetchTasks = [];
-
-      for (var doc in snapshot.docs) {
+      // Asynchronous tasks to fetch license plates
+      List<Future<void>> fetchTasks = snapshot.docs.map((doc) async {
         Violation violation = Violation.fromJson(doc);
         if (violation.gspNumber != null) {
-          fetchTasks.add(fetchLicensePlate(violation.gspNumber!).then((plate) {
-            if (plate != null && violation.Vid != null) {
-              licensePlateMap[violation.Vid!] = plate;
-              plateN.add(plate);
-            }
-          }));
+          String? plate = await fetchLicensePlate(violation.gspNumber!);
+          if (plate != null && violation.Vid != null) {
+            licensePlateMap[violation.Vid!] = plate;
+            plateN.add(plate);
+          }
         }
-      }
+      }).toList();
 
-      // Wait for all license plate fetches to complete
-      await Future.wait(fetchTasks);
+      await Future.wait(fetchTasks); // Wait for all tasks to complete
 
       setState(() {
         violations = snapshot.docs;
@@ -117,6 +114,7 @@ class _ViolationslistState extends State<Violationslist> {
 
         isHoveredList =
             List.generate(filteredViolations.length, (index) => false);
+        _isLoading = false; // Update loading state after fetching
       });
     } catch (e) {
       print("Error fetching violations: $e");
@@ -170,12 +168,10 @@ class _ViolationslistState extends State<Violationslist> {
         automaticallyImplyLeading: false,
         elevation: 0,
         backgroundColor: Color.fromARGB(255, 3, 152, 85),
-        toolbarHeight:
-            120, // Increase the height to accommodate the dropdown and filter
+        toolbarHeight: 120,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Title "My Violations"
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(left: 7),
@@ -197,11 +193,9 @@ class _ViolationslistState extends State<Violationslist> {
                     SizedBox(height: 10),
                     Row(
                       children: [
-                        // Search GPS dropdown
                         Expanded(
                           child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 7, vertical: 0), // Adjust padding
+                            padding: EdgeInsets.symmetric(horizontal: 7, vertical: 0),
                             decoration: BoxDecoration(
                               color: Color(0xFFF3F3F3),
                               borderRadius: BorderRadius.circular(20),
@@ -215,42 +209,31 @@ class _ViolationslistState extends State<Violationslist> {
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.search,
-                                    color: Colors.grey, size: 18),
+                                Icon(Icons.search, color: Colors.grey, size: 18),
                                 SizedBox(width: 5),
                                 Expanded(
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton<String>(
                                       isExpanded: true,
                                       value: selectedGPS,
-                                      icon: Icon(Icons.arrow_drop_down,
-                                          color: Colors.grey,
-                                          size: 20), // Dropdown arrow
+                                      icon: Icon(Icons.arrow_drop_down, color: Colors.grey, size: 20),
                                       dropdownColor: Color(0xFFF3F3F3),
-                                      style: GoogleFonts.poppins(
-                                        color: Colors.black,
-                                        fontSize: 14,
-                                      ),
+                                      style: GoogleFonts.poppins(color: Colors.black, fontSize: 14),
                                       hint: Text(
-                                        'Filter By Licence Plate', // Placeholder text
-                                        style: GoogleFonts.poppins(
-                                            color: Colors.grey, fontSize: 14),
+                                        'Filter By Licence Plate',
+                                        style: GoogleFonts.poppins(color: Colors.grey, fontSize: 14),
                                       ),
                                       onChanged: (String? newValue) {
                                         setState(() {
                                           selectedGPS = newValue;
                                         });
                                       },
-                                      items: plateN
-                                          .map<DropdownMenuItem<String>>(
-                                              (String gps) {
+                                      items: plateN.map<DropdownMenuItem<String>>((String gps) {
                                         return DropdownMenuItem<String>(
                                           value: gps,
                                           child: Text(
                                             gps,
-                                            style: GoogleFonts.poppins(
-                                                color: Colors.black,
-                                                fontSize: 13),
+                                            style: GoogleFonts.poppins(color: Colors.black, fontSize: 13),
                                           ),
                                         );
                                       }).toList(),
@@ -261,15 +244,12 @@ class _ViolationslistState extends State<Violationslist> {
                             ),
                           ),
                         ),
-                        // Filter Icon
                         IconButton(
                           onPressed: () {
                             _chooseDate();
                           },
                           icon: Icon(
-                            isFiltered
-                                ? HugeIcons.strokeRoundedFilterRemove
-                                : HugeIcons.strokeRoundedFilter,
+                            isFiltered ? HugeIcons.strokeRoundedFilterRemove : HugeIcons.strokeRoundedFilter,
                             size: 24,
                             color: Color(0xFFF3F3F3),
                           ),
@@ -293,119 +273,92 @@ class _ViolationslistState extends State<Violationslist> {
           ),
         ),
         child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 15),
-            child: StreamBuilder<QuerySnapshot>(
-              stream: fetchViolationsStream(),
-              builder: (context, snapshot) {
-                // Show a loading indicator while waiting for data
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                }
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          child: StreamBuilder<QuerySnapshot>(
+            stream: fetchViolationsStream(),
+            builder: (context, snapshot) {
+              if (_isLoading) {
+                return Center(child: CircularProgressIndicator());
+              }
 
-                // Handle errors
-                if (snapshot.hasError) {
-                  return Center(child: Text("Error loading violations"));
-                }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
 
-                // Ensure data is available and non-empty
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(
-                    child: Text(
-                      isFiltered
-                          ? "You don't have any violations\nfor the selected date."
-                          : "You don't have any violations,\nride safe :)",
-                      style:
-                          GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
-                      textAlign: TextAlign.center,
-                    ),
-                  );
-                }
+              if (snapshot.hasError) {
+                return Center(child: Text("Error loading violations"));
+              }
 
-                // Get the list of violations and apply filtering
-                final violations = snapshot.data!.docs;
-                final filteredList = isFiltered
-                    ? violations.where((doc) {
-                        Violation violation = Violation.fromJson(doc);
-                        return violation.getFormattedDate().split(' ')[0] ==
-                            selectDate.toString().split(' ')[0];
-                      }).toList()
-                    : violations;
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return Center(
+                  child: Text(
+                    isFiltered
+                        ? "You don't have any violations\nfor the selected date."
+                        : "You don't have any violations,\nride safe :)",
+                    style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              }
 
-                // Update `isHoveredList` to match the filtered list length
-                isHoveredList =
-                    List.generate(filteredList.length, (index) => false);
+              final violations = snapshot.data!.docs;
+              final filteredList = isFiltered
+                  ? violations.where((doc) {
+                      Violation violation = Violation.fromJson(doc);
+                      return violation.getFormattedDate().split(' ')[0] ==
+                          selectDate.toString().split(' ')[0];
+                    }).toList()
+                  : violations;
 
-                // Display message if the filtered list is empty
-                if (filteredList.isEmpty) {
-                  return Center(
-                    child: Text(
-                      "No violations found for the selected date.",
-                      style:
-                          GoogleFonts.poppins(fontSize: 18, color: Colors.grey),
-                      textAlign: TextAlign.center,
-                    ),
-                  );
-                }
+              isHoveredList = List.generate(filteredList.length, (index) => false);
 
-                // Build the ListView for violations
-                return ListView.separated(
-                  itemBuilder: (BuildContext context, int index) {
-                    // Additional safety check for out-of-bounds access
-                    if (index >= filteredList.length) return Container();
+              if (filteredList.isEmpty) {
+                return Center(
+                  child: Text(
+                    "No violations found for the selected date.",
+                    style: GoogleFonts.poppins(fontSize: 18, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              }
 
-                    Violation violation =
-                        Violation.fromJson(filteredList[index]);
-                    String formattedDate = violation.getFormattedDate();
+              return ListView.separated(
+                itemBuilder: (BuildContext context, int index) {
+                  if (index >= filteredList.length) return Container();
 
-                    return MouseRegion(
-                      onEnter: (_) =>
-                          setState(() => isHoveredList[index] = true),
-                      onExit: (_) =>
-                          setState(() => isHoveredList[index] = false),
-                      child: Container(
-                        padding: const EdgeInsets.all(7),
-                        decoration: BoxDecoration(
-                          color: isHoveredList[index]
-                              ? Colors.green[200]
-                              : Color(0xFFF3F3F3),
-                          borderRadius: BorderRadius.circular(30),
-                          boxShadow: isHoveredList[index]
-                              ? [
-                                  const BoxShadow(
-                                      color: Colors.black26, blurRadius: 5)
-                                ]
-                              : [],
+                  Violation violation = Violation.fromJson(filteredList[index]);
+                  String formattedDate = violation.getFormattedDate();
+
+                  return MouseRegion(
+                    onEnter: (_) => setState(() => isHoveredList[index] = true),
+                    onExit: (_) => setState(() => isHoveredList[index] = false),
+                    child: Container(
+                      padding: const EdgeInsets.all(7),
+                      decoration: BoxDecoration(
+                        color: isHoveredList[index] ? Colors.green[200] : Color(0xFFF3F3F3),
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: isHoveredList[index] ? [const BoxShadow(color: Colors.black26, blurRadius: 5)] : [],
+                      ),
+                      child: ListTile(
+                        title: Text(
+                          'Violation ID: ${violation.Vid}',
+                          style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF211D1D)),
                         ),
-                        child: ListTile(
-                          title: Text(
-                            'Violation ID: ${violation.Vid}',
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF211D1D),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Date: $formattedDate',
+                              style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D)),
                             ),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Date: $formattedDate',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  color: Color(0xFF211D1D),
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Licence Plate: ${licensePlateMap[violation.Vid] ?? "Loading..."}',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  color: Color(0xFF211D1D),
-                                ),
-                              ),
-                            ],
-                          ),
-                          trailing: Icon(
+                            const SizedBox(height: 4),
+                            Text(
+                              'Licence Plate: ${licensePlateMap[violation.Vid] ?? ""}',
+                              style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D)),
+                            ),
+                          ],
+                        ),
+                        trailing: Icon(
                             HugeIcons.strokeRoundedInformationCircle,
                             color: Color.fromARGB(202, 3, 152, 85),
                             size: 20,
@@ -419,17 +372,18 @@ class _ViolationslistState extends State<Violationslist> {
                               ),
                             );
                           },
-                        ),
                       ),
-                    );
-                  },
-                  separatorBuilder: (BuildContext context, int index) {
+                    ),
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) {
                     return Divider(color: Colors.grey[350]);
-                  },
-                  itemCount: filteredList.length,
-                );
-              },
-            )),
+                },
+                itemCount: filteredList.length,
+              );
+            },
+          ),
+        ),
       ),
     );
   }
