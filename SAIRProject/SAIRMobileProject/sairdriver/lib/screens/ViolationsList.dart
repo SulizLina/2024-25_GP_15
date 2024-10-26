@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sairdriver/models/violation.dart';
 import 'package:sairdriver/models/driver.dart';
 import 'package:sairdriver/services/driver_database.dart';
+import 'package:sairdriver/models/motorcycle.dart';
+import 'package:sairdriver/services/motorcycle_database.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/screens/ViolationDetail.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -21,7 +23,7 @@ class _ViolationslistState extends State<Violationslist> {
   List<DocumentSnapshot> filteredViolations = []; // List for filtered violations based on date
   List<bool> isHoveredList = []; // Hover state list
 
-  List<String> gpsNumbers = []; // To store all GPS numbers from violations
+  List<String> plateN = []; // To store all GPS numbers from violations
   String? selectedGPS; // Selected GPS number
 
   driver? driverNat_Res;
@@ -56,43 +58,59 @@ class _ViolationslistState extends State<Violationslist> {
 
 
   Future<void> fetchViolations({DateTime? filterDate}) async {
-    print(
-        'Attempting to fetch violations for driver ID: ${driverNat_Res?.driverId}');
-
-    if (driverNat_Res == null) {
-      print('Driver data is null, unable to fetch violations.');
-      return;
-    }
-
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('Violation')
           .where('driverID', isEqualTo: driverNat_Res?.driverId)
           .get();
 
-      print("Number of violations fetched: ${snapshot.docs.length}");
+    setState(() {
+      violations = snapshot.docs;
 
-      setState(() {
-        violations = snapshot.docs;
-        if (filterDate != null) {
-          filteredViolations = violations.where((doc) {
-            Violation violation = Violation.fromJson(doc);
-            return violation.getFormattedDate().split(' ')[0] == filterDate.toString().split(' ')[0];
-          }).toList();
-          isFiltered = true;
-        } else {
-          filteredViolations = violations;
-          isFiltered = false;
+      // Clear and extract GPS numbers from violations
+      plateN.clear();
+      for (var doc in violations) {
+        Violation violation = Violation.fromJson(doc);
+        if (violation.gspNumber != null) {
+          FirebaseFirestore.instance
+              .collection('Motorcycle')
+              .where('GPSnumber', isEqualTo: violation.gspNumber!)
+              .get()
+              .then((motorcycleSnapshot) {
+            if (motorcycleSnapshot.docs.isNotEmpty) {
+              Motorcycle motorcycle = Motorcycle.fromDocument(motorcycleSnapshot.docs.first);
+              if (motorcycle.licensePlate != null) {
+                plateN.add(motorcycle.licensePlate!); // Add license plate to the list
+              }
+            }
+          });
         }
+      }
 
-        // Update `isHoveredList` to match `filteredViolations` length
-        isHoveredList = List.generate(filteredViolations.length, (index) => false);
-      });
+      // Ensure no duplicate plate numbers
+      plateN = plateN.toSet().toList();
 
-    } catch (e) {
-      print("Error fetching violations: $e");
-    }
+      // Apply date filter if specified
+      if (filterDate != null) {
+        filteredViolations = violations.where((doc) {
+          Violation violation = Violation.fromJson(doc);
+          return violation.getFormattedDate().split(' ')[0] ==
+              filterDate.toString().split(' ')[0];
+        }).toList();
+        isFiltered = true;
+      } else {
+        filteredViolations = violations;
+        isFiltered = false;
+      }
+
+      // Adjust hover list
+      isHoveredList = List.generate(filteredViolations.length, (index) => false);
+    });
+
+  } catch (e) {
+    print("Error fetching violations: $e");
   }
+}
 
   // Choose date using the date picker
 void _chooseDate() async {
@@ -206,7 +224,7 @@ Widget build(BuildContext context) {
                                           selectedGPS = newValue;
                                         });
                                       },
-                                      items: gpsNumbers.map<DropdownMenuItem<String>>((String gps) {
+                                      items: plateN.map<DropdownMenuItem<String>>((String gps) {
                                         return DropdownMenuItem<String>(
                                           value: gps,
                                           child: Text(
