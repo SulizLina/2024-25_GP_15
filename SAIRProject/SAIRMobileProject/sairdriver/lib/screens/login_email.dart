@@ -139,7 +139,7 @@ class _LoginEmailState extends State<LoginEmail> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(
         child: Form(
           key: _formKey,

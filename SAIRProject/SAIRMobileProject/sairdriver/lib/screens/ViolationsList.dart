@@ -18,9 +18,11 @@ class Violationslist extends StatefulWidget {
 
 class _ViolationslistState extends State<Violationslist> {
   List<DocumentSnapshot> violations = []; // List to hold violation documents
-  List<DocumentSnapshot> filteredViolations =
-      []; // List for filtered violations based on date
+  List<DocumentSnapshot> filteredViolations = []; // List for filtered violations based on date
   List<bool> isHoveredList = []; // Hover state list
+
+  List<String> gpsNumbers = []; // To store all GPS numbers from violations
+  String? selectedGPS; // Selected GPS number
 
   driver? driverNat_Res;
   DateTime selectDate = DateTime.now(); // Selected date for filtering
@@ -136,49 +138,112 @@ Widget build(BuildContext context) {
   return Scaffold(
     backgroundColor: Color.fromARGB(255, 3, 152, 85),
     appBar: AppBar(
-      automaticallyImplyLeading: false,
-      elevation: 0,
-      backgroundColor: Color.fromARGB(255, 3, 152, 85),
-      toolbarHeight: 120,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 7),
-              child: Transform.translate(
-                offset: const Offset(0, 10),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 5),
-                  child: Text(
-                    "My Violations",
-                    style: GoogleFonts.poppins(
-                      fontSize: 24.0,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+        automaticallyImplyLeading: false,
+        elevation: 0,
+        backgroundColor: Color.fromARGB(255, 3, 152, 85),
+        toolbarHeight: 120, // Increase the height to accommodate the dropdown and filter
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Title "My Violations"
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 7),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 5),
+                      child: Text(
+                        "My Violations",
+                        style: GoogleFonts.poppins(
+                          fontSize: 24.0,
+                          color: Color(0xFFF3F3F3),
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
                     ),
-                    textAlign: TextAlign.left,
-                  ),
+                    SizedBox(height: 10),
+                    Row(
+                      children: [
+                        // Search GPS dropdown
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 7, vertical: 0), // Adjust padding
+                            decoration: BoxDecoration(
+                              color: Color(0xFFF3F3F3), 
+                              borderRadius: BorderRadius.circular(20), 
+                              border: Border.all(color: Colors.grey), 
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 3, 
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.search, color: Colors.grey, size: 18), 
+                                SizedBox(width: 5),
+                                Expanded(
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
+                                      isExpanded: true,
+                                      value: selectedGPS,
+                                      icon: Icon(Icons.arrow_drop_down, color: Colors.grey, size: 20), // Dropdown arrow
+                                      dropdownColor: Color(0xFFF3F3F3),
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.black,
+                                        fontSize: 14, 
+                                      ),
+                                      hint: Text(
+                                        'Filter By Licence Plate', // Placeholder text
+                                        style: GoogleFonts.poppins(color: Colors.grey, fontSize: 14),
+                                      ),
+                                      onChanged: (String? newValue) {
+                                        setState(() {
+                                          selectedGPS = newValue;
+                                        });
+                                      },
+                                      items: gpsNumbers.map<DropdownMenuItem<String>>((String gps) {
+                                        return DropdownMenuItem<String>(
+                                          value: gps,
+                                          child: Text(
+                                            gps,
+                                            style: GoogleFonts.poppins(color: Colors.black, fontSize: 13),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Filter Icon
+                        IconButton(
+                          onPressed: () {
+                            _chooseDate();
+                          },
+                          icon: Icon(
+                            isFiltered
+                                ? HugeIcons.strokeRoundedFilterRemove
+                                : HugeIcons.strokeRoundedFilter,
+                            size: 24,
+                            color: Color(0xFFF3F3F3),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 5, top: 10),
-            child: IconButton(
-              onPressed: () => _chooseDate(),
-              icon: Icon(
-                isFiltered
-                    ? HugeIcons.strokeRoundedFilterRemove
-                    : HugeIcons.strokeRoundedFilter,
-                color: Colors.white,
-                size: 28,
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
     body: Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -272,7 +337,15 @@ Widget build(BuildContext context) {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          formattedDate,
+                          'Date: $formattedDate',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: Color(0xFF211D1D),
+                          ),
+                        ),
+                        const SizedBox(height: 4), // Space between subtitles
+                        Text(
+                          'Licence Plate: AJ9967',
                           style: GoogleFonts.poppins(
                             fontSize: 14,
                             color: Color(0xFF211D1D),
