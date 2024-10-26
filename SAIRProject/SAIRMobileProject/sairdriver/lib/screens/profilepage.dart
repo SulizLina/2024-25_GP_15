@@ -180,20 +180,17 @@ class _ProfilepageState extends State<Profilepage> {
                                 // Logout Button
                                 ElevatedButton(
                                   onPressed: () {
-                                    Navigator.of(context)
-                                        .pop(); 
-                                    FirebaseAuth.instance
-                                        .signOut(); 
+                                    Navigator.of(context).pop();
+                                    FirebaseAuth.instance.signOut();
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              const Welcomepage()), 
+                                              const Welcomepage()),
                                     );
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors
-                                        .red,
+                                    backgroundColor: Colors.red,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
                                     ),
@@ -224,8 +221,8 @@ class _ProfilepageState extends State<Profilepage> {
         decoration: const BoxDecoration(
           color: Color(0xFFF3F3F3),
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30), 
-            topRight: Radius.circular(30), 
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
           ),
         ),
         child: SingleChildScrollView(
@@ -347,7 +344,8 @@ class _ProfilepageState extends State<Profilepage> {
                 ),
                 style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
                 readOnly: true,
-              ),  const SizedBox(height: 16),
+              ),
+              const SizedBox(height: 16),
               // Phone number field
               TextFormField(
                 //  initialValue:
@@ -470,7 +468,6 @@ class _ProfilepageState extends State<Profilepage> {
               ),
               const SizedBox(height: 16),
 
-
               const SizedBox(height: 16),
               Text(
                 'Motorcycle Information',
@@ -480,86 +477,6 @@ class _ProfilepageState extends State<Profilepage> {
                   color: Color.fromARGB(202, 3, 152, 85),
                 ),
               ),
-              const SizedBox(height: 16),
-              // ID / Residency number field
-              TextFormField(
-                controller: PlateN,
-                decoration: InputDecoration(
-                  labelText: 'Licence Plate',
-                  labelStyle:
-                      GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                readOnly: true,
-              ),
-              const SizedBox(height: 16),
-
-              // Plate Number field
-              TextFormField(
-                controller: gps,
-                decoration: InputDecoration(
-                  labelText: 'GPS Serial Number',
-                  labelStyle:
-                      GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                readOnly: true,
-              ),
-              const SizedBox(height: 16),
-              // GPS serial number field
-              TextFormField(
-                controller: type,
-                decoration: InputDecoration(
-                  labelText: 'Type',
-                  labelStyle:
-                      GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                readOnly: true,
-              ),
-
               const SizedBox(height: 16),
               //type
               TextFormField(
@@ -587,6 +504,34 @@ class _ProfilepageState extends State<Profilepage> {
                 readOnly: true,
               ),
               const SizedBox(height: 16),
+
+              // Type field
+              TextFormField(
+                controller: type,
+                decoration: InputDecoration(
+                  labelText: 'Type',
+                  labelStyle:
+                      GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(202, 3, 152, 85),
+                      width: 1.5,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(202, 3, 152, 85),
+                      width: 2.0,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                readOnly: true,
+              ),
+
+              const SizedBox(height: 16),
               TextFormField(
                 controller: model,
                 decoration: InputDecoration(
@@ -611,7 +556,60 @@ class _ProfilepageState extends State<Profilepage> {
                 style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
                 readOnly: true,
               ),
-              const SizedBox(height: 50),
+              const SizedBox(height: 16),
+              //Licence Plate 
+
+              TextFormField(
+                controller: PlateN,
+                decoration: InputDecoration(
+                  labelText: 'Licence Plate',
+                  labelStyle:
+                      GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(202, 3, 152, 85),
+                      width: 1.5,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(202, 3, 152, 85),
+                      width: 2.0,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                readOnly: true,
+              ),
+              const SizedBox(height: 16),
+              // GPS Number field
+              TextFormField(
+                controller: gps,
+                decoration: InputDecoration(
+                  labelText: 'GPS Serial Number',
+                  labelStyle:
+                      GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(202, 3, 152, 85),
+                      width: 1.5,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(202, 3, 152, 85),
+                      width: 2.0,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                readOnly: true,
+              ),
+              const SizedBox(height: 16),
             ],
           ),
         ),
