@@ -39,7 +39,7 @@ class _ViolationdetailState extends State<Violationdetail> {
   }
 
   BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
-  static const LatLng defaultLoc = LatLng(24.8348509, 46.5882190);
+  static const LatLng defaultLoc = LatLng(24.72238, 46.637332);
   Violation? violation;
   Motorcycle? motorcycle;
 
