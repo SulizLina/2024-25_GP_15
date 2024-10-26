@@ -301,7 +301,7 @@ class _ProfilepageState extends State<Profilepage> {
               TextFormField(
                 controller: id,
                 decoration: InputDecoration(
-                  labelText: 'Driver ID (National / Residency Number) ',
+                  labelText: 'Driver ID (National ID/ Residency Number) ',
                   labelStyle:
                       GoogleFonts.poppins(color: const Color(0xFF211D1D)),
                   enabledBorder: OutlineInputBorder(
@@ -323,7 +323,31 @@ class _ProfilepageState extends State<Profilepage> {
                 readOnly: true,
               ),
               const SizedBox(height: 16),
-
+              // Email field
+              TextFormField(
+                controller: email,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  labelStyle:
+                      GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(202, 3, 152, 85),
+                      width: 1.5,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Color.fromARGB(202, 3, 152, 85),
+                      width: 2.0,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                readOnly: true,
+              ),  const SizedBox(height: 16),
               // Phone number field
               TextFormField(
                 //  initialValue:
@@ -445,31 +469,7 @@ class _ProfilepageState extends State<Profilepage> {
                 readOnly: true,
               ),
               const SizedBox(height: 16),
-              // Email field
-              TextFormField(
-                controller: email,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  labelStyle:
-                      GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 1.5,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color.fromARGB(202, 3, 152, 85),
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                readOnly: true,
-              ),
+
 
               const SizedBox(height: 16),
               Text(
