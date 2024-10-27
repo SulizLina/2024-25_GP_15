@@ -97,20 +97,31 @@ class _ViolationslistState extends State<Violationslist> {
       await Future.wait(fetchTasks);
 
       setState(() {
-        plateN = ['All', ...{...plateN}]; // Ensures unique entries // Ensure unique entries
+        // Ensure plateN is unique and does not contain "All"
+        plateN = [
+          "Reset",
+          ...{...plateN}
+        ]; // Add "Reset" at the beginning
+
+        // Default selectedPlate to null if not in plateN
+        if (!plateN.contains(selectedPlate)) {
+          selectedPlate = null;
+        }
+
         violations = snapshot.docs;
 
         // Apply filters based on selectedPlate and filterDate
         filteredViolations = violations.where((doc) {
           Violation violation = Violation.fromJson(doc);
+
           bool dateMatch = isDateFiltered
               ? violation.getFormattedDate().split(' ')[0] ==
-                  filterDate?.toString().split(' ')[0]
+                  selectDate.toString().split(' ')[0]
               : true;
 
-          bool plateMatch = isPlateFiltered
-              ? licensePlateMap[violation.Vid] == selectedPlate
-              : true;
+          bool plateMatch = selectedPlate == null
+              ? true
+              : licensePlateMap[violation.Vid] == selectedPlate;
 
           return dateMatch && plateMatch;
         }).toList();
@@ -186,17 +197,18 @@ class _ViolationslistState extends State<Violationslist> {
                         textAlign: TextAlign.left,
                       ),
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 5),
                     Row(
                       children: [
                         Expanded(
                           child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 7, vertical: 0),
+                            padding: EdgeInsets.symmetric(horizontal: 8), // Adjust padding
+                            height: 35,
                             decoration: BoxDecoration(
                               color: Color(0xFFF3F3F3),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(
+                                  10), // Adjust border radius for thinner edges
+                              //border: Border.all(color: Colors.grey),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.1),
@@ -206,17 +218,14 @@ class _ViolationslistState extends State<Violationslist> {
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.search,
-                                    color: Colors.grey, size: 18),
                                 SizedBox(width: 5),
                                 Expanded(
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton<String>(
                                       isExpanded: true,
-                                      value: selectedPlate ??
-                                          'All', // Default to 'All' if null
+                                      value: selectedPlate,
                                       icon: Icon(Icons.arrow_drop_down,
-                                          color: Colors.grey, size: 20),
+                                          color: Colors.grey, size: 25),
                                       dropdownColor: Color(0xFFF3F3F3),
                                       style: GoogleFonts.poppins(
                                           color: Colors.black, fontSize: 14),
@@ -227,16 +236,21 @@ class _ViolationslistState extends State<Violationslist> {
                                       ),
                                       onChanged: (String? newValue) {
                                         setState(() {
-                                          selectedPlate = newValue;
-                                          isPlateFiltered =
-                                              selectedPlate != null &&
-                                                  selectedPlate != "All";
+                                          if (newValue == "Reset") {
+                                            selectedPlate = null;
+                                            isPlateFiltered = false;
+                                          } else {
+                                            selectedPlate = newValue;
+                                            isPlateFiltered =
+                                                selectedPlate != null;
+                                          }
                                           _isLoading = true;
                                         });
                                         fetchViolations(
-                                            filterDate: isDateFiltered
-                                                ? selectDate
-                                                : null);
+                                          filterDate: isDateFiltered
+                                              ? selectDate
+                                              : null,
+                                        );
                                       },
                                       items: plateN
                                           .map<DropdownMenuItem<String>>(
@@ -264,8 +278,8 @@ class _ViolationslistState extends State<Violationslist> {
                           },
                           icon: Icon(
                             isDateFiltered
-                                ? HugeIcons.strokeRoundedFilterRemove
-                                : HugeIcons.strokeRoundedFilter,
+                                ? HugeIcons.strokeRoundedCalendarRemove02
+                                : HugeIcons.strokeRoundedCalendar03,
                             size: 24,
                             color: Color(0xFFF3F3F3),
                           ),
