@@ -97,10 +97,8 @@ class _ViolationslistState extends State<Violationslist> {
       await Future.wait(fetchTasks);
 
       setState(() {
-        // Ensure plateN is unique and does not contain "All"
-        plateN = ["Reset", ...{...plateN}];
+        plateN = ["Reset", ...{...plateN}].toSet().toList();
 
-        // Default selectedPlate to null if not in plateN
         if (!plateN.contains(selectedPlate)) {
           selectedPlate = null;
         }
