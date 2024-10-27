@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:sairdriver/screens/welcomepage.dart';
+import 'package:sairdriver/screens/login_email.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 
 void main() async {
@@ -57,7 +58,7 @@ class SplashPage extends StatelessWidget {
               splash: Image.asset(
                 'assets/image/SAIRLogo.png', // Logo image
               ),
-              nextScreen: Welcomepage(), // The next screen to transition to
+              nextScreen: LoginEmail(), // The next screen to transition to
               splashTransition: SplashTransition.scaleTransition, // Add animation for the logo
               backgroundColor: Colors.transparent, // Make the background transparent to retain the design
             ),
