@@ -169,24 +169,29 @@ class _ViolationdetailState extends State<Violationdetail> {
                   const SizedBox(height: 20),
 
                   buildDetailSection(
+                      'Motorcycle Brand',
+                      motorcycle?.brand ?? '',
+                      HugeIcons.strokeRoundedMotorbike02),
+
+                  buildDetailSection('Motorcycle Type', motorcycle?.type ?? '',
+                      HugeIcons.strokeRoundedMotorbike02),
+
+                  buildDetailSection(
+                      'Motorcycle Model',
+                      motorcycle?.model ?? '',
+                      HugeIcons.strokeRoundedMotorbike02),
+                  Divider(color: Colors.grey[350]),
+
+                  buildDetailSection(
                       'Motorcycle Licence Plate',
                       motorcycle?.licensePlate ?? '',
-                      HugeIcons.strokeRoundedCreditCard), ////
+                      HugeIcons.strokeRoundedCreditCard),
+                      
                   buildDetailSection(
                       'GPS Serial Number',
                       violation?.gspNumber ?? '',
                       HugeIcons.strokeRoundedShareLocation01),
-                  buildDetailSection('Motorcycle Type', motorcycle?.type ?? '',
-                      HugeIcons.strokeRoundedMotorbike02), ///////
-                  buildDetailSection(
-                      'Motorcycle Brand',
-                      motorcycle?.brand ?? '',
-                      HugeIcons.strokeRoundedMotorbike02), ///////
-                  buildDetailSection(
-                      'Motorcycle Model',
-                      motorcycle?.model ?? '',
-                      HugeIcons.strokeRoundedMotorbike02), ///////
-                  Divider(color: Colors.grey[350]),
+
                   const SizedBox(height: 15),
 
                   buildDetailSection(
