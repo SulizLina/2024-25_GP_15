@@ -25,7 +25,7 @@ class _ViolationslistState extends State<Violationslist> {
   List<bool> isHoveredList = []; // Hover state list
 
   List<String> plateN = []; // To store all GPS numbers from violations
-  String? selectedGPS; // Selected GPS number
+  String? selectedPlate; // Selected GPS number
 
   driver? driverNat_Res;
   DateTime selectDate = DateTime.now(); // Selected date for filtering
@@ -215,7 +215,7 @@ class _ViolationslistState extends State<Violationslist> {
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton<String>(
                                       isExpanded: true,
-                                      value: selectedGPS,
+                                      value: selectedPlate,
                                       icon: Icon(Icons.arrow_drop_down, color: Colors.grey, size: 20),
                                       dropdownColor: Color(0xFFF3F3F3),
                                       style: GoogleFonts.poppins(color: Colors.black, fontSize: 14),
@@ -225,14 +225,14 @@ class _ViolationslistState extends State<Violationslist> {
                                       ),
                                       onChanged: (String? newValue) {
                                         setState(() {
-                                          selectedGPS = newValue;
+                                          selectedPlate = newValue;
                                         });
                                       },
-                                      items: plateN.map<DropdownMenuItem<String>>((String gps) {
+                                      items: plateN.map<DropdownMenuItem<String>>((String plate) {
                                         return DropdownMenuItem<String>(
-                                          value: gps,
+                                          value: plate,
                                           child: Text(
-                                            gps,
+                                            plate,
                                             style: GoogleFonts.poppins(color: Colors.black, fontSize: 13),
                                           ),
                                         );
