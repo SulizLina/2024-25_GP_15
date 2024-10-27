@@ -186,7 +186,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                       'Motorcycle Licence Plate',
                       motorcycle?.licensePlate ?? '',
                       HugeIcons.strokeRoundedCreditCard),
-                      
+
                   buildDetailSection(
                       'GPS Serial Number',
                       violation?.gspNumber ?? '',
@@ -227,19 +227,25 @@ class _ViolationdetailState extends State<Violationdetail> {
 
                   Container(
                     height: 200,
-                    child: GoogleMap(
-                      initialCameraPosition: CameraPosition(
-                        target: LatLng(latitude, longitude),
-                        zoom: 13,
-                      ),
-                      markers: {
-                        Marker(
-                          markerId: MarkerId('violationLocationPin'),
-                          position: LatLng(latitude, longitude),
-                          icon: customMapIcon ?? BitmapDescriptor.defaultMarker,
-                        ),
-                      },
-                    ),
+                    child: (latitude != defaultLoc.latitude ||
+                            longitude != defaultLoc.longitude)
+                        ? GoogleMap(
+                            initialCameraPosition: CameraPosition(
+                              target: LatLng(latitude, longitude),
+                              zoom: 13,
+                            ),
+                            markers: {
+                              Marker(
+                                markerId: MarkerId('violationLocationPin'),
+                                position: LatLng(latitude, longitude),
+                                icon: customMapIcon ??
+                                    BitmapDescriptor.defaultMarker,
+                              ),
+                            },
+                          )
+                        : Center(
+                            child:
+                                CircularProgressIndicator()), // Shows a loader until valid coordinates are fetched
                   ),
                   const SizedBox(height: 30),
                   ElevatedButton(
