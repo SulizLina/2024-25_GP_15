@@ -140,7 +140,7 @@ class _LoginEmailState extends State<LoginEmail> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
-                height: MediaQuery.of(context).size.height * 0.5,
+                height: MediaQuery.of(context).size.height * 0.6,
                 decoration: const BoxDecoration(
                   color: Color.fromARGB(202, 3, 152, 85),
                   borderRadius: BorderRadius.only(

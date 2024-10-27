@@ -98,10 +98,7 @@ class _ViolationslistState extends State<Violationslist> {
 
       setState(() {
         // Ensure plateN is unique and does not contain "All"
-        plateN = [
-          "Reset",
-          ...{...plateN}
-        ]; // Add "Reset" at the beginning
+        plateN = ["Reset", ...{...plateN}];
 
         // Default selectedPlate to null if not in plateN
         if (!plateN.contains(selectedPlate)) {
