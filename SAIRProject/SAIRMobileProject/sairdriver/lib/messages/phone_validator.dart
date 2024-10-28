@@ -1,13 +1,13 @@
 String? validatePhoneNumber(String? value) {
-  if (value == null || value.isEmpty) {
+  if (value == null || value.isEmpty ||value=="+966" ) {
     return 'Please enter your phone number';
   } 
   // Clean the phone number before validation
   String cleanedNumber = cleanPhoneNumber(value);
 
   // Validate cleaned number using regex (exactly 9 digits after +966)
-  if (!RegExp(r'^\+966\d{9}$').hasMatch(cleanedNumber)) {
-    return 'Phone number must start with +966 and be followed\nby 9 digits.';
+  if (!RegExp(r'^\+9665\d{8}$').hasMatch(cleanedNumber)) {
+    return 'Phone number must start with +9665 and be followed\nby 9 digits.';
   }
   return null;
 }
