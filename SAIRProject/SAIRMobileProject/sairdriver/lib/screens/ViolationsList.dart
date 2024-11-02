@@ -211,7 +211,7 @@ class _ViolationslistState extends State<Violationslist> {
                   padding: const EdgeInsets.only(top: 5.0),
                   child: ColorFiltered(
                     colorFilter: ColorFilter.mode(
-                      plateN.isEmpty ? Colors.grey : Colors.white,
+                      plateN.isEmpty ? const Color.fromARGB(255, 199, 199, 199) : Colors.white,
                       BlendMode.srcIn,
                     ),
                     child: Image.asset(
@@ -259,7 +259,7 @@ class _ViolationslistState extends State<Violationslist> {
                     ? HugeIcons.strokeRoundedCalendarRemove02
                     : HugeIcons.strokeRoundedCalendar03,
                 size: 24,
-                color: violations.isEmpty ? Colors.grey : Color(0xFFF3F3F3),
+                color: violations.isEmpty ? const Color.fromARGB(255, 199, 199, 199) : Color(0xFFF3F3F3),
               ),
             ),
           ],
