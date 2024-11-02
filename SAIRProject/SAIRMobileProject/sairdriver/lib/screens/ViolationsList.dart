@@ -97,10 +97,15 @@ class _ViolationslistState extends State<Violationslist> {
       await Future.wait(fetchTasks);
 
       setState(() {
-        plateN = [
-          "Reset",
-          ...{...plateN}
-        ].toSet().toList();
+        // Only add "Reset" if there are plates available
+        if (plateN.isNotEmpty) {
+          plateN = [
+            "Reset",
+            ...{...plateN}
+          ].toSet().toList();
+        } else {
+          plateN = []; // Empty list when no plates
+        }
 
         if (!plateN.contains(selectedPlate)) {
           selectedPlate = null;
@@ -199,15 +204,14 @@ class _ViolationslistState extends State<Violationslist> {
                 ),
               ),
             ),
-            // Car icon that opens the dropdown
+            // filter by plate
             DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 icon: Padding(
-                  padding: const EdgeInsets.only(
-                      top: 5.0), // Adjust the top padding as needed
+                  padding: const EdgeInsets.only(top: 5.0),
                   child: ColorFiltered(
                     colorFilter: ColorFilter.mode(
-                      Colors.white,
+                      plateN.isEmpty ? Colors.grey : Colors.white,
                       BlendMode.srcIn,
                     ),
                     child: Image.asset(
@@ -228,34 +232,34 @@ class _ViolationslistState extends State<Violationslist> {
                     ),
                   );
                 }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    if (newValue == "Reset") {
-                      selectedPlate = null;
-                      isPlateFiltered = false;
-                    } else {
-                      selectedPlate = newValue;
-                      isPlateFiltered = selectedPlate != null;
-                    }
-                    _isLoading = true;
-                  });
-                  fetchViolations(
-                    filterDate: isDateFiltered ? selectDate : null,
-                  );
-                },
+                onChanged: plateN.isEmpty
+                    ? null
+                    : (String? newValue) {
+                        setState(() {
+                          if (newValue == "Reset") {
+                            selectedPlate = null;
+                            isPlateFiltered = false;
+                          } else {
+                            selectedPlate = newValue;
+                            isPlateFiltered = selectedPlate != null;
+                          }
+                          _isLoading = true;
+                        });
+                        fetchViolations(
+                          filterDate: isDateFiltered ? selectDate : null,
+                        );
+                      },
               ),
             ),
-            // Calendar icon button
+            // Filter by date
             IconButton(
-              onPressed: () {
-                _chooseDate();
-              },
+              onPressed: violations.isEmpty ? null : _chooseDate,
               icon: Icon(
                 isDateFiltered
                     ? HugeIcons.strokeRoundedCalendarRemove02
                     : HugeIcons.strokeRoundedCalendar03,
                 size: 24,
-                color: Color(0xFFF3F3F3),
+                color: violations.isEmpty ? Colors.grey : Color(0xFFF3F3F3),
               ),
             ),
           ],
