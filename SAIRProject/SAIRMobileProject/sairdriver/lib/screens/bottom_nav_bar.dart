@@ -65,7 +65,7 @@ class _MyBottomNavState extends State<BottomNavBar> {
   // List of Screens for Bottom NavBar
   List<Widget> _buildScreen(String driverId) {
     return [
-      const Crasheslist(),
+      Crasheslist(driverId: driverId),
       Violationslist(driverId: driverId),
       Home(driverId: driverId),
       Viewcomplaints(driverId: driverId),
