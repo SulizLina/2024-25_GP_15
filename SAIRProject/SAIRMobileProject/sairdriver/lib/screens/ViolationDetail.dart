@@ -39,7 +39,7 @@ class _ViolationdetailState extends State<Violationdetail> {
   }
 
   BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
-  static const LatLng defaultLoc = LatLng(24.72238, 46.637332);
+  static const LatLng defaultLoc = LatLng(0.0, 0.0);
   Violation? violation;
   Motorcycle? motorcycle;
 
@@ -253,7 +253,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                               DateTime.now().subtract(Duration(days: 30)),
                             )
                         ? () {
-                            // Button is enabled, show alert about future implementation
+                            // Button is enabled, show form to sumbit a complaint
                             showDialog(
                               context: context,
                               builder: (context) {

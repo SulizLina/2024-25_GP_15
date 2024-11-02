@@ -97,7 +97,10 @@ class _ViolationslistState extends State<Violationslist> {
       await Future.wait(fetchTasks);
 
       setState(() {
-        plateN = ["Reset", ...{...plateN}].toSet().toList();
+        plateN = [
+          "Reset",
+          ...{...plateN}
+        ].toSet().toList();
 
         if (!plateN.contains(selectedPlate)) {
           selectedPlate = null;
@@ -192,97 +195,67 @@ class _ViolationslistState extends State<Violationslist> {
                         textAlign: TextAlign.left,
                       ),
                     ),
-                    SizedBox(height: 5),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8), // Adjust padding
-                            height: 35,
-                            decoration: BoxDecoration(
-                              color: Color(0xFFF3F3F3),
-                              borderRadius: BorderRadius.circular(
-                                  10), // Adjust border radius for thinner edges
-                              //border: Border.all(color: Colors.grey),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 3,
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                SizedBox(width: 5),
-                                Expanded(
-                                  child: DropdownButtonHideUnderline(
-                                    child: DropdownButton<String>(
-                                      isExpanded: true,
-                                      value: selectedPlate,
-                                      icon: Icon(Icons.arrow_drop_down,
-                                          color: Colors.grey, size: 25),
-                                      dropdownColor: Color(0xFFF3F3F3),
-                                      style: GoogleFonts.poppins(
-                                          color: Colors.black, fontSize: 14),
-                                      hint: Text(
-                                        'Filter By Licence Plate',
-                                        style: GoogleFonts.poppins(
-                                            color: Colors.grey, fontSize: 14),
-                                      ),
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          if (newValue == "Reset") {
-                                            selectedPlate = null;
-                                            isPlateFiltered = false;
-                                          } else {
-                                            selectedPlate = newValue;
-                                            isPlateFiltered =
-                                                selectedPlate != null;
-                                          }
-                                          _isLoading = true;
-                                        });
-                                        fetchViolations(
-                                          filterDate: isDateFiltered
-                                              ? selectDate
-                                              : null,
-                                        );
-                                      },
-                                      items: plateN
-                                          .map<DropdownMenuItem<String>>(
-                                              (String plate) {
-                                        return DropdownMenuItem<String>(
-                                          value: plate,
-                                          child: Text(
-                                            plate,
-                                            style: GoogleFonts.poppins(
-                                                color: Colors.black,
-                                                fontSize: 13),
-                                          ),
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            _chooseDate();
-                          },
-                          icon: Icon(
-                            isDateFiltered
-                                ? HugeIcons.strokeRoundedCalendarRemove02
-                                : HugeIcons.strokeRoundedCalendar03,
-                            size: 24,
-                            color: Color(0xFFF3F3F3),
-                          ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
+              ),
+            ),
+            // Car icon that opens the dropdown
+            DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                icon: Padding(
+                  padding: const EdgeInsets.only(
+                      top: 5.0), // Adjust the top padding as needed
+                  child: ColorFiltered(
+                    colorFilter: ColorFilter.mode(
+                      Colors.white,
+                      BlendMode.srcIn,
+                    ),
+                    child: Image.asset(
+                      'assets/image/licenseplate.png',
+                      width: 33,
+                      height: 33,
+                    ),
+                  ),
+                ),
+                dropdownColor: Color(0xFFF3F3F3),
+                items: plateN.map<DropdownMenuItem<String>>((String plate) {
+                  return DropdownMenuItem<String>(
+                    value: plate,
+                    child: Text(
+                      plate,
+                      style: GoogleFonts.poppins(
+                          color: Colors.black, fontSize: 14),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    if (newValue == "Reset") {
+                      selectedPlate = null;
+                      isPlateFiltered = false;
+                    } else {
+                      selectedPlate = newValue;
+                      isPlateFiltered = selectedPlate != null;
+                    }
+                    _isLoading = true;
+                  });
+                  fetchViolations(
+                    filterDate: isDateFiltered ? selectDate : null,
+                  );
+                },
+              ),
+            ),
+            // Calendar icon button
+            IconButton(
+              onPressed: () {
+                _chooseDate();
+              },
+              icon: Icon(
+                isDateFiltered
+                    ? HugeIcons.strokeRoundedCalendarRemove02
+                    : HugeIcons.strokeRoundedCalendar03,
+                size: 24,
+                color: Color(0xFFF3F3F3),
               ),
             ),
           ],
