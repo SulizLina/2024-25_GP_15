@@ -166,6 +166,7 @@ const ViolationList = () => {
           <span> / </span>
           <a onClick={() => navigate('/violations')}>Violations List</a>
         </div>
+        
         <main>
 
         <div className={s.container}>
