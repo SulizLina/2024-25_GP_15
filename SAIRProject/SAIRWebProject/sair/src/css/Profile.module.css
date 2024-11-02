@@ -1,0 +1,113 @@
+.container {
+  max-width: 800px;
+  margin: 80px auto;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  font-family: 'Open Sans';
+}
+
+.container form {
+  display: flex;
+  flex-direction: column;
+  font-family: 'Open Sans';
+}
+
+/* Profile Form Styling */
+.container label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #333;
+  margin-left: 0; /* Remove custom left margin */
+  margin-top: 0; /* Remove custom top margin */
+  font-family: 'Open Sans';
+}
+
+.container input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #059855; /* Green border */
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.3s ease-in-out;
+  font-family: 'Open Sans';
+}
+
+/* Change border color on focus */
+.container input:focus {
+  outline: none;
+  border-color: #1c7a50; /* Darker green when focused */
+  font-family: 'Open Sans';
+}
+
+/* Form Layout Styling */
+.formRow {
+  display: flex;
+  /* justify-content: space-between; */
+  gap: 20px; /* Space between the columns */
+  margin-bottom: 20px;
+  font-family: 'Open Sans';
+}
+
+.formRow div {
+  flex: 1;
+  font-family: 'Open Sans';
+}
+
+.container input:focus {
+  outline: none;
+  box-shadow: 0px 4px 8px rgba(60, 197, 133, 0.3);
+  font-family: 'Open Sans';
+}
+
+.editBtn,
+.profileCancel,
+.profilesave,
+.profileVerify {
+  border-radius: 5px;
+  background-color: #059855;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+  color: white;
+  margin-right: 10px;
+  font-family: 'Open Sans';
+}
+.editBtn:hover,
+.profilesave:hover,
+.profileCancel:hover,
+.profileVerify.profileVerify:hover {
+  background-color: #1c7a50;
+  font-family: 'Open Sans';
+}
+.profileLabel {
+  color: #059855;
+}
+.container label {
+  color: #059855;
+  font-family: 'Open Sans';
+}
+
+.togglePasswordVisibility {
+  position: absolute;
+  top: 45px;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  color: gray;
+}
+
+.passwordRequirements {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  margin: 0;
+  padding-left: 18px; /* Adjust this value to align with the input field */
+  font-size: 12px; /* Make the font size smaller */
+  list-style-type: none;
+}

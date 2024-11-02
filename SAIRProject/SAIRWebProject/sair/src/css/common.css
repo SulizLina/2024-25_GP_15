@@ -1,0 +1,257 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: 'Open Sans';
+}
+
+body,
+html {
+  height: 100%;
+}
+
+p {
+  color: #211d1d;
+  /* margin-left: 22px;
+  margin-top: 10px; */
+  font-family: 'Open Sans';
+  /* margin-left: 3px; */
+  font-size: 14px;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  color: #059855; 
+}
+
+h1,
+h2 {
+  font-family: 'Open Sans';
+}
+
+.breadcrumb {
+  margin: 20px 0;
+  text-align: left;
+  margin-left: 20px;
+  font-family: 'Open Sans';
+}
+
+.breadcrumb a {
+  color: #059855;
+  font-size: 1rem;
+  text-decoration: underline;
+  font-family: 'Open Sans';
+}
+
+/* Popup styling */
+.popup-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: auto;
+  height: auto;
+  /* Adjust height to auto for better content fit */
+  background-color: var(--primary);
+  color: #059855;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  /* Optional: add some padding for the content */
+  min-width: 500px;
+  font-family: 'Open Sans';
+}
+
+.popup-content {
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  /* Increased gap between elements */
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  font-family: 'Open Sans';
+}
+
+.popup-content form {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 10px;
+  font-family: 'Open Sans';
+}
+
+.popup-content input,
+.popup-content select {
+  padding: 10px;
+  /* Increased padding for inputs */
+  font-size: 1.2rem;
+  /* Larger font size for inputs */
+  border: 2px solid #3cc585;
+  /* Optional: add border */
+  border-radius: 10px;
+  /* Make inputs slightly rounded */
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+  align-items: center;
+  justify-content: center;
+  color: black;
+  width: 100%;
+  font-family: 'Open Sans';
+}
+
+.popup-content h2 {
+  font-size: 2rem;
+  /* Increase the heading size */
+  text-align: center;
+  /* Center the title */
+  color: #3cc585;
+  font-family: 'Open Sans';
+}
+
+.close-popup-btn {
+  align-self: flex-end;
+  cursor: pointer;
+  font-size: 1.5rem;
+  margin-top: -10px;
+  margin-right: -9px;
+}
+
+.close-popup-btn1 {
+  align-self: flex-end;
+  cursor: pointer;
+  font-size: 1.5rem;
+  margin-top: -100px;
+  gap: 500px;
+  margin-right: 9px;
+  margin-left: 180px;
+}
+
+.close-popup-btn1:hover {
+  color: red;
+}
+
+.close-popup-btn:hover {
+  color: red;
+}
+
+.popup-container button {
+  background-color: white;
+  color: var(--primary);
+  padding: 10px;
+  grid-column: 1 / -1;
+  margin-top: 10px;
+  font-family: 'Open Sans';
+}
+
+.actions-container {
+  height: auto;
+  /* Maintain aspect ratio */
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Open Sans';
+}
+
+.popup img {
+  width: 50px;
+  margin-bottom: 10px;
+  /* Reduce margin to improve spacing */
+}
+
+.popup p {
+  font-size: 16px;
+  color: #333;
+  margin: 0;
+  /* Remove margin for better vertical alignment */
+  font-family: 'Open Sans';
+}
+
+.popup .close-btn {
+  position: absolute;
+  top: 3px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #333;
+}
+
+.popup .close-btn:hover {
+  color: #ff0000;
+  /* Optional: Red hover color for close button */
+}
+
+/* Popup Styling */
+.popup,
+.notification-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  width: 300px;
+  text-align: center;
+  z-index: 1000;
+  font-family: 'Open Sans';
+}
+
+.popup img,
+.notification-popup img {
+  width: 50px;
+  margin-bottom: 10px;
+}
+
+.popup p,
+.notification-popup p {
+  font-size: 16px;
+  color: #333;
+  font-family: 'Open Sans';
+}
+
+/* Error and Success Messages */
+.error-message,
+.password-requirements li {
+  font-size: 12px;
+  margin: 5px 0;
+  font-family: 'Open Sans';
+}
+
+.error-message {
+  color: red;
+  font-family: 'Open Sans';
+}
+
+.success-message {
+  color: green;
+  font-family: 'Open Sans';
+}
+
+main {
+  padding: 0 20px;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+hr {
+  border: 1px solid #059855;
+  margin: 20px 0;
+}
+
+.title {
+  color: #059855;
+  font-size: 32px;
+  margin-right: auto;
+  margin-bottom: 16px;
+}

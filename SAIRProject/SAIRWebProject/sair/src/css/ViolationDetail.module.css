@@ -1,0 +1,20 @@
+.title {
+  color: #059855;
+  font-size: 32px;
+  margin: 20px 0;
+}
+
+.map {
+  margin: 60px auto;
+  height: 400px;
+}
+
+.violation h3 {
+color: #333;
+margin-bottom: 10px;
+}
+
+.violation p {
+  margin-bottom: 16px;
+  color: #444;
+}
