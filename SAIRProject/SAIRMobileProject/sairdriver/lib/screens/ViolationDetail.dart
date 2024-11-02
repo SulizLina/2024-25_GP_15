@@ -382,7 +382,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                                 DateTime.now().subtract(Duration(days: 30)),
                               )
                           ? Color.fromARGB(202, 3, 152, 85) // Active color
-                          : Colors.grey, // Gray color if condition is not met
+                          : const Color.fromARGB(255, 199, 199, 199), // Gray color if condition is not met
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
