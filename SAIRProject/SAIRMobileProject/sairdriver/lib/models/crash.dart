@@ -9,6 +9,7 @@ class Crash {
   String? location; 
   GeoPoint? position; 
   int? time;  
+  String? status;
 
   Crash({
     required this.cid,
@@ -17,6 +18,8 @@ class Crash {
     required this.location,
     required this.position,
     required this.time,
+        required this.status,
+
   });
 
     String getFormattedDate() {
@@ -39,6 +42,7 @@ class Crash {
       cid: parsedJSON['crashID'].toString(),
       driverId: parsedJSON['driverID'].toString(),
       gspNumber: parsedJSON['GPSnumber'].toString(),
+      status: parsedJSON['Status'] as String?, 
       location: parsedJSON['location'] as String?, 
       position: parsedJSON['position'] != null
           ? GeoPoint(

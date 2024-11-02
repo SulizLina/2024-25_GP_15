@@ -6,7 +6,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:sairdriver/models/crash.dart';
 import 'package:sairdriver/models/driver.dart';
 import 'package:sairdriver/models/motorcycle.dart';
-import 'package:sairdriver/screens/ViolationDetail.dart';
+import 'package:sairdriver/screens/CrashDetail.dart';
 import 'package:sairdriver/services/driver_database.dart';
 class Crasheslist extends StatefulWidget {
   final String driverId;
@@ -153,7 +153,7 @@ class _CrasheslistState extends State<Crasheslist> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 3, 152, 85),
-        appBar: AppBar(
+           appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
         backgroundColor: Color.fromARGB(255, 3, 152, 85),
@@ -183,15 +183,14 @@ class _CrasheslistState extends State<Crasheslist> {
                 ),
               ),
             ),
-            // Car icon that opens the dropdown
+            // filter by plate
             DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 icon: Padding(
-                  padding: const EdgeInsets.only(
-                      top: 5.0), // Adjust the top padding as needed
+                  padding: const EdgeInsets.only(top: 5.0),
                   child: ColorFiltered(
                     colorFilter: ColorFilter.mode(
-                      Colors.white,
+                      plateN.isEmpty ? const Color.fromARGB(255, 199, 199, 199) : Colors.white,
                       BlendMode.srcIn,
                     ),
                     child: Image.asset(
@@ -212,34 +211,34 @@ class _CrasheslistState extends State<Crasheslist> {
                     ),
                   );
                 }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    if (newValue == "Reset") {
-                      selectedPlate = null;
-                      isPlateFiltered = false;
-                    } else {
-                      selectedPlate = newValue;
-                      isPlateFiltered = selectedPlate != null;
-                    }
-                    _isLoading = true;
-                  });
-                  fetchCrash(
-                    filterDate: isDateFiltered ? selectDate : null,
-                  );
-                },
+                onChanged: plateN.isEmpty
+                    ? null
+                    : (String? newValue) {
+                        setState(() {
+                          if (newValue == "Reset") {
+                            selectedPlate = null;
+                            isPlateFiltered = false;
+                          } else {
+                            selectedPlate = newValue;
+                            isPlateFiltered = selectedPlate != null;
+                          }
+                          _isLoading = true;
+                        });
+                        fetchCrash(
+                          filterDate: isDateFiltered ? selectDate : null,
+                        );
+                      },
               ),
             ),
-            // Calendar icon button
+            // Filter by date
             IconButton(
-              onPressed: () {
-                _chooseDate();
-              },
+              onPressed: crashes.isEmpty ? null : _chooseDate,
               icon: Icon(
                 isDateFiltered
                     ? HugeIcons.strokeRoundedCalendarRemove02
                     : HugeIcons.strokeRoundedCalendar03,
                 size: 24,
-                color: Color(0xFFF3F3F3),
+                color: crashes.isEmpty ? const Color.fromARGB(255, 199, 199, 199) : Color(0xFFF3F3F3),
               ),
             ),
           ],
@@ -370,8 +369,8 @@ class _CrasheslistState extends State<Crasheslist> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => Violationdetail(
-                                  violationId: filteredList[index].id),
+                              builder: (context) => Crashdetail(
+                                  crashId: filteredList[index].id),
                             ),
                           );
                         },
