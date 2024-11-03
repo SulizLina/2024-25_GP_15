@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/models/violation.dart';
 import 'package:sairdriver/screens/ViolationsList.dart';
+import 'package:sairdriver/screens/RaiseCompliants.dart';
 import 'package:sairdriver/services/Violations_database.dart';
 import 'package:sairdriver/screens/RaiseCompliants.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -172,8 +173,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                       'Motorcycle Brand',
                       motorcycle?.brand ?? '',
                       HugeIcons.strokeRoundedMotorbike02),
-                  buildDetailSection('Motorcycle Type',
-                       motorcycle?.type ?? '',
+                  buildDetailSection('Motorcycle Type', motorcycle?.type ?? '',
                       HugeIcons.strokeRoundedMotorbike02),
                   buildDetailSection(
                       'Motorcycle Model',
@@ -186,7 +186,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                   buildDetailSection(
                       'GPS Serial Number',
                       violation?.gspNumber ?? '',
-                      HugeIcons.strokeRoundedShareLocation01),               
+                      HugeIcons.strokeRoundedShareLocation01),
 
                   Divider(color: Colors.grey[350]),
                   const SizedBox(height: 15),
@@ -254,60 +254,13 @@ class _ViolationdetailState extends State<Violationdetail> {
                             )
                         ? () {
                             // Button is enabled, show form to sumbit a complaint
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return Dialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Container(
-                                    padding: EdgeInsets.all(16),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          "Note!",
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        SizedBox(height: 20),
-                                        Text(
-                                          "This is a raise complaint form that will be done in Sprint 2",
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 16,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        SizedBox(height: 20),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.pop(
-                                                context); // Close dialog
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                Color.fromARGB(201, 3, 152, 85),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                          ),
-                                          child: Text(
-                                            "OK",
-                                            style: GoogleFonts.poppins(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
+                            Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Raisecomplaint(
+                                  violationId: violation?.Vid ?? ''),
+                            ),
+                          );
                           }
                         : () {
                             // Button is disabled, show warning dialog
@@ -382,7 +335,8 @@ class _ViolationdetailState extends State<Violationdetail> {
                                 DateTime.now().subtract(Duration(days: 30)),
                               )
                           ? Color.fromARGB(202, 3, 152, 85) // Active color
-                          : const Color.fromARGB(255, 199, 199, 199), // Gray color if condition is not met
+                          : const Color.fromARGB(255, 199, 199,
+                              199),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -443,5 +397,9 @@ class _ViolationdetailState extends State<Violationdetail> {
         const SizedBox(height: 20), // Add space below each section
       ],
     );
+  }
+
+  void submitComplint(){
+    Navigator.of(context).pop();
   }
 }
