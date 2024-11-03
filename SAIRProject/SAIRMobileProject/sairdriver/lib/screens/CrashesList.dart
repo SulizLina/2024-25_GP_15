@@ -1,3 +1,4 @@
+import 'dart:async'; // Import for Timer
 import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:sairdriver/models/driver.dart';
 import 'package:sairdriver/models/motorcycle.dart';
 import 'package:sairdriver/screens/CrashDetail.dart';
 import 'package:sairdriver/services/driver_database.dart';
+
 class Crasheslist extends StatefulWidget {
   final String driverId;
   const Crasheslist({super.key, required this.driverId});
@@ -18,7 +20,6 @@ class Crasheslist extends StatefulWidget {
 
 class _CrasheslistState extends State<Crasheslist> {
   List<DocumentSnapshot> crashes = [];
-  List<DocumentSnapshot> filteredCrashes = [];
   List<String> plateN = [];
   String? selectedPlate;
   List<bool> isHoveredList = [];
@@ -27,25 +28,134 @@ class _CrasheslistState extends State<Crasheslist> {
   bool isDateFiltered = false;
   bool isPlateFiltered = false;
   bool _isLoading = true;
-
   Map<String, String?> licensePlateMap = {};
+  Timer? _timer; // Timer for auto-confirmation
 
   Future<void> fetchDriverData() async {
     DriverDatabase dbD = DriverDatabase();
     driverNat_Res = await dbD.getDriversnById(widget.driverId);
+    setState(() {
+      _isLoading = driverNat_Res == null;
+    });
+  }
 
-    if (driverNat_Res != null) {
-      setState(() {
-        _isLoading = false;
-      });
-    } else {
-      setState(() {
-        _isLoading = false;
+  void checkForPendingCrashes(List<DocumentSnapshot> crashes) {
+    bool hasPending = crashes.any((doc) {
+      Crash crash = Crash.fromJson(doc);
+      return crash.status == 'pending';
+    });
+
+    if (hasPending) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showPendingCrashDialog();
       });
     }
   }
 
-  Future<void> fetchCrash({DateTime? filterDate}) async {
+  void showPendingCrashDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // Start the timer for 10 minutes
+        _timer = Timer(Duration(minutes: 10), () {
+          updateCrashStatus('confirmed'); // Auto-confirm crash
+          Navigator.of(context).pop(); // Close dialog if still open
+        });
+
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "You had a crash?",
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(202, 3, 152, 85),
+                  ),
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'Please confirm or reject the crash. You have 10 minutes to respond before it will be automatically confirmed.',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        _timer?.cancel(); // Cancel the timer
+                        updateCrashStatus('rejected');
+                        Navigator.of(context).pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        'Reject',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        _timer?.cancel(); // Cancel the timer
+                        updateCrashStatus('confirmed');
+                        Navigator.of(context).pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        'Confirm',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> updateCrashStatus(String newStatus) async {
+    List<DocumentSnapshot> pendingCrashes = crashes.where((doc) {
+      Crash crash = Crash.fromJson(doc);
+      return crash.status == 'pending';
+    }).toList();
+
+    if (pendingCrashes.isNotEmpty) {
+      String crashId = pendingCrashes.first.id;
+      await FirebaseFirestore.instance
+          .collection('Crash')
+          .doc(crashId)
+          .update({'Status': newStatus});
+      fetchCrash();
+    }
+  }
+
+  Future<void> fetchCrash() async {
     setState(() {
       _isLoading = true;
     });
@@ -68,48 +178,42 @@ class _CrasheslistState extends State<Crasheslist> {
       }).toList();
 
       await Future.wait(fetchTasks);
+  // Only add "Reset" if there are plates available
+        if (plateN.isNotEmpty) {
+          plateN = [
+            "Reset",
+            ...{...plateN}
+          ].toSet().toList();
+        } else {
+          plateN = []; // Empty list when no plates
+        }
 
-      setState(() {
-        plateN = ["Reset", ...{...plateN}].toSet().toList();
-        crashes = snapshot.docs;
-        applyFilters();
-        _isLoading = false;
-      });
+        if (!plateN.contains(selectedPlate)) {
+          selectedPlate = null;
+        }
     } catch (e) {
       print("Error fetching crashes: $e");
     }
   }
+
   Stream<QuerySnapshot> fetchVCrashStream() {
     return FirebaseFirestore.instance
         .collection('Crash')
         .where('driverID', isEqualTo: driverNat_Res?.driverId)
         .snapshots();
   }
+
   Future<String?> fetchLicensePlate(String gspNumber) async {
     QuerySnapshot motorcycleSnapshot = await FirebaseFirestore.instance
         .collection('Motorcycle')
         .where('GPSnumber', isEqualTo: gspNumber)
         .get();
     if (motorcycleSnapshot.docs.isNotEmpty) {
-      Motorcycle motorcycle = Motorcycle.fromDocument(motorcycleSnapshot.docs.first);
+      Motorcycle motorcycle =
+          Motorcycle.fromDocument(motorcycleSnapshot.docs.first);
       return motorcycle.licensePlate;
     }
     return null;
-  }
-
-  void applyFilters() {
-    setState(() {
-      filteredCrashes = crashes.where((doc) {
-        Crash crash = Crash.fromJson(doc);
-        bool dateMatch = isDateFiltered
-            ? crash.getFormattedDate().split(' ')[0] == selectDate.toString().split(' ')[0]
-            : true;
-        bool plateMatch = selectedPlate == null
-            ? true
-            : licensePlateMap[crash.cid] == selectedPlate;
-        return dateMatch && plateMatch;
-      }).toList();
-    });
   }
 
   @override
@@ -118,20 +222,15 @@ class _CrasheslistState extends State<Crasheslist> {
     fetchDriverData().then((_) => fetchCrash());
   }
 
-  // Choose date using the date picker
   void _chooseDate() async {
-    if (isDateFiltered) {
-      setState(() {
-        selectDate = DateTime.now();
-        isDateFiltered = false;
-      });
-    } else {
+    if (!isDateFiltered) {
       final result = await showBoardDateTimePicker(
         context: context,
         pickerType: DateTimePickerType.date,
         initialDate: selectDate,
         options: BoardDateTimeOptions(
-          languages: BoardPickerLanguages(today: 'Today', tomorrow: '', now: 'now'),
+          languages:
+              BoardPickerLanguages(today: 'Today', tomorrow: '', now: 'now'),
           startDayOfWeek: DateTime.sunday,
           pickerFormat: PickerFormat.ymd,
           activeColor: Color.fromARGB(255, 3, 152, 85),
@@ -145,15 +244,25 @@ class _CrasheslistState extends State<Crasheslist> {
           isDateFiltered = true;
         });
       }
+    } else {
+      setState(() {
+        isDateFiltered = false;
+        selectDate = DateTime.now();
+      });
     }
-    applyFilters();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancel the timer if the widget is disposed
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 3, 152, 85),
-           appBar: AppBar(
+      appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
         backgroundColor: Color.fromARGB(255, 3, 152, 85),
@@ -164,33 +273,26 @@ class _CrasheslistState extends State<Crasheslist> {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(left: 7),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 5),
-                      child: Text(
-                        "My Crashes",
-                        style: GoogleFonts.poppins(
-                          fontSize: 24.0,
-                          color: Color(0xFFF3F3F3),
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  "My Crashes",
+                  style: GoogleFonts.poppins(
+                    fontSize: 24.0,
+                    color: Color(0xFFF3F3F3),
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.left,
                 ),
               ),
             ),
-            // filter by plate
             DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 icon: Padding(
                   padding: const EdgeInsets.only(top: 5.0),
                   child: ColorFiltered(
                     colorFilter: ColorFilter.mode(
-                      plateN.isEmpty ? const Color.fromARGB(255, 199, 199, 199) : Colors.white,
+                      plateN.isEmpty
+                          ? const Color.fromARGB(255, 199, 199, 199)
+                          : Colors.white,
                       BlendMode.srcIn,
                     ),
                     child: Image.asset(
@@ -215,22 +317,12 @@ class _CrasheslistState extends State<Crasheslist> {
                     ? null
                     : (String? newValue) {
                         setState(() {
-                          if (newValue == "Reset") {
-                            selectedPlate = null;
-                            isPlateFiltered = false;
-                          } else {
-                            selectedPlate = newValue;
-                            isPlateFiltered = selectedPlate != null;
-                          }
-                          _isLoading = true;
+                          selectedPlate = newValue == "Reset" ? null : newValue;
+                          isPlateFiltered = selectedPlate != null;
                         });
-                        fetchCrash(
-                          filterDate: isDateFiltered ? selectDate : null,
-                        );
                       },
               ),
             ),
-            // Filter by date
             IconButton(
               onPressed: crashes.isEmpty ? null : _chooseDate,
               icon: Icon(
@@ -238,13 +330,15 @@ class _CrasheslistState extends State<Crasheslist> {
                     ? HugeIcons.strokeRoundedCalendarRemove02
                     : HugeIcons.strokeRoundedCalendar03,
                 size: 24,
-                color: crashes.isEmpty ? const Color.fromARGB(255, 199, 199, 199) : Color(0xFFF3F3F3),
+                color: crashes.isEmpty
+                    ? const Color.fromARGB(255, 199, 199, 199)
+                    : Color(0xFFF3F3F3),
               ),
             ),
           ],
         ),
       ),
-     body: Container(
+      body: Container(
         width: double.infinity,
         decoration: const BoxDecoration(
           color: Color(0xFFF3F3F3),
@@ -253,138 +347,129 @@ class _CrasheslistState extends State<Crasheslist> {
             topRight: Radius.circular(30),
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 15),
-          child: StreamBuilder<QuerySnapshot>(
-            stream: fetchVCrashStream(),
-            builder: (context, snapshot) {
-              if (_isLoading) {
-                return Center(child: CircularProgressIndicator());
-              }
+        child: StreamBuilder<QuerySnapshot>(
+          stream: fetchVCrashStream(),
+          builder: (context, snapshot) {
+            if (_isLoading ||
+                snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
 
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              }
+            if (snapshot.hasError) {
+              return Center(child: Text("Error loading crashes"));
+            }
 
-              if (snapshot.hasError) {
-                return Center(child: Text("Error loading crashes"));
-              }
-
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return Center(
-                  child: Text(
-                    isDateFiltered || isPlateFiltered
-                        ? "You don't have any crashes\nfor the selected date."
-                        : "You don't have any crashes,\nride safe :)",
-                    style:
-                        GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
-                    textAlign: TextAlign.center,
-                  ),
-                );
-              }
-
-              final violations = snapshot.data!.docs;
-              final filteredList = violations.where((doc) {
-                Crash crash = Crash.fromJson(doc);
-
-                bool dateMatch = isDateFiltered
-                    ? crash.getFormattedDate().split(' ')[0] ==
-                        selectDate.toString().split(' ')[0]
-                    : true;
-                bool plateMatch = selectedPlate != null
-                    ? licensePlateMap[crash.cid] == selectedPlate
-                    : true;
-
-                return dateMatch && plateMatch;
-              }).toList();
-
-              isHoveredList =
-                  List.generate(filteredList.length, (index) => false);
-
-              if (filteredList.isEmpty) {
-                return Center(
-                  child: Text(
-                    "No crashes found for the selected date.",
-                    style:
-                        GoogleFonts.poppins(fontSize: 18, color: Colors.grey),
-                    textAlign: TextAlign.center,
-                  ),
-                );
-              }
-
-              return ListView.separated(
-                itemBuilder: (BuildContext context, int index) {
-                  if (index >= filteredList.length) return Container();
-
-                  Crash crash = Crash.fromJson(filteredList[index]);
-                  String formattedDate = crash.getFormattedDate();
-
-                  return MouseRegion(
-                    onEnter: (_) => setState(() => isHoveredList[index] = true),
-                    onExit: (_) => setState(() => isHoveredList[index] = false),
-                    child: Container(
-                      padding: const EdgeInsets.all(7),
-                      decoration: BoxDecoration(
-                        color: isHoveredList[index]
-                            ? Colors.green[200]
-                            : Color(0xFFF3F3F3),
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: isHoveredList[index]
-                            ? [
-                                const BoxShadow(
-                                    color: Colors.black26, blurRadius: 5)
-                              ]
-                            : [],
-                      ),
-                      child: ListTile(
-                        title: Text(
-                          'Crash ID: ${crash.cid}',
-                          style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF211D1D)),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Date: $formattedDate',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 14, color: Color(0xFF211D1D)),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Licence Plate: ${licensePlateMap[crash.cid] ?? ""}',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 14, color: Color(0xFF211D1D)),
-                            ),
-                          ],
-                        ),
-                        trailing: Icon(
-                          HugeIcons.strokeRoundedInformationCircle,
-                          color: Color.fromARGB(202, 3, 152, 85),
-                          size: 20,
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Crashdetail(
-                                  crashId: filteredList[index].id),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  );
-                },
-                separatorBuilder: (BuildContext context, int index) {
-                  return Divider(color: Colors.grey[350]);
-                },
-                itemCount: filteredList.length,
+            if (!snapshot.hasData) {
+              return Center(
+                child: Text(
+                  "You don't have any crashes,\nride safe :)",
+                  style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
               );
-            },
-          ),
+            }
+
+            final filteredList = snapshot.data!.docs.where((doc) {
+              Crash crash = Crash.fromJson(doc);
+              bool dateMatch = isDateFiltered
+                  ? crash.getFormattedDate().split(' ')[0] ==
+                      selectDate.toString().split(' ')[0]
+                  : true;
+              bool plateMatch = selectedPlate != null
+                  ? licensePlateMap[crash.cid] == selectedPlate
+                  : true;
+
+              return dateMatch && plateMatch;
+            }).toList();
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              checkForPendingCrashes(filteredList);
+            });
+
+            if (filteredList.isEmpty) {
+              return Center(
+                child: Text(
+                  isDateFiltered || isPlateFiltered
+                      ? "You don't have any crashes\nfor the selected date."
+                      : "You don't have any crashes,\nride safe :)",
+                  style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
+              );
+            }
+
+            return ListView.builder(
+              itemCount: filteredList.length + 1, // Add 1 for the SizedBox
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return SizedBox(height: 10);
+                }
+
+                Crash crash =
+                    Crash.fromJson(filteredList[index - 1]); // Adjust index
+                isHoveredList.add(false);
+
+                String licensePlate = licensePlateMap[crash.cid] ?? "Unknown";
+
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Crashdetail(
+                            crashId:
+                                filteredList[index - 1].id), // Adjust index
+                      ),
+                    );
+                  },
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    color: Colors.white,
+                    elevation: 4,
+                    child: ListTile(
+                      leading: Container(
+                        decoration: BoxDecoration(
+                          color: crash.status == 'pending'
+                              ? Colors.yellow
+                              : (crash.status == 'confirmed'
+                                  ? Colors.green
+                                  : Colors.red),
+                          shape: BoxShape.circle,
+                        ),
+                        width: 10,
+                        height: 10,
+                      ),
+                      title: Text(
+                        "Crash ID: ${crash.cid}",
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            crash.getFormattedDate(),
+                            style: GoogleFonts.poppins(color: Colors.grey),
+                          ),
+                          Text(
+                            "License Plate: $licensePlate",
+                            style: GoogleFonts.poppins(color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                      trailing: Icon(Icons.chevron_right, color: Colors.grey),
+                    ),
+                  ),
+                );
+              },
+            );
+          },
         ),
       ),
     );
