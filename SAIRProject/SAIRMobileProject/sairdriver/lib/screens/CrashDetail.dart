@@ -50,30 +50,32 @@ class _CrashdetailState extends State<Crashdetail> {
     }
   }
 
-  Future<BitmapDescriptor> getCustomMapIcon() async {
-    const double size = 48;
-    final icon = Icons.location_pin;
-    final pictureRecorder = ui.PictureRecorder();
-    final canvas = Canvas(pictureRecorder);
+Future<BitmapDescriptor> getCustomMapIcon() async {
+  const double size = 150;
+  final icon = Icons.location_pin;
+  final pictureRecorder = ui.PictureRecorder();
+  final canvas = Canvas(pictureRecorder, Rect.fromPoints(Offset(0, 0), Offset(size, size)));
 
-    TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
-    textPainter.text = TextSpan(
-      text: String.fromCharCode(icon.codePoint),
-      style: TextStyle(
-        fontSize: size,
-        fontFamily: icon.fontFamily,
-        color: Colors.green,
-      ),
-    );
-    textPainter.layout();
-    textPainter.paint(canvas, const Offset(0, 0));
+  final paint = Paint();
+  paint.color = Colors.transparent;
+  canvas.drawRect(Rect.fromLTWH(0, 0, size, size), paint);
 
-    final image = await pictureRecorder
-        .endRecording()
-        .toImage(size.toInt(), size.toInt());
-    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-    return BitmapDescriptor.fromBytes(bytes!.buffer.asUint8List());
-  }
+  TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
+  textPainter.text = TextSpan(
+    text: String.fromCharCode(icon.codePoint),
+    style: TextStyle(
+      fontSize: size - 20,
+      fontFamily: icon.fontFamily,
+      color: Colors.green,
+    ),
+  );
+  textPainter.layout();
+  textPainter.paint(canvas, Offset(0, 0));
+
+  final image = await pictureRecorder.endRecording().toImage(size.toInt(), size.toInt());
+  final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+  return BitmapDescriptor.fromBytes(bytes!.buffer.asUint8List());
+}
 
   @override
   Widget build(BuildContext context) {
