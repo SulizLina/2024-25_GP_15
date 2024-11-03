@@ -125,6 +125,7 @@ class _CrashdetailState extends State<Crashdetail> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  SizedBox(height: 20,),
                   buildDetailSection(
                       'Motorcycle Brand',
                       motorcycle?.brand ?? '',
@@ -146,15 +147,9 @@ class _CrashdetailState extends State<Crashdetail> {
 
                   Divider(color: Colors.grey[350]),
                   const SizedBox(height: 15),
-                  // Updated Crash ID Section to match other fields style
-                  buildDetailSection(
-                      'Crash ID',
-                      crash?.cid ?? 'N/A',
-                      HugeIcons.strokeRoundedBrush),
-     buildDetailSection(
-                      'Status',
-                      crash?.status ?? '',
-                      HugeIcons.strokeRoundedBrush),
+                  buildDetailSectionWithImage(
+                      'Crash ID', crash?.cid ?? 'N/A'),
+                  buildDetailSectionWithImage('Status', crash?.status ?? ''),
                   buildDetailSection(
                       'Time',
                       crash?.getFormattedTimeOnly() ?? '',
@@ -202,6 +197,42 @@ class _CrashdetailState extends State<Crashdetail> {
           children: [
             if (icon != null)
               Icon(icon, size: 24, color: Color.fromARGB(255, 3, 152, 85)),
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF211D1D),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.only(left: 32),
+          child: Text(
+            content ?? 'N/A',
+            style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D)),
+          ),
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  Widget buildDetailSectionWithImage(String title, String? content) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Image.asset(
+              'assets/icons/CRASHiconCrash.png',
+              width: 24,
+              height: 35,
+              color: Color.fromARGB(255, 3, 152, 85),
+            ),
             const SizedBox(width: 8),
             Text(
               title,
