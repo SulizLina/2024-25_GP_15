@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sairdriver/models/violation.dart';
+import 'package:sairdriver/models/complaint.dart';
+import 'package:sairdriver/services/Complaint_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Raisecomplaint extends StatefulWidget {
-  final String violationId;
+  final Violation violation;
+  final String driverid;
 
-  const Raisecomplaint({Key? key, required this.violationId}) : super(key: key);
+  const Raisecomplaint(
+      {Key? key, required this.violation, required this.driverid})
+      : super(key: key);
 
   @override
   State<Raisecomplaint> createState() => _RaisecomplaintState();
@@ -12,28 +19,21 @@ class Raisecomplaint extends StatefulWidget {
 
 class _RaisecomplaintState extends State<Raisecomplaint> {
   final _controller = TextEditingController();
-  final maxChararcter = 3;
-
-  // Function to count words
-  int _countWords(String text) {
-    return text.trim().isEmpty ? 0 : text.trim().split(RegExp(r'\s+')).length;
-  }
-
+  final maxChararcter = 249; 
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
 
-    // Listen to text changes and validate character count
     _controller.addListener(() {
       if (_controller.text.length > maxChararcter) {
-        // Prevent user from typing more than the maxCharacters
         _controller.text = _controller.text.substring(0, maxChararcter);
         _controller.selection = TextSelection.fromPosition(
           TextPosition(offset: _controller.text.length),
         );
       }
-      setState(() {}); // Update character count display
+      setState(() {});
     });
   }
 
@@ -43,6 +43,26 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
     super.dispose();
   }
 
+Future<void> submitComplaint() async {
+  if (_formKey.currentState!.validate()) {
+    try {
+      // Call raiseComplaint with only the required positional parameters
+      await ComplaintDatabase().raiseComplaint(
+        widget.violation,
+        _controller.text,
+        widget.driverid,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Complaint submitted successfully!")),
+      );
+      Navigator.pop(context); // Return to previous screen
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to submit complaint: $error")),
+      );
+    }
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -91,11 +111,12 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Form(
+              key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Raise a Complaint on violation number: ${widget.violationId}',
+                    'Raise a Complaint on violation number: ${widget.violation.Vid}',
                     style: GoogleFonts.poppins(
                       fontSize: 21,
                       fontWeight: FontWeight.bold,
@@ -104,8 +125,9 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    'Don\'t worry, the GDT will respond as soon as possible!',
-                    style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+                    'Write below your complaint on the violation,\nyour text should be with 249 character!',
+                    style:
+                        GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
                   ),
                   SizedBox(height: 20),
                   TextFormField(
@@ -128,32 +150,15 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
                         ),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.red,
-                          width: 1.5,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.red,
-                          width: 2.0,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your complaint';
-                      } else if (value.length > maxChararcter) {
-                        return 'Complaint cannot exceed $maxChararcter characters';
                       }
                       return null;
                     },
                   ),
                   SizedBox(height: 8),
-                  // Display the total character count with color change
                   Text(
                     '${_controller.text.length}/$maxChararcter characters',
                     style: TextStyle(
@@ -165,9 +170,7 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Add your submission logic here
-                      },
+                      onPressed: submitComplaint,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color.fromARGB(201, 3, 152, 85),
                         shape: RoundedRectangleBorder(

@@ -391,7 +391,7 @@ class _ViolationslistState extends State<Violationslist> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => Violationdetail(
-                                  violationId: filteredList[index].id),
+                                  violationId: filteredList[index].id, driverid: widget.driverId,),
                             ),
                           );
                         },

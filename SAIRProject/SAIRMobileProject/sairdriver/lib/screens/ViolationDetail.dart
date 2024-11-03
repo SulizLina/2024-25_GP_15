@@ -16,8 +16,9 @@ import 'package:hugeicons/hugeicons.dart';
 
 class Violationdetail extends StatefulWidget {
   final String violationId;
+  final String driverid;
 
-  const Violationdetail({Key? key, required this.violationId})
+  const Violationdetail({Key? key, required this.violationId, required this.driverid})
       : super(key: key);
 
   @override
@@ -258,7 +259,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => Raisecomplaint(
-                                  violationId: violation?.Vid ?? ''),
+                                  violation: violation!, driverid: widget.driverid,),
                             ),
                           );
                           }
