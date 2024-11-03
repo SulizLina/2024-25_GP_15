@@ -32,11 +32,22 @@ class _CrasheslistState extends State<Crasheslist> {
   Timer? _timer; // Timer for auto-confirmation
 
   Future<void> fetchDriverData() async {
-    DriverDatabase dbD = DriverDatabase();
-    driverNat_Res = await dbD.getDriversnById(widget.driverId);
-    setState(() {
-      _isLoading = driverNat_Res == null;
-    });
+    try {
+      DriverDatabase dbD = DriverDatabase();
+      driverNat_Res = await dbD.getDriversnById(widget.driverId);
+      if (driverNat_Res != null) {
+        fetchCrash();
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print("Error fetching driver data: $e");
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   void checkForPendingCrashes(List<DocumentSnapshot> crashes) {
@@ -56,10 +67,9 @@ class _CrasheslistState extends State<Crasheslist> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        // Start the timer for 10 minutes
         _timer = Timer(Duration(minutes: 10), () {
-          updateCrashStatus('confirmed'); // Auto-confirm crash
-          Navigator.of(context).pop(); // Close dialog if still open
+          updateCrashStatus('confirmed');
+          Navigator.of(context).pop();
         });
 
         return Dialog(
@@ -93,7 +103,7 @@ class _CrasheslistState extends State<Crasheslist> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        _timer?.cancel(); // Cancel the timer
+                        _timer?.cancel();
                         updateCrashStatus('rejected');
                         Navigator.of(context).pop();
                       },
@@ -112,7 +122,7 @@ class _CrasheslistState extends State<Crasheslist> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        _timer?.cancel(); // Cancel the timer
+                        _timer?.cancel();
                         updateCrashStatus('confirmed');
                         Navigator.of(context).pop();
                       },
@@ -178,21 +188,28 @@ class _CrasheslistState extends State<Crasheslist> {
       }).toList();
 
       await Future.wait(fetchTasks);
-  // Only add "Reset" if there are plates available
-        if (plateN.isNotEmpty) {
-          plateN = [
-            "Reset",
-            ...{...plateN}
-          ].toSet().toList();
-        } else {
-          plateN = []; // Empty list when no plates
-        }
+      if (plateN.isNotEmpty) {
+        plateN = [
+          "Reset",
+          ...{...plateN}
+        ].toSet().toList();
+      } else {
+        plateN = [];
+      }
 
-        if (!plateN.contains(selectedPlate)) {
-          selectedPlate = null;
-        }
+      if (!plateN.contains(selectedPlate)) {
+        selectedPlate = null;
+      }
+
+      setState(() {
+        crashes = snapshot.docs;
+        _isLoading = false;
+      });
     } catch (e) {
       print("Error fetching crashes: $e");
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -219,7 +236,7 @@ class _CrasheslistState extends State<Crasheslist> {
   @override
   void initState() {
     super.initState();
-    fetchDriverData().then((_) => fetchCrash());
+    fetchDriverData();
   }
 
   void _chooseDate() async {
@@ -254,7 +271,7 @@ class _CrasheslistState extends State<Crasheslist> {
 
   @override
   void dispose() {
-    _timer?.cancel(); // Cancel the timer if the widget is disposed
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -359,7 +376,7 @@ class _CrasheslistState extends State<Crasheslist> {
               return Center(child: Text("Error loading crashes"));
             }
 
-            if (!snapshot.hasData) {
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
               return Center(
                 child: Text(
                   "You don't have any crashes,\nride safe :)",
@@ -399,14 +416,14 @@ class _CrasheslistState extends State<Crasheslist> {
             }
 
             return ListView.builder(
-              itemCount: filteredList.length + 1, // Add 1 for the SizedBox
+              itemCount: filteredList.length + 1,
               itemBuilder: (context, index) {
                 if (index == 0) {
                   return SizedBox(height: 10);
                 }
 
                 Crash crash =
-                    Crash.fromJson(filteredList[index - 1]); // Adjust index
+                    Crash.fromJson(filteredList[index - 1]);
                 isHoveredList.add(false);
 
                 String licensePlate = licensePlateMap[crash.cid] ?? "Unknown";
@@ -418,7 +435,7 @@ class _CrasheslistState extends State<Crasheslist> {
                       MaterialPageRoute(
                         builder: (context) => Crashdetail(
                             crashId:
-                                filteredList[index - 1].id), // Adjust index
+                                filteredList[index - 1].id),
                       ),
                     );
                   },
