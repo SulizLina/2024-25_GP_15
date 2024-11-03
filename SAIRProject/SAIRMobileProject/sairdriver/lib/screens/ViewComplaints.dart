@@ -202,55 +202,6 @@ class _ViewcomplaintsState extends State<Viewcomplaints> {
                 ),
               ),
             ),
-            // filter by plate
-            DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                icon: Padding(
-                  padding: const EdgeInsets.only(top: 5.0),
-                  child: ColorFiltered(
-                    colorFilter: ColorFilter.mode(
-                      plateN.isEmpty
-                          ? const Color.fromARGB(255, 199, 199, 199)
-                          : Colors.white,
-                      BlendMode.srcIn,
-                    ),
-                    child: Image.asset(
-                      'assets/image/licenseplate.png',
-                      width: 33,
-                      height: 33,
-                    ),
-                  ),
-                ),
-                dropdownColor: Color(0xFFF3F3F3),
-                items: plateN.map<DropdownMenuItem<String>>((String plate) {
-                  return DropdownMenuItem<String>(
-                    value: plate,
-                    child: Text(
-                      plate,
-                      style: GoogleFonts.poppins(
-                          color: Colors.black, fontSize: 14),
-                    ),
-                  );
-                }).toList(),
-                onChanged: plateN.isEmpty
-                    ? null
-                    : (String? newValue) {
-                        setState(() {
-                          if (newValue == "Reset") {
-                            selectedPlate = null;
-                            isPlateFiltered = false;
-                          } else {
-                            selectedPlate = newValue;
-                            isPlateFiltered = selectedPlate != null;
-                          }
-                          _isLoading = true;
-                        });
-                        fetchComplaint(
-                          filterDate: isDateFiltered ? selectDate : null,
-                        );
-                      },
-              ),
-            ),
             // Filter by date
             IconButton(
               onPressed: complaints.isEmpty ? null : _chooseDate,
@@ -393,7 +344,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => Complaintdetail(
-                                ComplaintID: filteredList[index].id,
+                                ComplaintID: filteredList[index].id?? '',
                                 driverid: widget.driverId,
                               ),
                             ),

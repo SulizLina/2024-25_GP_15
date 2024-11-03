@@ -22,4 +22,21 @@ class ComplaintDatabase {
       print("Error adding complaint: $e");
     }
   }
+
+    Future<Complaint?> getComplaintById(String complaintid) async {
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('Complaint')
+          .doc(complaintid)
+          .get();
+
+      if (snapshot.exists) {
+        return Complaint.fromJson(snapshot); // Return the violation object
+      }
+      return null; // Return null if no violation found
+    } catch (e) {
+      print("Error fetching violation: $e");
+      return null; // Return null on error
+    }
+  }
 }

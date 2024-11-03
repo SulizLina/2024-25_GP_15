@@ -19,7 +19,7 @@ class Raisecomplaint extends StatefulWidget {
 
 class _RaisecomplaintState extends State<Raisecomplaint> {
   final _controller = TextEditingController();
-  final maxChararcter = 249; 
+  final maxChararcter = 249;
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -43,26 +43,26 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
     super.dispose();
   }
 
-Future<void> submitComplaint() async {
-  if (_formKey.currentState!.validate()) {
-    try {
-      // Call raiseComplaint with only the required positional parameters
-      await ComplaintDatabase().raiseComplaint(
-        widget.violation,
-        _controller.text,
-        widget.driverid,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Complaint submitted successfully!")),
-      );
-      Navigator.pop(context); // Return to previous screen
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to submit complaint: $error")),
-      );
+  Future<void> submitComplaint() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        // Call raiseComplaint with only the required positional parameters
+        await ComplaintDatabase().raiseComplaint(
+          widget.violation,
+          _controller.text,
+          widget.driverid,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Complaint submitted successfully!")),
+        );
+        Navigator.pop(context); // Return to previous screen
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to submit complaint: $error")),
+        );
+      }
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -146,6 +146,20 @@ Future<void> submitComplaint() async {
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                           color: Color.fromARGB(201, 3, 152, 85),
+                          width: 2.0,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.red,
+                          width: 1.5,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.red,
                           width: 2.0,
                         ),
                         borderRadius: BorderRadius.circular(10),
