@@ -144,8 +144,8 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: (complaint?.Vid != null &&
-                            complaint!.Vid!.isNotEmpty)
+                    onPressed: (complaint != null &&
+                            complaint!.Status == "pending")
                         ? () {
                             showDialog(
                               context: context,
@@ -181,7 +181,6 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceEvenly,
                                           children: [
-                                            // Cancel Button
                                             ElevatedButton(
                                               onPressed: () {
                                                 Navigator.of(context).pop();
@@ -200,14 +199,12 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                                                 ),
                                               ),
                                             ),
-                                            // Logout Button
                                             ElevatedButton(
                                               onPressed: () {
                                                 Navigator.of(context).pop();
                                               },
                                               style: ElevatedButton.styleFrom(
-                                                backgroundColor: Colors
-                                                    .red, // Red background for the Logout button
+                                                backgroundColor: Colors.red,
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(10),
@@ -229,9 +226,12 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                               },
                             );
                           }
-                        : null,
+                        : null, // Disables button when status is not "pending"
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
+                      backgroundColor:
+                          complaint != null && complaint!.Status == "pending"
+                              ? Colors.red
+                              : Colors.grey, 
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -241,7 +241,9 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                     child: Text(
                       'Delete Complaint',
                       style: GoogleFonts.poppins(
-                          color: Colors.white, fontSize: 16),
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 43),
