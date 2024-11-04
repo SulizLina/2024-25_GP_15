@@ -105,30 +105,29 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                     HugeIcons.strokeRoundedFileEdit,
                   ),
                   const SizedBox(height: 15),
+                  buildDetailSectionWithImage(
+                      'Status', complaint?.Status ?? ''),
+                  const SizedBox(height: 15),
                   buildDetailSection(
                     'Complaint: ',
                     complaint?.Description ?? '',
                     HugeIcons.strokeRoundedFileEdit,
                   ),
-                  const SizedBox(height: 15),
-                  buildDetailSectionWithImage(
-                      'Status', complaint?.Status ?? ''),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 70),
                   ElevatedButton(
-                    onPressed:
-                        (complaint?.Vid != null && complaint!.Vid!.isNotEmpty)
-                            ? () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Violationdetail(
-                                      violationId: complaint!.Vid ?? '',
-                                      driverid: widget.driverid,
-                                    ),
-                                  ),
-                                );
-                              }
-                            : null,
+                    onPressed: complaint != null
+                        ? () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Violationdetail(
+                                  violationId: complaint!.Vid!,
+                                  driverid: widget.driverid,
+                                ),
+                              ),
+                            );
+                          }
+                        : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color.fromARGB(202, 3, 152, 85),
                       shape: RoundedRectangleBorder(
@@ -145,91 +144,92 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed:
-                        (complaint?.Vid != null && complaint!.Vid!.isNotEmpty)
-                            ? () {
-                                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Dialog(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Container(
-                        padding: EdgeInsets.all(16),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "Delete",
-                              style: GoogleFonts.poppins(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(202, 3, 152, 85),
-                              ),
-                            ),
-                            SizedBox(height: 20),
-                            Text(
-                              'Are you sure that you want to delete the complaint?',
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(height: 20),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                // Cancel Button
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.of(context)
-                                        .pop(); 
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors
-                                        .grey, // Grey background for the Cancel button
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
+                    onPressed: (complaint?.Vid != null &&
+                            complaint!.Vid!.isNotEmpty)
+                        ? () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Container(
+                                    padding: EdgeInsets.all(16),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          "Delete",
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                Color.fromARGB(202, 3, 152, 85),
+                                          ),
+                                        ),
+                                        SizedBox(height: 20),
+                                        Text(
+                                          'Are you sure that you want to delete the complaint?',
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 16,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        SizedBox(height: 20),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            // Cancel Button
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.grey,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                              ),
+                                              child: Text(
+                                                'Cancel',
+                                                style: GoogleFonts.poppins(
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                            // Logout Button
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors
+                                                    .red, // Red background for the Logout button
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                              ),
+                                              child: Text(
+                                                'Delete',
+                                                style: GoogleFonts.poppins(
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  child: Text(
-                                    'Cancel',
-                                    style: GoogleFonts.poppins(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                                // Logout Button
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.of(context)
-                                        .pop();
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors
-                                        .red, // Red background for the Logout button
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Delete',
-                                    style: GoogleFonts.poppins(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                );
-                              }
-                            : null,
+                                );
+                              },
+                            );
+                          }
+                        : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                       shape: RoundedRectangleBorder(
@@ -244,7 +244,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                           color: Colors.white, fontSize: 16),
                     ),
                   ),
-                  const SizedBox(height: 85),
+                  const SizedBox(height: 43),
                 ],
               ),
             ),

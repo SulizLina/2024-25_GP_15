@@ -422,8 +422,7 @@ class _CrasheslistState extends State<Crasheslist> {
                   return SizedBox(height: 10);
                 }
 
-                Crash crash =
-                    Crash.fromJson(filteredList[index - 1]);
+                Crash crash = Crash.fromJson(filteredList[index - 1]);
                 isHoveredList.add(false);
 
                 String licensePlate = licensePlateMap[crash.cid] ?? "Unknown";
@@ -433,9 +432,8 @@ class _CrasheslistState extends State<Crasheslist> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => Crashdetail(
-                            crashId:
-                                filteredList[index - 1].id),
+                        builder: (context) =>
+                            Crashdetail(crashId: filteredList[index - 1].id),
                       ),
                     );
                   },
@@ -446,19 +444,22 @@ class _CrasheslistState extends State<Crasheslist> {
                     margin:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     color: Colors.white,
-                    elevation: 4,
+                    elevation: 2,
                     child: ListTile(
-                      leading: Container(
-                        decoration: BoxDecoration(
-                          color: crash.status == 'pending'
-                              ? Colors.yellow
-                              : (crash.status == 'confirmed'
-                                  ? Colors.green
-                                  : Colors.red),
-                          shape: BoxShape.circle,
+                      leading: SizedBox(
+                        width: 25, 
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: crash.status == 'pending'
+                                ? Colors.yellow
+                                : (crash.status == 'confirmed'
+                                    ? Colors.green
+                                    : Colors.red),
+                            shape: BoxShape.circle,
+                          ),
+                          width: 10,
+                          height: 10,
                         ),
-                        width: 10,
-                        height: 10,
                       ),
                       title: Text(
                         "Crash ID: ${crash.cid}",

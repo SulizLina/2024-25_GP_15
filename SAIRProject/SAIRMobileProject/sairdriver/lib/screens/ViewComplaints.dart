@@ -286,37 +286,52 @@ class _ViewcomplaintsState extends State<Viewcomplaints> {
                 );
               }
 
-              return ListView.separated(
+              return ListView.builder(
                 itemBuilder: (BuildContext context, int index) {
                   if (index >= filteredList.length) return Container();
 
                   Complaint complaint = Complaint.fromJson(filteredList[index]);
                   String formattedDate = complaint.getFormattedDate();
 
+                  // Determine the color for the circle based on a specific field in the complaint
+                  Color statusColor;
+                  if (complaint.Status == 'pending') {
+                    statusColor = Colors.orange;
+                  } else if (complaint.Status == 'approved') {
+                    statusColor = Colors.green;
+                  } else {
+                    statusColor = Colors.red;
+                  }
                   return MouseRegion(
                     onEnter: (_) => setState(() => isHoveredList[index] = true),
                     onExit: (_) => setState(() => isHoveredList[index] = false),
-                    child: Container(
-                      padding: const EdgeInsets.all(7),
-                      decoration: BoxDecoration(
-                        color: isHoveredList[index]
-                            ? Colors.green[200]
-                            : Color(0xFFF3F3F3),
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: isHoveredList[index]
-                            ? [
-                                const BoxShadow(
-                                    color: Colors.black26, blurRadius: 5)
-                              ]
-                            : [],
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
                       ),
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
+                      color: Colors.white,
+                      elevation: 2, 
                       child: ListTile(
+                        leading: SizedBox(
+                          width: 24,
+                          child: Container(
+                            width: 10,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: statusColor,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
                         title: Text(
                           'Complaint ID: ${complaint.ComID}',
                           style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF211D1D)),
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF211D1D),
+                          ),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -327,24 +342,15 @@ class _ViewcomplaintsState extends State<Viewcomplaints> {
                                   fontSize: 14, color: Color(0xFF211D1D)),
                             ),
                             const SizedBox(height: 4),
-                            Text(
-                              'Licence Plate: ${licensePlateMap[complaint.Vid] ?? ""}',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 14, color: Color(0xFF211D1D)),
-                            ),
                           ],
                         ),
-                        trailing: Icon(
-                          HugeIcons.strokeRoundedInformationCircle,
-                          color: Color.fromARGB(202, 3, 152, 85),
-                          size: 20,
-                        ),
+                        trailing: Icon(Icons.chevron_right, color: Colors.grey),
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => Complaintdetail(
-                                ComplaintID: filteredList[index].id?? '',
+                                ComplaintID: filteredList[index].id ?? '',
                                 driverid: widget.driverId,
                               ),
                             ),
@@ -353,9 +359,6 @@ class _ViewcomplaintsState extends State<Viewcomplaints> {
                       ),
                     ),
                   );
-                },
-                separatorBuilder: (BuildContext context, int index) {
-                  return Divider(color: Colors.grey[350]);
                 },
                 itemCount: filteredList.length,
               );
