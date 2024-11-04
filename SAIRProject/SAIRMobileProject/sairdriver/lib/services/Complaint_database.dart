@@ -1,15 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sairdriver/models/complaint.dart';
 import 'package:sairdriver/models/violation.dart';
+import 'dart:math';
 
 class ComplaintDatabase {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  String generateComplaintID() {
+    Random random = Random();
+    return List.generate(10, (_) => random.nextInt(10)).join();
+  }
+
   //method to raise complaint
   Future<void> raiseComplaint(Violation v, String desc, String driverid) async {
+
+    String complaintID = generateComplaintID(); 
+
     try {
       await _firestore.collection('Complaint').add({
-        'ComplaintID': '1234567890', //////////new genrated
+        'ComplaintID': complaintID, //////////new genrated
         'driverID': v.driverId,
         'DateTime': Timestamp.now(),
         'Description': desc,
