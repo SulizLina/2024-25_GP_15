@@ -231,8 +231,8 @@ Future<BitmapDescriptor> getCustomMapIcon() async {
           children: [
             Image.asset(
               'assets/icons/CRASHiconCrash.png',
-              width: 24,
-              height: 35,
+             width: 30,
+              height: 30,
               color: Color.fromARGB(255, 3, 152, 85),
             ),
             const SizedBox(width: 8),
