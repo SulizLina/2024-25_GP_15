@@ -24,20 +24,24 @@ class Complaintdetail extends StatefulWidget {
 class _ComplaintdetailState extends State<Complaintdetail> {
   Complaint? complaint;
 
-Future<void> fetchComplaint() async {
-  ComplaintDatabase db = ComplaintDatabase();
-  Complaint? fetchedComplaint = await db.getComplaintById(widget.ComplaintID);
-  if (fetchedComplaint != null) {
-    setState(() {
-      complaint = fetchedComplaint;
-    });
-  } else {
-    // Handle case where no complaint is found
-    setState(() {
-      complaint = null;
-    });
+  @override
+  void initState() {
+    super.initState();
+    fetchComplaint();
   }
-}
+
+  Future<void> fetchComplaint() async {
+    ComplaintDatabase db = ComplaintDatabase();
+    complaint = await db.getComplaintById(widget.ComplaintID);
+    if (complaint != null) {
+      setState(() {});
+    } else {
+      // Handle case where no complaint is found
+      setState(() {
+        complaint = null;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,28 +49,27 @@ Future<void> fetchComplaint() async {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
-        backgroundColor: Color.fromARGB(255, 3, 152, 85), // Background color
-        toolbarHeight: 100, // Adjusted toolbar height for the row layout
-        iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)), // Arrow color
+        backgroundColor: Color.fromARGB(255, 3, 152, 85),
+        toolbarHeight: 100,
+        iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)),
         title: Row(
           children: [
             IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
-                Navigator.pop(context); // Navigate back
+                Navigator.pop(context);
               },
             ),
-            SizedBox(width: 10), // Space between arrow and text
+            SizedBox(width: 10),
             Expanded(
-              // Allows the text to take up remaining space
               child: Text(
-                "Complaint Details", // Adjust the text as needed
+                "Complaint Details",
                 style: GoogleFonts.poppins(
-                  fontSize: 20, // Font size to match the image
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFFAFAFF), // Color for the text
+                  color: Color(0xFFFAFAFF),
                 ),
-                textAlign: TextAlign.start, // Align text to the start
+                textAlign: TextAlign.start,
               ),
             ),
           ],
@@ -91,33 +94,41 @@ Future<void> fetchComplaint() async {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  const SizedBox(height: 15),
                   buildDetailSection('Violation ID', complaint?.Vid ?? '',
                       HugeIcons.strokeRoundedDoNotTouch02),
                   Divider(color: Colors.grey[350]),
+                  const SizedBox(height: 15),
+                  buildDetailSection(
+                    'Complaint ID: ',
+                    complaint?.Description ?? '',
+                    HugeIcons.strokeRoundedFileEdit,
+                  ),
                   const SizedBox(height: 15),
                   buildDetailSection(
                     'Complaint: ',
                     complaint?.Description ?? '',
                     HugeIcons.strokeRoundedFileEdit,
                   ),
-
                   const SizedBox(height: 15),
-                  buildComplaintStatus(complaint?.Status),
+                  buildDetailSectionWithImage(
+                      'Status', complaint?.Status ?? ''),
                   const SizedBox(height: 30),
-
                   ElevatedButton(
-                    onPressed: () {
-                      // Navigate to Violation details
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Violationdetail(
-                            violationId: complaint!.Vid?? '',
-                            driverid: widget.driverid,
-                          ),
-                        ),
-                      );
-                    },
+                    onPressed:
+                        (complaint?.Vid != null && complaint!.Vid!.isNotEmpty)
+                            ? () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Violationdetail(
+                                      violationId: complaint!.Vid ?? '',
+                                      driverid: widget.driverid,
+                                    ),
+                                  ),
+                                );
+                              }
+                            : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color.fromARGB(202, 3, 152, 85),
                       shape: RoundedRectangleBorder(
@@ -133,6 +144,107 @@ Future<void> fetchComplaint() async {
                     ),
                   ),
                   const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed:
+                        (complaint?.Vid != null && complaint!.Vid!.isNotEmpty)
+                            ? () {
+                                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Dialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Container(
+                        padding: EdgeInsets.all(16),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "Delete",
+                              style: GoogleFonts.poppins(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(202, 3, 152, 85),
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                            Text(
+                              'Are you sure that you want to delete the complaint?',
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                // Cancel Button
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pop(); 
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors
+                                        .grey, // Grey background for the Cancel button
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Cancel',
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                                // Logout Button
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pop();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors
+                                        .red, // Red background for the Logout button
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Delete',
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+                              }
+                            : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      textStyle: GoogleFonts.poppins(fontSize: 18),
+                    ),
+                    child: Text(
+                      'Delete Complaint',
+                      style: GoogleFonts.poppins(
+                          color: Colors.white, fontSize: 16),
+                    ),
+                  ),
+                  const SizedBox(height: 85),
                 ],
               ),
             ),
@@ -181,50 +293,39 @@ Future<void> fetchComplaint() async {
     );
   }
 
-  Widget buildComplaintStatus(String? status) {
-    Color statusColor;
-
-    // Determine the color based on the status
-    if (status == 'pending') {
-      statusColor = Colors.yellow;
-    } else if (status == 'accepted') {
-      statusColor = Colors.green;
-    } else {
-      statusColor = Colors.red;
-    }
-
-    return Row(
+  Widget buildDetailSectionWithImage(String title, String? content) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Complaint Status: ',
-          style: GoogleFonts.poppins(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF211D1D),
+        Row(
+          children: [
+            Image.asset(
+              'assets/icons/CRASHiconCrash.png',
+              width: 30,
+              height: 30,
+              color: Color.fromARGB(255, 3, 152, 85),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF211D1D),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.only(left: 32),
+          child: Text(
+            content ?? 'N/A',
+            style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D)),
           ),
         ),
-        const SizedBox(width: 8), // Space between title and colored circle
-        Container(
-          width: 24,
-          height: 24,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: statusColor,
-          ),
-        ),
-        const SizedBox(width: 8), // Additional spacing
-        Text(
-          status??'',
-          style: GoogleFonts.poppins(
-            fontSize: 14,
-            color: Color(0xFF211D1D),
-          ),
-        ),
+        const SizedBox(height: 20),
       ],
     );
-  }
-
-  void submitComplint() {
-    Navigator.of(context).pop(); ///////////////?
   }
 }

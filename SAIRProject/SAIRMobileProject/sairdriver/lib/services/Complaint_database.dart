@@ -23,11 +23,11 @@ class ComplaintDatabase {
     }
   }
 
-    Future<Complaint?> getComplaintById(String complaintid) async {
+  Future<Complaint?> getComplaintById(String complaintId) async {
     try {
       DocumentSnapshot snapshot = await FirebaseFirestore.instance
           .collection('Complaint')
-          .doc(complaintid)
+          .doc(complaintId) // Use the document ID directly
           .get();
 
       if (snapshot.exists) {
