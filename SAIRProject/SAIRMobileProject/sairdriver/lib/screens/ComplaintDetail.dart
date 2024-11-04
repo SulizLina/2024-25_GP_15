@@ -105,6 +105,18 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                     HugeIcons.strokeRoundedFileEdit,
                   ),
                   const SizedBox(height: 15),
+                  buildDetailSection(
+                    'Time: ',
+                    complaint?.getFormattedDate() ?? '',
+                    HugeIcons.strokeRoundedClock03,
+                  ),
+                  const SizedBox(height: 15),
+                  buildDetailSection(
+                    'Date: ',
+                    complaint?.getFormattedTime() ?? '',
+                    HugeIcons.strokeRoundedCalendar01,
+                  ),
+                  const SizedBox(height: 15),
                   buildDetailSectionWithImage(
                       'Status', complaint?.Status ?? ''),
                   const SizedBox(height: 15),
@@ -113,7 +125,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                     complaint?.Description ?? '',
                     HugeIcons.strokeRoundedFileEdit,
                   ),
-                  const SizedBox(height: 70),
+                  const SizedBox(height: 30),
                   ElevatedButton(
                     onPressed: complaint != null
                         ? () {
@@ -246,7 +258,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 43),
+                  const SizedBox(height: 60),
                 ],
               ),
             ),

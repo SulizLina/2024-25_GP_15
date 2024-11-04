@@ -347,27 +347,30 @@ class _ViolationslistState extends State<Violationslist> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
+                      color: Colors.white,
+                      elevation: 2, 
                       child: ListTile(
                         title: Text(
                           'Violation ID: ${violation.Vid}',
-                          style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF211D1D)),
+                           style: GoogleFonts.poppins(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'Date: $formattedDate',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 14, color: Color(0xFF211D1D)),
+                              style: GoogleFonts.poppins(color: Colors.grey),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               'Licence Plate: ${licensePlateMap[violation.Vid] ?? ""}',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 14, color: Color(0xFF211D1D)),
+                              style: GoogleFonts.poppins(color: Colors.grey),
                             ),
                           ],
                         ),
