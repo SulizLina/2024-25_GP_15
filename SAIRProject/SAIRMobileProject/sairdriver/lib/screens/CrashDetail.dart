@@ -51,7 +51,7 @@ class _CrashdetailState extends State<Crashdetail> {
   }
 
 Future<BitmapDescriptor> getCustomMapIcon() async {
-  const double size = 150;
+  const double size = 120;
   final icon = Icons.location_pin;
   final pictureRecorder = ui.PictureRecorder();
   final canvas = Canvas(pictureRecorder, Rect.fromPoints(Offset(0, 0), Offset(size, size)));

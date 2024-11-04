@@ -481,7 +481,11 @@ class _CrasheslistState extends State<Crasheslist> {
                           ),
                         ],
                       ),
-                      trailing: Icon(Icons.chevron_right, color: Colors.grey),
+                      trailing: Icon(
+                          HugeIcons.strokeRoundedInformationCircle,
+                          color: Color.fromARGB(202, 3, 152, 85),
+                          size: 20,
+                        ),
                     ),
                   ),
                 );

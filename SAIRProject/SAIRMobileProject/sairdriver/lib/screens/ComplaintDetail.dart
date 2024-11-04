@@ -101,7 +101,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                   const SizedBox(height: 15),
                   buildDetailSection(
                     'Complaint ID: ',
-                    complaint?.Description ?? '',
+                    complaint?.ComID ?? '',
                     HugeIcons.strokeRoundedFileEdit,
                   ),
                   const SizedBox(height: 15),
