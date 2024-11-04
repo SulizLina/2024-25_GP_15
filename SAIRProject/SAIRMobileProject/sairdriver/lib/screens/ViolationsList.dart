@@ -333,7 +333,7 @@ class _ViolationslistState extends State<Violationslist> {
                 );
               }
 
-              return ListView.separated(
+              return ListView.builder(
                 itemBuilder: (BuildContext context, int index) {
                   if (index >= filteredList.length) return Container();
 
@@ -343,19 +343,9 @@ class _ViolationslistState extends State<Violationslist> {
                   return MouseRegion(
                     onEnter: (_) => setState(() => isHoveredList[index] = true),
                     onExit: (_) => setState(() => isHoveredList[index] = false),
-                    child: Container(
-                      padding: const EdgeInsets.all(7),
-                      decoration: BoxDecoration(
-                        color: isHoveredList[index]
-                            ? Colors.green[200]
-                            : Color(0xFFF3F3F3),
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: isHoveredList[index]
-                            ? [
-                                const BoxShadow(
-                                    color: Colors.black26, blurRadius: 5)
-                              ]
-                            : [],
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
                       ),
                       child: ListTile(
                         title: Text(
@@ -398,9 +388,6 @@ class _ViolationslistState extends State<Violationslist> {
                       ),
                     ),
                   );
-                },
-                separatorBuilder: (BuildContext context, int index) {
-                  return Divider(color: Colors.grey[350]);
                 },
                 itemCount: filteredList.length,
               );

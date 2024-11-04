@@ -328,23 +328,26 @@ class _ViewcomplaintsState extends State<Viewcomplaints> {
                         title: Text(
                           'Complaint ID: ${complaint.ComID}',
                           style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF211D1D),
-                          ),
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'Date: $formattedDate',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 14, color: Color(0xFF211D1D)),
+                              style: GoogleFonts.poppins(color: Colors.grey),
                             ),
                             const SizedBox(height: 4),
                           ],
                         ),
-                        trailing: Icon(Icons.chevron_right, color: Colors.grey),
+                        trailing: Icon(
+                          HugeIcons.strokeRoundedInformationCircle,
+                          color: Color.fromARGB(202, 3, 152, 85),
+                          size: 20,
+                        ),
                         onTap: () {
                           Navigator.push(
                             context,
