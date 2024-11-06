@@ -1,12 +1,8 @@
-import 'dart:ffi';
-import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:sairdriver/models/complaint.dart';
 import 'package:sairdriver/screens/ViolationDetail.dart';
 import 'package:sairdriver/services/Complaint_database.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sairdriver/screens/RaiseCompliants.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 class Complaintdetail extends StatefulWidget {
@@ -188,7 +184,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: (complaint != null &&
-                            complaint!.Status == "pending")
+                            complaint!.Status == "Pending")
                         ? () {
                             showDialog(
                               context: context,
@@ -272,7 +268,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                         : null, // Disables button when status is not "pending"
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
-                          complaint != null && complaint!.Status == "pending"
+                          complaint != null && complaint!.Status == "Pending"
                               ? Colors.red
                               : Colors.grey,
                       shape: RoundedRectangleBorder(
@@ -326,7 +322,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
           padding: const EdgeInsets.only(
               left: 32), // Indent the content a bit for better visual hierarchy
           child: Text(
-            content ?? 'N/A',
+            content ?? '',
             style: GoogleFonts.poppins(
               fontSize: 14,
               color: Color(0xFF211D1D),
@@ -365,7 +361,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
         Padding(
           padding: const EdgeInsets.only(left: 32),
           child: Text(
-            content ?? 'N/A',
+            content ?? '',
             style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D)),
           ),
         ),

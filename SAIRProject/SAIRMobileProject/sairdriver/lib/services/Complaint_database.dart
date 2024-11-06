@@ -36,7 +36,7 @@ class ComplaintDatabase {
     try {
       DocumentSnapshot snapshot = await FirebaseFirestore.instance
           .collection('Complaint')
-          .doc(complaintId) // Use the document ID directly
+          .doc(complaintId) 
           .get();
 
       if (snapshot.exists) {
