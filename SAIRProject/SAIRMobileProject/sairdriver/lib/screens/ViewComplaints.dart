@@ -342,9 +342,9 @@ class _ViewcomplaintsState extends State<Viewcomplaints> {
 
                   // Determine the color for the circle based on a specific field in the complaint
                   Color statusColor;
-                  if (complaint.Status == 'pending') {
+                  if (complaint.Status == 'Pending') {
                     statusColor = Colors.orange;
-                  } else if (complaint.Status == 'approved') {
+                  } else if (complaint.Status == 'Accepted') {
                     statusColor = Colors.green;
                   } else {
                     statusColor = Colors.red;

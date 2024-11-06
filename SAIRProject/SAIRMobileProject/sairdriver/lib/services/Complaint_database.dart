@@ -24,7 +24,7 @@ class ComplaintDatabase {
         'Description': desc,
         'GPSnumber': v.gspNumber,
         'ViolationID': v.Vid,
-        'Status': 'pending',
+        'Status': 'Pending',
       });
       print("Complaint added successfully.");
     } catch (e) {

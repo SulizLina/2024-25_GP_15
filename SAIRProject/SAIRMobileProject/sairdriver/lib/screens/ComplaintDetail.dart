@@ -94,11 +94,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(height: 15),
-                  buildDetailSection('Violation ID', complaint?.Vid ?? '',
-                      HugeIcons.strokeRoundedDoNotTouch02),
-                  Divider(color: Colors.grey[350]),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 20),
                   buildDetailSection(
                     'Complaint ID: ',
                     complaint?.ComID ?? '',
@@ -117,15 +113,50 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                     HugeIcons.strokeRoundedCalendar01,
                   ),
                   const SizedBox(height: 15),
-                  buildDetailSectionWithImage(
-                      'Status', complaint?.Status ?? ''),
+                  buildDetailSectionIcon(
+                    'Status',
+                    complaint?.Status ?? '',
+                    complaint?.Status,
+                  ),
+
                   const SizedBox(height: 15),
                   buildDetailSection(
                     'Complaint: ',
                     complaint?.Description ?? '',
                     HugeIcons.strokeRoundedFileEdit,
                   ),
+                  Divider(color: Colors.grey[350]),
+                  const SizedBox(height: 15),
+                  buildDetailSection('Violation ID', complaint?.Vid ?? '',
+                      HugeIcons.strokeRoundedDoNotTouch02),
+                  Divider(color: Colors.grey[350]),
+                  const SizedBox(height: 15),
+                  buildDetailSection(
+                      'Motorcycle Brand',
+                      complaint?.gspNumber ?? '',
+                      HugeIcons.strokeRoundedMotorbike02), //////////////
+                  const SizedBox(height: 15),
+                  buildDetailSection(
+                      'Motorcycle Type',
+                      complaint?.gspNumber ?? '',
+                      HugeIcons.strokeRoundedMotorbike02), //////////////
+                  const SizedBox(height: 15),
+                  buildDetailSection(
+                      'Motorcycle Model',
+                      complaint?.gspNumber ?? '',
+                      HugeIcons.strokeRoundedMotorbike02), //////////////
+                  const SizedBox(height: 15),
+                  buildDetailSection(
+                      'Motorcycle Licence Plate',
+                      complaint?.gspNumber ?? '',
+                      HugeIcons.strokeRoundedCreditCard), //////////////
+                  const SizedBox(height: 15),
+                  buildDetailSection(
+                      'GPS Serial Number',
+                      complaint?.gspNumber ?? '',
+                      HugeIcons.strokeRoundedShareLocation01),
                   const SizedBox(height: 30),
+
                   ElevatedButton(
                     onPressed: complaint != null
                         ? () {
@@ -243,7 +274,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                       backgroundColor:
                           complaint != null && complaint!.Status == "pending"
                               ? Colors.red
-                              : Colors.grey, 
+                              : Colors.grey,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -339,6 +370,66 @@ class _ComplaintdetailState extends State<Complaintdetail> {
           ),
         ),
         const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  Widget buildDetailSectionIcon(String title, String? content, String? status) {
+    Color circleColor;
+
+    switch (status) {
+      case 'Pending':
+        circleColor = Colors.orange;
+        break;
+      case 'Accepted':
+        circleColor = Colors.green;
+        break;
+      default:
+        circleColor = Colors.red;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            SizedBox(
+              width: 25,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: circleColor,
+                  shape: BoxShape.circle,
+                ),
+                width: 10,
+                height: 10,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                title,
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF211D1D),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8), // Space between title and content
+        Padding(
+          padding:
+              const EdgeInsets.only(left: 32), // Indent content for hierarchy
+          child: Text(
+            content ?? '',
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              color: Color(0xFF211D1D),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20), // Space below each section
       ],
     );
   }
