@@ -193,7 +193,7 @@ class _ViolationslistState extends State<Violationslist> {
                       child: Text(
                         "My Violations",
                         style: GoogleFonts.poppins(
-                          fontSize: 24.0,
+                          fontSize: 22,
                           color: Color(0xFFF3F3F3),
                           fontWeight: FontWeight.bold,
                         ),
@@ -367,7 +367,6 @@ class _ViolationslistState extends State<Violationslist> {
                               'Date: $formattedDate',
                               style: GoogleFonts.poppins(color: Colors.grey),
                             ),
-                            const SizedBox(height: 4),
                             Text(
                               'Licence Plate: ${licensePlateMap[violation.Vid] ?? ""}',
                               style: GoogleFonts.poppins(color: Colors.grey),

@@ -110,7 +110,7 @@ class _ProfilepageState extends State<Profilepage> {
                 child: Text(
                   "My Profile",
                   style: GoogleFonts.poppins(
-                    fontSize: 24.0,
+                    fontSize: 22,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),

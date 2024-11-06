@@ -106,7 +106,7 @@ class _HomeState extends State<Home> {
               child: Text(
                 "Hello $driverName !",
                 style: GoogleFonts.poppins(
-                  fontSize: 24.0,
+                  fontSize: 22,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),

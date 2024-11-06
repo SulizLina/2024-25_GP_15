@@ -131,7 +131,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints> {
     } catch (e) {
       print("Error fetching complaint: $e");
       setState(() {
-        _isLoading = false; // Update loading state on error
+        _isLoading = false; 
       });
     }
   }
@@ -191,7 +191,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints> {
                       child: Text(
                         "My Complaints",
                         style: GoogleFonts.poppins(
-                          fontSize: 24.0,
+                          fontSize: 22,
                           color: Color(0xFFF3F3F3),
                           fontWeight: FontWeight.bold,
                         ),
@@ -200,6 +200,53 @@ class _ViewcomplaintsState extends State<Viewcomplaints> {
                     ),
                   ],
                 ),
+              ),
+            ),
+            // filter by plate
+            DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                icon: Padding(
+                  padding: const EdgeInsets.only(top: 5.0),
+                  child: ColorFiltered(
+                    colorFilter: ColorFilter.mode(
+                      plateN.isEmpty ? const Color.fromARGB(255, 199, 199, 199) : Colors.white,
+                      BlendMode.srcIn,
+                    ),
+                    child: Image.asset(
+                      'assets/image/licenseplate.png',
+                      width: 33,
+                      height: 33,
+                    ),
+                  ),
+                ),
+                dropdownColor: Color(0xFFF3F3F3),
+                items: plateN.map<DropdownMenuItem<String>>((String plate) {
+                  return DropdownMenuItem<String>(
+                    value: plate,
+                    child: Text(
+                      plate,
+                      style: GoogleFonts.poppins(
+                          color: Colors.black, fontSize: 14),
+                    ),
+                  );
+                }).toList(),
+                onChanged: plateN.isEmpty
+                    ? null
+                    : (String? newValue) {
+                        setState(() {
+                          if (newValue == "Reset") {
+                            selectedPlate = null;
+                            isPlateFiltered = false;
+                          } else {
+                            selectedPlate = newValue;
+                            isPlateFiltered = selectedPlate != null;
+                          }
+                          _isLoading = true;
+                        });
+                        fetchComplaint(
+                          filterDate: isDateFiltered ? selectDate : null,
+                        );
+                      },
               ),
             ),
             // Filter by date
@@ -340,7 +387,10 @@ class _ViewcomplaintsState extends State<Viewcomplaints> {
                               'Date: $formattedDate',
                               style: GoogleFonts.poppins(color: Colors.grey),
                             ),
-                            const SizedBox(height: 4),
+                            Text(
+                              'Licence Plate: ${licensePlateMap[complaint.Vid] ?? ""}',
+                              style: GoogleFonts.poppins(color: Colors.grey),
+                            ),
                           ],
                         ),
                         trailing: Icon(

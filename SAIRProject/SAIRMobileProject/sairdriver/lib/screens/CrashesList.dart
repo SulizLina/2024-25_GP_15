@@ -293,7 +293,7 @@ class _CrasheslistState extends State<Crasheslist> {
                 child: Text(
                   "My Crashes",
                   style: GoogleFonts.poppins(
-                    fontSize: 24.0,
+                    fontSize: 22,
                     color: Color(0xFFF3F3F3),
                     fontWeight: FontWeight.bold,
                   ),
