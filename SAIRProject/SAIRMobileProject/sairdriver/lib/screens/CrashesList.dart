@@ -426,7 +426,7 @@ class _CrasheslistState extends State<Crasheslist> {
                 isHoveredList.add(false);
 
                 String licensePlate = licensePlateMap[crash.cid] ?? "Unknown";
-
+                String d = crash.getFormattedDate();
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -447,7 +447,7 @@ class _CrasheslistState extends State<Crasheslist> {
                     elevation: 2,
                     child: ListTile(
                       leading: SizedBox(
-                        width: 25, 
+                        width: 25,
                         child: Container(
                           decoration: BoxDecoration(
                             color: crash.status == 'pending'
@@ -472,7 +472,7 @@ class _CrasheslistState extends State<Crasheslist> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            crash.getFormattedDate(),
+                            "Date: $d",
                             style: GoogleFonts.poppins(color: Colors.grey),
                           ),
                           Text(
@@ -482,10 +482,10 @@ class _CrasheslistState extends State<Crasheslist> {
                         ],
                       ),
                       trailing: Icon(
-                          HugeIcons.strokeRoundedInformationCircle,
-                          color: Color.fromARGB(202, 3, 152, 85),
-                          size: 20,
-                        ),
+                        HugeIcons.strokeRoundedInformationCircle,
+                        color: Color.fromARGB(202, 3, 152, 85),
+                        size: 20,
+                      ),
                     ),
                   ),
                 );
