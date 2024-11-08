@@ -79,8 +79,7 @@ class _ViolationdetailState extends State<Violationdetail> {
     if (complaintSnapshot.docs.isNotEmpty) {
       setState(() {
         hasComplaint = true;
-        compID =
-            complaintSnapshot.docs.first.id; 
+        compID = complaintSnapshot.docs.first.id;
       });
     }
   }
@@ -92,7 +91,6 @@ class _ViolationdetailState extends State<Violationdetail> {
     final canvas = Canvas(pictureRecorder);
 
     const double size = 48; //icon size as the defult icon from google :)
-    final paint = Paint();
 
     TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
     textPainter.text = TextSpan(
@@ -274,8 +272,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                               ),
                             );
                           }
-                        : () {
-                            // Determine the dialog message based on conditions
+                        : () {// Determine the dialog message based on conditions
                             String message;
                             if (hasComplaint) {
                               if (DateTime.parse(violation!.getFormattedDate())
@@ -292,6 +289,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                               message =
                                   'You can\'t raise a complaint after 30 days of the violation!';
                             }
+                      
 
                             // Show appropriate dialog
                             showDialog(
@@ -342,8 +340,8 @@ class _ViolationdetailState extends State<Violationdetail> {
                                               GoogleFonts.poppins(fontSize: 16),
                                           textAlign: TextAlign.center,
                                         ),
-                                        if (hasComplaint) ...[
-                                          const SizedBox(height: 20),
+                                        SizedBox(height: 20),
+                                        if (hasComplaint)
                                           ElevatedButton(
                                             onPressed: () {
                                               Navigator.push(
@@ -351,7 +349,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                                                 MaterialPageRoute(
                                                   builder: (context) =>
                                                       Complaintdetail(
-                                                    ComplaintID: compID?? '',
+                                                    ComplaintID: compID ?? '',
                                                     driverid: widget.driverid,
                                                   ),
                                                 ),
@@ -360,6 +358,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor: Color.fromARGB(
                                                   202, 3, 152, 85),
+                                              /*
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                       vertical: 10,
@@ -368,6 +367,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                                                 borderRadius:
                                                     BorderRadius.circular(10),
                                               ),
+                                              */
                                             ),
                                             child: Text(
                                               'View Complaint Details',
@@ -377,7 +377,6 @@ class _ViolationdetailState extends State<Violationdetail> {
                                               ),
                                             ),
                                           ),
-                                        ],
                                       ],
                                     ),
                                   ),
@@ -445,7 +444,7 @@ class _ViolationdetailState extends State<Violationdetail> {
           padding: const EdgeInsets.only(
               left: 32), // Indent the content a bit for better visual hierarchy
           child: Text(
-            content ?? 'N/A',
+            content ?? '',
             style: GoogleFonts.poppins(
               fontSize: 14,
               color: Color(0xFF211D1D),

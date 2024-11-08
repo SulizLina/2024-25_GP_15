@@ -19,7 +19,8 @@ class Viewcomplaints extends StatefulWidget {
   State<Viewcomplaints> createState() => _ViewcomplaintsState();
 }
 
-class _ViewcomplaintsState extends State<Viewcomplaints> {
+class _ViewcomplaintsState extends State<Viewcomplaints>
+    with SingleTickerProviderStateMixin {
   List<DocumentSnapshot> complaints = []; // List to hold complaint documents
   List<DocumentSnapshot> filteredComplaint =
       []; // List for filtered complaint based on date
@@ -31,11 +32,30 @@ class _ViewcomplaintsState extends State<Viewcomplaints> {
   bool isDateFiltered = false;
   bool isPlateFiltered = false;
   bool _isLoading = true;
+  String selectedStatus = "All";
+  late TabController _tabController;
+  List<DocumentSnapshot> filteredComplaints = [];
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 4, vsync: this);
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        setState(() {
+          selectedStatus =
+              ["Accepted", "All", "Pending", "Rejected"][_tabController.index];
+        });
+        filterComplaints();
+      }
+    });
     fetchDriverData();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<String?> fetchLicensePlate(String? gspNumber) async {
@@ -131,9 +151,29 @@ class _ViewcomplaintsState extends State<Viewcomplaints> {
     } catch (e) {
       print("Error fetching complaint: $e");
       setState(() {
-        _isLoading = false; 
+        _isLoading = false;
       });
     }
+  }
+
+  void filterComplaints() {
+    setState(() {
+      filteredComplaints = complaints.where((doc) {
+        Complaint complaint = Complaint.fromJson(doc);
+
+        bool statusMatch =
+            selectedStatus == "All" || complaint.Status == selectedStatus;
+        bool dateMatch = isDateFiltered
+            ? complaint.getFormattedDate().split(' ')[0] ==
+                selectDate.toString().split(' ')[0]
+            : true;
+        bool plateMatch = selectedPlate == null
+            ? true
+            : licensePlateMap[complaint.Vid] == selectedPlate;
+
+        return statusMatch && dateMatch && plateMatch;
+      }).toList();
+    });
   }
 
   // Choose date using the date picker
@@ -209,7 +249,9 @@ class _ViewcomplaintsState extends State<Viewcomplaints> {
                   padding: const EdgeInsets.only(top: 5.0),
                   child: ColorFiltered(
                     colorFilter: ColorFilter.mode(
-                      plateN.isEmpty ? const Color.fromARGB(255, 199, 199, 199) : Colors.white,
+                      plateN.isEmpty
+                          ? const Color.fromARGB(255, 199, 199, 199)
+                          : Colors.white,
                       BlendMode.srcIn,
                     ),
                     child: Image.asset(
@@ -265,159 +307,267 @@ class _ViewcomplaintsState extends State<Viewcomplaints> {
           ],
         ),
       ),
-      body: Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          color: Color(0xFFF3F3F3),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
+      body: Column(
+        children: [
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Color(0xFFF3F3F3),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
+              ),
+              child: Column(
+                children: [
+Padding(
+  padding: const EdgeInsets.symmetric(vertical: 10),
+  child: Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(color: Colors.grey.shade300),
+    ),
+    child: TabBar(
+      controller: _tabController,
+      labelColor: Colors.green,  // Selected tab color
+      unselectedLabelColor: Colors.grey,  // Unselected tab color
+      indicatorColor: Colors.transparent,  // No indicator line
+      labelPadding: EdgeInsets.symmetric(vertical: 10),  // Vertical padding for the text
+      isScrollable: true,
+      tabs: [
+        Tab(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              color: _tabController.index == 0 ? Colors.white : Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(20),
+              border: _tabController.index == 0
+                  ? Border.all(color: Colors.green)
+                  : Border.all(color: Colors.transparent),
+            ),
+            child: Center(child: Text('Accepted')),
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 15),
-          child: StreamBuilder<QuerySnapshot>(
-            stream: fetchComplaintStream(),
-            builder: (context, snapshot) {
-              if (_isLoading) {
-                return Center(child: CircularProgressIndicator());
-              }
-
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              }
-
-              if (snapshot.hasError) {
-                return Center(child: Text("Error loading complaint"));
-              }
-
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return Center(
-                  child: Text(
-                    isDateFiltered || isPlateFiltered
-                        ? "You don't have any complaint\nfor the selected date."
-                        : "You don't have any complaint,\nride safe :)",
-                    style:
-                        GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
-                    textAlign: TextAlign.center,
-                  ),
-                );
-              }
-
-              final complaint = snapshot.data!.docs;
-              final filteredList = complaint.where((doc) {
-                Complaint complaint = Complaint.fromJson(doc);
-
-                bool dateMatch = isDateFiltered
-                    ? complaint.getFormattedDate().split(' ')[0] ==
-                        selectDate.toString().split(' ')[0]
-                    : true;
-                bool plateMatch = selectedPlate != null
-                    ? licensePlateMap[complaint.Vid] == selectedPlate
-                    : true;
-
-                return dateMatch && plateMatch;
-              }).toList();
-
-              isHoveredList =
-                  List.generate(filteredList.length, (index) => false);
-
-              if (filteredList.isEmpty) {
-                return Center(
-                  child: Text(
-                    "No complaint found for the selected date",
-                    style:
-                        GoogleFonts.poppins(fontSize: 18, color: Colors.grey),
-                    textAlign: TextAlign.center,
-                  ),
-                );
-              }
-
-              return ListView.builder(
-                itemBuilder: (BuildContext context, int index) {
-                  if (index >= filteredList.length) return Container();
-
-                  Complaint complaint = Complaint.fromJson(filteredList[index]);
-                  String formattedDate = complaint.getFormattedDate();
-
-                  // Determine the color for the circle based on a specific field in the complaint
-                  Color statusColor;
-                  if (complaint.Status == 'Pending') {
-                    statusColor = Colors.orange;
-                  } else if (complaint.Status == 'Accepted') {
-                    statusColor = Colors.green;
-                  } else {
-                    statusColor = Colors.red;
-                  }
-                  return MouseRegion(
-                    onEnter: (_) => setState(() => isHoveredList[index] = true),
-                    onExit: (_) => setState(() => isHoveredList[index] = false),
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
+        Tab(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              color: _tabController.index == 1 ? Colors.white : Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(20),
+              border: _tabController.index == 1
+                  ? Border.all(color: Colors.green)
+                  : Border.all(color: Colors.transparent),
+            ),
+            child: Center(child: Text('All')),
+          ),
+        ),
+        Tab(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              color: _tabController.index == 2 ? Colors.white : Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(20),
+              border: _tabController.index == 2
+                  ? Border.all(color: Colors.green)
+                  : Border.all(color: Colors.transparent),
+            ),
+            child: Center(child: Text('Pending')),
+          ),
+        ),
+        Tab(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              color: _tabController.index == 3 ? Colors.white : Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(20),
+              border: _tabController.index == 3
+                  ? Border.all(color: Colors.green)
+                  : Border.all(color: Colors.transparent),
+            ),
+            child: Center(child: Text('Rejected')),
+          ),
+        ),
+      ],
+    ),
+  ),
+),
+                  Expanded(
+                    child: Container(
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFF3F3F3),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                        ),
                       ),
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      color: Colors.white,
-                      elevation: 2, 
-                      child: ListTile(
-                        leading: SizedBox(
-                          width: 24,
-                          child: Container(
-                            width: 10,
-                            height: 10,
-                            decoration: BoxDecoration(
-                              color: statusColor,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        child: StreamBuilder<QuerySnapshot>(
+                          stream: fetchComplaintStream(),
+                          builder: (context, snapshot) {
+                            if (_isLoading ||
+                                snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            }
+
+                            if (snapshot.hasError) {
+                              return const Center(
+                                  child: Text("Error loading complaint"));
+                            }
+
+                            if (!snapshot.hasData ||
+                                snapshot.data!.docs.isEmpty) {
+                              return Center(
+                                child: Text(
+                                  isDateFiltered || isPlateFiltered
+                                      ? "You don't have any complaint\nfor the selected date."
+                                      : "You don't have any complaint,\nride safe :)",
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 20, color: Colors.grey),
+                                  textAlign: TextAlign.center,
+                                ),
+                              );
+                            }
+
+                            final complaints = snapshot.data!.docs;
+                            final filteredList = complaints.where((doc) {
+                              Complaint complaint = Complaint.fromJson(doc);
+
+                              bool dateMatch = isDateFiltered
+                                  ? complaint
+                                          .getFormattedDate()
+                                          .split(' ')[0] ==
+                                      selectDate.toString().split(' ')[0]
+                                  : true;
+                              bool plateMatch = selectedPlate != null
+                                  ? licensePlateMap[complaint.Vid] ==
+                                      selectedPlate
+                                  : true;
+                              bool statusMatch = selectedStatus == "All" ||
+                                  complaint.Status == selectedStatus;
+
+                              return dateMatch && plateMatch && statusMatch;
+                            }).toList();
+
+                            isHoveredList = List.generate(
+                                filteredList.length, (index) => false);
+
+                            if (filteredList.isEmpty) {
+                              return Center(
+                                child: Text(
+                                  "No complaint found for the selected date",
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 18, color: Colors.grey),
+                                  textAlign: TextAlign.center,
+                                ),
+                              );
+                            }
+
+                            return ListView.builder(
+                              itemCount: filteredList.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                Complaint complaint =
+                                    Complaint.fromJson(filteredList[index]);
+                                String formattedDate =
+                                    complaint.getFormattedDate();
+
+                                Color statusColor;
+                                if (complaint.Status == 'Pending') {
+                                  statusColor = Colors.orange;
+                                } else if (complaint.Status == 'Accepted') {
+                                  statusColor = Colors.green;
+                                } else {
+                                  statusColor = Colors.red;
+                                }
+
+                                return MouseRegion(
+                                  onEnter: (_) => setState(
+                                      () => isHoveredList[index] = true),
+                                  onExit: (_) => setState(
+                                      () => isHoveredList[index] = false),
+                                  child: Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 5),
+                                    color: Colors.white,
+                                    elevation: 2,
+                                    child: ListTile(
+                                      leading: SizedBox(
+                                        width: 24,
+                                        child: Container(
+                                          width: 10,
+                                          height: 10,
+                                          decoration: BoxDecoration(
+                                            color: statusColor,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                      ),
+                                      title: Text(
+                                        'Complaint ID: ${complaint.ComID}',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      subtitle: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Date: $formattedDate',
+                                            style: GoogleFonts.poppins(
+                                                color: Colors.grey),
+                                          ),
+                                          Text(
+                                            'Licence Plate: ${licensePlateMap[complaint.Vid] ?? ""}',
+                                            style: GoogleFonts.poppins(
+                                                color: Colors.grey),
+                                          ),
+                                        ],
+                                      ),
+                                      trailing: Icon(
+                                        HugeIcons
+                                            .strokeRoundedInformationCircle,
+                                        color: Color.fromARGB(202, 3, 152, 85),
+                                        size: 20,
+                                      ),
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                Complaintdetail(
+                                              ComplaintID:
+                                                  filteredList[index].id ?? '',
+                                              driverid: widget.driverId,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
                         ),
-                        title: Text(
-                          'Complaint ID: ${complaint.ComID}',
-                          style: GoogleFonts.poppins(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Date: $formattedDate',
-                              style: GoogleFonts.poppins(color: Colors.grey),
-                            ),
-                            Text(
-                              'Licence Plate: ${licensePlateMap[complaint.Vid] ?? ""}',
-                              style: GoogleFonts.poppins(color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                        trailing: Icon(
-                          HugeIcons.strokeRoundedInformationCircle,
-                          color: Color.fromARGB(202, 3, 152, 85),
-                          size: 20,
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Complaintdetail(
-                                ComplaintID: filteredList[index].id ?? '',
-                                driverid: widget.driverId,
-                              ),
-                            ),
-                          );
-                        },
                       ),
                     ),
-                  );
-                },
-                itemCount: filteredList.length,
-              );
-            },
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
