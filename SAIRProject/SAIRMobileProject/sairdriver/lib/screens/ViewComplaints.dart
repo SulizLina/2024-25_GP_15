@@ -321,90 +321,95 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
               ),
               child: Column(
                 children: [
-Padding(
-  padding: const EdgeInsets.symmetric(vertical: 10),
-  child: Container(
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(10),
-      border: Border.all(color: Colors.grey.shade300),
-    ),
-    child: TabBar(
-      controller: _tabController,
-      labelColor: Colors.green,  // Selected tab color
-      unselectedLabelColor: Colors.grey,  // Unselected tab color
-      indicatorColor: Colors.transparent,  // No indicator line
-      labelPadding: EdgeInsets.symmetric(vertical: 10),  // Vertical padding for the text
-      isScrollable: true,
-      tabs: [
-        Tab(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              color: _tabController.index == 0 ? Colors.white : Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(20),
-              border: _tabController.index == 0
-                  ? Border.all(color: Colors.green)
-                  : Border.all(color: Colors.transparent),
-            ),
-            child: Center(child: Text('Accepted')),
-          ),
-        ),
-        Tab(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              color: _tabController.index == 1 ? Colors.white : Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(20),
-              border: _tabController.index == 1
-                  ? Border.all(color: Colors.green)
-                  : Border.all(color: Colors.transparent),
-            ),
-            child: Center(child: Text('All')),
-          ),
-        ),
-        Tab(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              color: _tabController.index == 2 ? Colors.white : Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(20),
-              border: _tabController.index == 2
-                  ? Border.all(color: Colors.green)
-                  : Border.all(color: Colors.transparent),
-            ),
-            child: Center(child: Text('Pending')),
-          ),
-        ),
-        Tab(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              color: _tabController.index == 3 ? Colors.white : Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(20),
-              border: _tabController.index == 3
-                  ? Border.all(color: Colors.green)
-                  : Border.all(color: Colors.transparent),
-            ),
-            child: Center(child: Text('Rejected')),
-          ),
-        ),
-      ],
-    ),
-  ),
-),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: TabBar(
+                        controller: _tabController,
+                        labelColor: Colors.black, 
+                        unselectedLabelColor: Colors.black,
+                        indicatorColor: Colors.transparent, 
+                        labelPadding: EdgeInsets.symmetric(vertical: 3), 
+                        isScrollable: true, // i want to remove it :)
+                        tabs: [
+                          Tab(
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                              decoration: BoxDecoration(
+                                color: _tabController.index == 0
+                                    ? Colors.white
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Accepted', 
+                                  style: GoogleFonts.poppins(),
+                                  )),
+                            ),
+                          ),
+                          Tab(
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 5),
+                              decoration: BoxDecoration(
+                                color: _tabController.index == 1
+                                    ? Colors.white
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'All',
+                                  style: GoogleFonts.poppins(),
+                                  )),
+                            ),
+                          ),
+                          Tab(
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 5),
+                              decoration: BoxDecoration(
+                                color: _tabController.index == 2
+                                    ? Colors.white
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Pending',
+                                  style: GoogleFonts.poppins(),
+                                  )),
+                            ),
+                          ),
+                          Tab(
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 5),
+                              decoration: BoxDecoration(
+                                color: _tabController.index == 3
+                                    ? Colors.white
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Rejected',
+                                  style: GoogleFonts.poppins(),
+                                  )),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   Expanded(
                     child: Container(
                       width: double.infinity,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFF3F3F3),
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
-                        ),
-                      ),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        padding: const EdgeInsets.symmetric(vertical: 5),
                         child: StreamBuilder<QuerySnapshot>(
                           stream: fetchComplaintStream(),
                           builder: (context, snapshot) {
