@@ -322,7 +322,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                    padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 9),
                     child: Container(
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
@@ -334,8 +334,9 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                         labelColor: Colors.black, 
                         unselectedLabelColor: Colors.black,
                         indicatorColor: Colors.transparent, 
-                        labelPadding: EdgeInsets.symmetric(vertical: 3), 
-                        isScrollable: true, // i want to remove it :)
+                        indicator: BoxDecoration(), 
+                        labelPadding: EdgeInsets.symmetric(vertical: 3),
+                        padding: EdgeInsets.only(left: 8, right: 8),
                         tabs: [
                           Tab(
                             child: Container(
@@ -349,7 +350,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                               child: Center(
                                 child: Text(
                                   'Accepted', 
-                                  style: GoogleFonts.poppins(),
+                                  style: GoogleFonts.poppins(fontSize: 11.7),
                                   )),
                             ),
                           ),
@@ -365,7 +366,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                               child: Center(
                                 child: Text(
                                   'All',
-                                  style: GoogleFonts.poppins(),
+                                  style: GoogleFonts.poppins(fontSize: 11.7),
                                   )),
                             ),
                           ),
@@ -381,7 +382,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                               child: Center(
                                 child: Text(
                                   'Pending',
-                                  style: GoogleFonts.poppins(),
+                                  style: GoogleFonts.poppins(fontSize: 11.7),
                                   )),
                             ),
                           ),
@@ -397,7 +398,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                               child: Center(
                                 child: Text(
                                   'Rejected',
-                                  style: GoogleFonts.poppins(),
+                                  style: GoogleFonts.poppins(fontSize: 11.7),
                                   )),
                             ),
                           ),
@@ -500,7 +501,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                                       borderRadius: BorderRadius.circular(15),
                                     ),
                                     margin: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 5),
+                                        horizontal: 10),
                                     color: Colors.white,
                                     elevation: 2,
                                     child: ListTile(
