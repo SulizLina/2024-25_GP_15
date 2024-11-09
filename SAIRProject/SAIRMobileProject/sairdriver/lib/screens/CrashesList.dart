@@ -24,6 +24,8 @@ class _CrasheslistState extends State<Crasheslist> {
   String? selectedPlate;
   List<bool> isHoveredList = [];
   driver? driverNat_Res;
+  driver? driverA;
+  bool _pendingPopupShown = false;
   DateTime selectDate = DateTime.now();
   bool isDateFiltered = false;
   bool isPlateFiltered = false;
@@ -51,25 +53,66 @@ class _CrasheslistState extends State<Crasheslist> {
   }
 
   void checkForPendingCrashes(List<DocumentSnapshot> crashes) {
+    // Only show the popup once if there is a pending crash
     bool hasPending = crashes.any((doc) {
       Crash crash = Crash.fromJson(doc);
       return crash.status == 'pending';
     });
 
-    if (hasPending) {
+    if (hasPending && !_pendingPopupShown) {
+      _pendingPopupShown = true; // Set flag to prevent multiple popups
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showPendingCrashDialog();
       });
     }
   }
 
+  Future<void> updateCrashStatus(String newStatus) async {
+    DriverDatabase db = DriverDatabase();
+    driverA = await db.getDriversnById(widget.driverId);
+
+    List<DocumentSnapshot> pendingCrashes = crashes.where((doc) {
+      Crash crash = Crash.fromJson(doc);
+      return crash.status == 'pending' && crash.driverId == driverA?.id;
+    }).toList();
+
+    if (pendingCrashes.isNotEmpty) {
+      String crashId = pendingCrashes.first.id;
+
+      try {
+        DocumentSnapshot crashDoc = await FirebaseFirestore.instance
+            .collection('Crash')
+            .doc(crashId)
+            .get();
+
+        if (crashDoc.exists) {
+          await FirebaseFirestore.instance
+              .collection('Crash')
+              .doc(crashId)
+              .update({'Status': newStatus});
+
+          // Refresh the list immediately
+          await fetchCrash();
+        } else {
+          print("Document with crashId $crashId not found.");
+        }
+      } catch (e) {
+        print("Error updating crash status: $e");
+      }
+    } else {
+      print("No pending crashes found for driverId: ${driverA?.id}");
+    }
+  }
+
   void showPendingCrashDialog() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         _timer = Timer(Duration(minutes: 10), () {
           updateCrashStatus('confirmed');
           Navigator.of(context).pop();
+          _pendingPopupShown = false;
         });
 
         return Dialog(
@@ -106,6 +149,9 @@ class _CrasheslistState extends State<Crasheslist> {
                         _timer?.cancel();
                         updateCrashStatus('rejected');
                         Navigator.of(context).pop();
+                        setState(() {
+                          _pendingPopupShown = false;
+                        });
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
@@ -125,9 +171,12 @@ class _CrasheslistState extends State<Crasheslist> {
                         _timer?.cancel();
                         updateCrashStatus('confirmed');
                         Navigator.of(context).pop();
+                        setState(() {
+                          _pendingPopupShown = false;
+                        });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: Color.fromARGB(255, 3, 152, 85),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -147,22 +196,6 @@ class _CrasheslistState extends State<Crasheslist> {
         );
       },
     );
-  }
-
-  Future<void> updateCrashStatus(String newStatus) async {
-    List<DocumentSnapshot> pendingCrashes = crashes.where((doc) {
-      Crash crash = Crash.fromJson(doc);
-      return crash.status == 'pending';
-    }).toList();
-
-    if (pendingCrashes.isNotEmpty) {
-      String crashId = pendingCrashes.first.id;
-      await FirebaseFirestore.instance
-          .collection('Crash')
-          .doc(crashId)
-          .update({'Status': newStatus});
-      fetchCrash();
-    }
   }
 
   Future<void> fetchCrash() async {
