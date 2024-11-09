@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sairdriver/models/complaint.dart';
 import 'package:sairdriver/screens/ViolationDetail.dart';
 import 'package:sairdriver/screens/edit_phone_page.dart';
+import 'package:sairdriver/messages/Warning.dart';
 import 'package:sairdriver/services/Complaint_database.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -21,6 +22,8 @@ class Complaintdetail extends StatefulWidget {
 class _ComplaintdetailState extends State<Complaintdetail> {
   Complaint? complaint;
 
+  TextEditingController complainttext = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -30,6 +33,12 @@ class _ComplaintdetailState extends State<Complaintdetail> {
   Future<void> fetchComplaint() async {
     ComplaintDatabase db = ComplaintDatabase();
     complaint = await db.getComplaintById(widget.ComplaintID);
+    setState(() {});
+    if (mounted) {
+      complainttext.text = complaint?.Description ?? '';
+    }
+    setState(() {});
+
     if (complaint != null) {
       setState(() {});
     } else {
@@ -117,60 +126,72 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                   ),
 
                   const SizedBox(height: 15),
-                  buildDetailSection(
+                  buildDetailSectionNoContent(
                     'Complaint ',
-                    complaint?.Description ?? '',
                     HugeIcons.strokeRoundedFileEdit,
                   ),
+
                   Padding(
                     padding: const EdgeInsets.only(left: 32),
-                    child: TextFormField(
-                      //controller: phone,
-                      decoration: InputDecoration(
-                        labelText: '',
-                        labelStyle:
-                            GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: Color.fromARGB(202, 3, 152, 85),
-                            width: 1.5,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: Color.fromARGB(202, 3, 152, 85),
-                            width: 2.0,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        // Inside the TextFormField for Phone Number
-                        suffixIcon: IconButton(
-                          icon: const Icon(
-                            Icons.edit,
-                            color: Color.fromARGB(202, 3, 152, 85),
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EditPhonePage(
-                                  driverId: widget.driverid,
-                                  onPhoneUpdated: (newPhone) {
-                                    setState(() {
-                                      //phone.text =  newPhone; // Update the phone number on the profile page
-                                    });
-                                  },
-                                ),
+                    child: Stack(
+                      children: [
+                        TextFormField(
+                          controller: complainttext,
+                          decoration: InputDecoration(
+                            labelStyle: GoogleFonts.poppins(
+                                color: const Color(0xFF211D1D)),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Color.fromARGB(202, 3, 152, 85),
+                                width: 1.5,
                               ),
-                            );
-                          },
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Color.fromARGB(202, 3, 152, 85),
+                                width: 2.0,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            contentPadding: const EdgeInsets.only(
+                                left: 15, right: 40, top: 10),
+                          ),
+                          style: GoogleFonts.poppins(
+                              color: const Color(0xFF211D1D)),
+                          readOnly: true,
+                          maxLines: null,
+                          minLines: 1,
                         ),
-                      ),
-                      style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
-                      readOnly: true,
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: IconButton(
+                            icon: Icon(Icons.edit,
+                                color: complaint!.Status == "Pending"
+                                    ? Color.fromARGB(202, 3, 152, 85)
+                                    : Colors.grey),
+                            onPressed: complaint!.Status == "Pending"
+                                ? () {
+                                    //nav to edit page
+                                  }
+                                : () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return const WarningDialog(
+                                          message:
+                                              "You can't edit the complaint unless the complaint status is pending",
+                                        );
+                                      },
+                                    );
+                                  },
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+
                   const SizedBox(height: 15),
 
                   Divider(color: Colors.grey[350]),
@@ -237,86 +258,38 @@ class _ComplaintdetailState extends State<Complaintdetail> {
 
                   //edit complaint
                   ElevatedButton(
-                    onPressed: (complaint != null &&
-                            complaint!.Status == "Pending")
-                        ? () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Violationdetail(
-                                  //////////////////////////Change it
-                                  violationId: complaint!.Vid!,
-                                  driverid: widget.driverid,
-                                ),
-                              ),
-                            );
-                          } //navigate to edit page
-
-                        : () {
-                            // Disables button when status is not "pending"
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return Dialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Container(
-                                    padding: EdgeInsets.all(16),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            SizedBox(width: 48),
-                                            Expanded(
-                                              child: Center(
-                                                child: Text(
-                                                  "Warning",
-                                                  style: GoogleFonts.poppins(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.red,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            Transform.translate(
-                                              offset: Offset(0, -15),
-                                              child: IconButton(
-                                                icon: Icon(Icons.close,
-                                                    color: Color(0xFF211D1D)),
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 20),
-                                        Text(
-                                          'You can\'t edit complaint unless it\'s status is pending',
-                                          style:
-                                              GoogleFonts.poppins(fontSize: 16),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        SizedBox(height: 20),
-
-                                        /// delete ??
-                                      ],
+                    onPressed:
+                        (complaint != null && complaint!.Status == "Pending")
+                            ? () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Violationdetail(
+                                      //////////////////////////Change it
+                                      violationId: complaint!.Vid!,
+                                      driverid: widget.driverid,
                                     ),
                                   ),
                                 );
+                              } //navigate to edit page
+
+                            : () {
+                                // Disables button when status is not "pending"
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return const WarningDialog(
+                                      message:
+                                          "You can't edit the complaint unless the complaint status is pending",
+                                    );
+                                  },
+                                );
                               },
-                            );
-                          },
                     //edit complaint
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
                           complaint != null && complaint!.Status == "Pending"
-                              ? Color.fromARGB(255, 3, 152, 85)
+                              ? Color.fromARGB(202, 3, 152, 85)
                               : Colors.grey,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -578,6 +551,33 @@ class _ComplaintdetailState extends State<Complaintdetail> {
           ),
         ),
         const SizedBox(height: 20), // Space below each section
+      ],
+    );
+  }
+
+  Widget buildDetailSectionNoContent(String title, IconData? icon) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 24, color: Color.fromARGB(255, 3, 152, 85)),
+              const SizedBox(width: 8),
+            ],
+            Expanded(
+              child: Text(
+                title,
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF211D1D),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20), // Adjust spacing to avoid extra space
       ],
     );
   }
