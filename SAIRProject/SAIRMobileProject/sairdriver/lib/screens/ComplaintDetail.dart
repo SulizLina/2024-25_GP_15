@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sairdriver/models/complaint.dart';
 import 'package:sairdriver/models/violation.dart';
-import 'package:sairdriver/services/Violations_database.dart';
+import 'package:sairdriver/services/Complaint_database.dart';
+import 'package:sairdriver/screens/EditComplaint.dart';
 import 'package:sairdriver/screens/ViolationDetail.dart';
 import 'package:sairdriver/messages/Warning.dart';
 import 'package:sairdriver/services/Complaint_database.dart';
@@ -35,7 +36,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
       if (complaint != null) {
         fetchViolation();
       }
-    }); 
+    });
   }
 
   Future<void> fetchComplaint() async {
@@ -47,31 +48,31 @@ class _ComplaintdetailState extends State<Complaintdetail> {
     }
   }
 
-Future<Violation?> fetchViolation() async {
-  final violationDoc = await FirebaseFirestore.instance
-      .collection('Violation')
-      .where('violationID', isEqualTo: complaint?.Vid ?? '')
-      .limit(1)
-      .get();
+  Future<Violation?> fetchViolation() async {
+    final violationDoc = await FirebaseFirestore.instance
+        .collection('Violation')
+        .where('violationID', isEqualTo: complaint?.Vid ?? '')
+        .limit(1)
+        .get();
 
-  if (violationDoc.docs.isNotEmpty) {
-    final doc = violationDoc.docs.first;
-    vioDocid = doc.id; // violation doc id "i need it to navigate to violation details :::))"
+    if (violationDoc.docs.isNotEmpty) {
+      final doc = violationDoc.docs.first;
+      vioDocid = doc
+          .id; // violation doc id "i need it to navigate to violation details :::))"
 
-    print('==============hellooo=================');
-    print("Violation Document ID: $vioDocid");
-    print('===============================');
+      print('==============hellooo=================');
+      print("Violation Document ID: $vioDocid");
+      print('===============================');
 
-    // Use the fromJson method to convert the Firestore document into a Violation object
-    return Violation.fromJson(doc); // Converts Firestore doc into Violation
-  } else {
-    print('==============Soory=================');
-    print("No matching violation found.");
-    print("Violation Document ID: ${complaint?.Vid ?? 'hi'}");
-    return null; // Return null if no violation found
+      // Use the fromJson method to convert the Firestore document into a Violation object
+      return Violation.fromJson(doc); // Converts Firestore doc into Violation
+    } else {
+      print('==============Soory=================');
+      print("No matching violation found.");
+      print("Violation Document ID: ${complaint?.Vid ?? 'hi'}");
+      return null; // Return null if no violation found
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -257,7 +258,8 @@ Future<Violation?> fetchViolation() async {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => Violationdetail(
-                                  violationId: vioDocid??'', ///////////JAKcz2eO2NKEOsBvazb4
+                                  violationId: vioDocid ??
+                                      '', ///////////JAKcz2eO2NKEOsBvazb4
                                   driverid: widget.driverid,
                                 ),
                               ),
@@ -288,8 +290,8 @@ Future<Violation?> fetchViolation() async {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => Violationdetail(
-                                      violationId: vioDocid!,
+                                    builder: (context) => editcomplaint(
+                                      complaint: complaint!,
                                       driverid: widget.driverid,
                                     ),
                                   ),
