@@ -44,7 +44,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
       if (_tabController.indexIsChanging) {
         setState(() {
           selectedStatus =
-              ["Accepted", "All", "Pending", "Rejected"][_tabController.index];
+              ["All", "Accepted", "Pending", "Rejected"][_tabController.index];
         });
         filterComplaints();
       }
@@ -114,10 +114,10 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
       setState(() {
         // Only add "Reset" if there are plates available
         if (plateN.isNotEmpty) {
-          plateN = [
+          plateN = {
             "Reset",
             ...{...plateN}
-          ].toSet().toList();
+          }.toList();
         } else {
           plateN = []; // Empty list when no plates
         }
@@ -149,6 +149,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
         _isLoading = false;
       });
     } catch (e) {
+      // ignore: avoid_print
       print("Error fetching complaint: $e");
       setState(() {
         _isLoading = false;
@@ -322,84 +323,90 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 9),
+                    padding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 9),
                     child: Container(
                       width: MediaQuery.of(context).size.width,
+                      height: 40,
                       decoration: BoxDecoration(
                         color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: TabBar(
                         controller: _tabController,
-                        labelColor: Colors.black, 
+                        labelColor: Colors.black,
                         unselectedLabelColor: Colors.black,
-                        indicatorColor: Colors.transparent, 
-                        indicator: BoxDecoration(), 
+                        indicator: BoxDecoration(),
+                        indicatorColor: Colors.transparent,
                         labelPadding: EdgeInsets.symmetric(vertical: 3),
-                        padding: EdgeInsets.only(left: 8, right: 8),
+                        padding: EdgeInsets.only(left: 3, right: 3),
                         tabs: [
                           Tab(
                             child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 2, horizontal: 12),
                               decoration: BoxDecoration(
                                 color: _tabController.index == 0
                                     ? Colors.white
                                     : Colors.transparent,
-                                borderRadius: BorderRadius.circular(15),
+                                borderRadius: BorderRadius.circular(12),
                               ),
                               child: Center(
-                                child: Text(
-                                  'Accepted', 
-                                  style: GoogleFonts.poppins(fontSize: 11.7),
-                                  )),
+                                  child: Text(
+                                'All',
+                                style: GoogleFonts.poppins(fontSize: 11.7),
+                              )),
                             ),
                           ),
                           Tab(
                             child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 5),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 2, horizontal: 12),
                               decoration: BoxDecoration(
                                 color: _tabController.index == 1
                                     ? Colors.white
                                     : Colors.transparent,
-                                borderRadius: BorderRadius.circular(15),
+                                borderRadius: BorderRadius.circular(12),
                               ),
                               child: Center(
-                                child: Text(
-                                  'All',
-                                  style: GoogleFonts.poppins(fontSize: 11.7),
-                                  )),
+                                  child: Text(
+                                'Accepted',
+                                style: GoogleFonts.poppins(fontSize: 11.7),
+                              )),
                             ),
                           ),
                           Tab(
                             child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 5),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 2, horizontal: 12),
                               decoration: BoxDecoration(
                                 color: _tabController.index == 2
                                     ? Colors.white
                                     : Colors.transparent,
-                                borderRadius: BorderRadius.circular(15),
+                                borderRadius: BorderRadius.circular(12),
                               ),
                               child: Center(
-                                child: Text(
-                                  'Pending',
-                                  style: GoogleFonts.poppins(fontSize: 11.7),
-                                  )),
+                                  child: Text(
+                                'Pending',
+                                style: GoogleFonts.poppins(fontSize: 11.7),
+                              )),
                             ),
                           ),
                           Tab(
                             child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 5),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 2, horizontal: 12),
                               decoration: BoxDecoration(
                                 color: _tabController.index == 3
                                     ? Colors.white
                                     : Colors.transparent,
-                                borderRadius: BorderRadius.circular(15),
+                                borderRadius: BorderRadius.circular(12),
                               ),
                               child: Center(
-                                child: Text(
-                                  'Rejected',
-                                  style: GoogleFonts.poppins(fontSize: 11.7),
-                                  )),
+                                  child: Text(
+                                'Rejected',
+                                style: GoogleFonts.poppins(fontSize: 11.7),
+                              )),
                             ),
                           ),
                         ],
@@ -454,7 +461,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                                   ? licensePlateMap[complaint.Vid] ==
                                       selectedPlate
                                   : true;
-                              bool statusMatch = selectedStatus == "All" ||
+                              bool statusMatch = selectedStatus == "Accepted" ||
                                   complaint.Status == selectedStatus;
 
                               return dateMatch && plateMatch && statusMatch;

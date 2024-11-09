@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sairdriver/models/complaint.dart';
 import 'package:sairdriver/screens/ViolationDetail.dart';
+import 'package:sairdriver/screens/edit_phone_page.dart';
 import 'package:sairdriver/services/Complaint_database.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -121,6 +122,57 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                     complaint?.Description ?? '',
                     HugeIcons.strokeRoundedFileEdit,
                   ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 32),
+                    child: TextFormField(
+                      //controller: phone,
+                      decoration: InputDecoration(
+                        labelText: '',
+                        labelStyle:
+                            GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(202, 3, 152, 85),
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(202, 3, 152, 85),
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        // Inside the TextFormField for Phone Number
+                        suffixIcon: IconButton(
+                          icon: const Icon(
+                            Icons.edit,
+                            color: Color.fromARGB(202, 3, 152, 85),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditPhonePage(
+                                  driverId: widget.driverid,
+                                  onPhoneUpdated: (newPhone) {
+                                    setState(() {
+                                      //phone.text =  newPhone; // Update the phone number on the profile page
+                                    });
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      style: GoogleFonts.poppins(color: const Color(0xFF211D1D)),
+                      readOnly: true,
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+
                   Divider(color: Colors.grey[350]),
                   const SizedBox(height: 15),
                   buildDetailSection('Violation ID', complaint?.Vid ?? '',
@@ -250,7 +302,9 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                                               GoogleFonts.poppins(fontSize: 16),
                                           textAlign: TextAlign.center,
                                         ),
-                                        SizedBox(height: 20),/// delete ??
+                                        SizedBox(height: 20),
+
+                                        /// delete ??
                                       ],
                                     ),
                                   ),
