@@ -20,7 +20,7 @@ class Raisecomplaint extends StatefulWidget {
 
 class _RaisecomplaintState extends State<Raisecomplaint> {
   final _controller = TextEditingController();
-  final maxChararcter = 249;
+  final maxChararcter = 250;
   final _formKey = GlobalKey<FormState>();
 
   @override

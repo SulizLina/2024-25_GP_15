@@ -17,7 +17,7 @@ class editcomplaint extends StatefulWidget {
 
 class _editcomplaintState extends State<editcomplaint> {
   //final _controller = TextEditingController();
-  final maxChararcter = 20;
+  final maxChararcter = 250;
   final _formKey = GlobalKey<FormState>();
   TextEditingController complainttext = TextEditingController();
 

@@ -198,7 +198,15 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                                     : Colors.grey),
                             onPressed: complaint!.Status == "Pending"
                                 ? () {
-                                    //nav to edit page
+                                  Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => editcomplaint(
+                                      complaint: complaint!,
+                                      driverid: widget.driverid,
+                                    ),
+                                  ),
+                                );
                                   }
                                 : () {
                                     showDialog(
