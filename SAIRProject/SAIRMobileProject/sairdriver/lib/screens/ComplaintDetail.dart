@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:sairdriver/models/complaint.dart';
+import 'package:sairdriver/models/violation.dart';
+import 'package:sairdriver/services/Violations_database.dart';
 import 'package:sairdriver/screens/ViolationDetail.dart';
-import 'package:sairdriver/screens/edit_phone_page.dart';
 import 'package:sairdriver/messages/Warning.dart';
 import 'package:sairdriver/services/Complaint_database.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 class Complaintdetail extends StatefulWidget {
@@ -21,13 +23,19 @@ class Complaintdetail extends StatefulWidget {
 
 class _ComplaintdetailState extends State<Complaintdetail> {
   Complaint? complaint;
+  Violation? violation;
+  String? vioDocid;
 
   TextEditingController complainttext = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    fetchComplaint();
+    fetchComplaint().then((_) {
+      if (complaint != null) {
+        fetchViolation();
+      }
+    }); 
   }
 
   Future<void> fetchComplaint() async {
@@ -37,17 +45,33 @@ class _ComplaintdetailState extends State<Complaintdetail> {
     if (mounted) {
       complainttext.text = complaint?.Description ?? '';
     }
-    setState(() {});
-
-    if (complaint != null) {
-      setState(() {});
-    } else {
-      // Handle case where no complaint is found
-      setState(() {
-        complaint = null;
-      });
-    }
   }
+
+Future<Violation?> fetchViolation() async {
+  final violationDoc = await FirebaseFirestore.instance
+      .collection('Violation')
+      .where('violationID', isEqualTo: complaint?.Vid ?? '')
+      .limit(1)
+      .get();
+
+  if (violationDoc.docs.isNotEmpty) {
+    final doc = violationDoc.docs.first;
+    vioDocid = doc.id; // violation doc id "i need it to navigate to violation details :::))"
+
+    print('==============hellooo=================');
+    print("Violation Document ID: $vioDocid");
+    print('===============================');
+
+    // Use the fromJson method to convert the Firestore document into a Violation object
+    return Violation.fromJson(doc); // Converts Firestore doc into Violation
+  } else {
+    print('==============Soory=================');
+    print("No matching violation found.");
+    print("Violation Document ID: ${complaint?.Vid ?? 'hi'}");
+    return null; // Return null if no violation found
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -233,7 +257,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => Violationdetail(
-                                  violationId: complaint!.Vid!,
+                                  violationId: vioDocid??'', ///////////JAKcz2eO2NKEOsBvazb4
                                   driverid: widget.driverid,
                                 ),
                               ),
@@ -265,14 +289,12 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => Violationdetail(
-                                      //////////////////////////Change it
-                                      violationId: complaint!.Vid!,
+                                      violationId: vioDocid!,
                                       driverid: widget.driverid,
                                     ),
                                   ),
                                 );
-                              } //navigate to edit page
-
+                              }
                             : () {
                                 // Disables button when status is not "pending"
                                 showDialog(
