@@ -92,19 +92,19 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                 children: [
                   const SizedBox(height: 20),
                   buildDetailSection(
-                    'Complaint ID: ',
+                    'Complaint ID ',
                     complaint?.ComID ?? '',
                     HugeIcons.strokeRoundedFileEdit,
                   ),
                   const SizedBox(height: 15),
                   buildDetailSection(
-                    'Time: ',
+                    'Time ',
                     complaint?.getFormattedDate() ?? '',
                     HugeIcons.strokeRoundedClock03,
                   ),
                   const SizedBox(height: 15),
                   buildDetailSection(
-                    'Date: ',
+                    'Date',
                     complaint?.getFormattedTime() ?? '',
                     HugeIcons.strokeRoundedCalendar01,
                   ),
@@ -117,7 +117,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
 
                   const SizedBox(height: 15),
                   buildDetailSection(
-                    'Complaint: ',
+                    'Complaint ',
                     complaint?.Description ?? '',
                     HugeIcons.strokeRoundedFileEdit,
                   ),
@@ -181,6 +181,104 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                           color: Colors.white, fontSize: 16),
                     ),
                   ),
+                  const SizedBox(height: 20),
+
+                  //edit complaint
+                  ElevatedButton(
+                    onPressed: (complaint != null &&
+                            complaint!.Status == "Pending")
+                        ? () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Violationdetail(
+                                  //////////////////////////Change it
+                                  violationId: complaint!.Vid!,
+                                  driverid: widget.driverid,
+                                ),
+                              ),
+                            );
+                          } //navigate to edit page
+
+                        : () {
+                            // Disables button when status is not "pending"
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Container(
+                                    padding: EdgeInsets.all(16),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            SizedBox(width: 48),
+                                            Expanded(
+                                              child: Center(
+                                                child: Text(
+                                                  "Warning",
+                                                  style: GoogleFonts.poppins(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.red,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Transform.translate(
+                                              offset: Offset(0, -15),
+                                              child: IconButton(
+                                                icon: Icon(Icons.close,
+                                                    color: Color(0xFF211D1D)),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 20),
+                                        Text(
+                                          'You can\'t edit complaint unless it\'s status is pending',
+                                          style:
+                                              GoogleFonts.poppins(fontSize: 16),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        SizedBox(height: 20),/// delete ??
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                    //edit complaint
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          complaint != null && complaint!.Status == "Pending"
+                              ? Color.fromARGB(255, 3, 152, 85)
+                              : Colors.grey,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      textStyle: GoogleFonts.poppins(fontSize: 18),
+                    ),
+                    child: Text(
+                      'Edit Complaint',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: (complaint != null &&

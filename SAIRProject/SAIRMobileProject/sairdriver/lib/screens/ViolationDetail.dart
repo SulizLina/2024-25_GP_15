@@ -358,7 +358,6 @@ class _ViolationdetailState extends State<Violationdetail> {
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor: Color.fromARGB(
                                                   202, 3, 152, 85),
-                                              /*
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                       vertical: 10,
@@ -367,7 +366,6 @@ class _ViolationdetailState extends State<Violationdetail> {
                                                 borderRadius:
                                                     BorderRadius.circular(10),
                                               ),
-                                              */
                                             ),
                                             child: Text(
                                               'View Complaint Details',
