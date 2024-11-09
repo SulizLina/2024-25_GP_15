@@ -44,7 +44,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
       if (_tabController.indexIsChanging) {
         setState(() {
           selectedStatus =
-              ["All", "Accepted", "Pending", "Rejected"][_tabController.index];
+              ["Accepted", "All", "Pending", "Rejected"][_tabController.index];
         });
         filterComplaints();
       }
@@ -324,7 +324,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                 children: [
                   Padding(
                     padding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 9),
+                        const EdgeInsets.symmetric(vertical: 15, horizontal: 9),
                     child: Container(
                       width: MediaQuery.of(context).size.width,
                       height: 40,
@@ -353,7 +353,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                               ),
                               child: Center(
                                   child: Text(
-                                'All',
+                                'Accepted',
                                 style: GoogleFonts.poppins(fontSize: 11.7),
                               )),
                             ),
@@ -370,7 +370,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                               ),
                               child: Center(
                                   child: Text(
-                                'Accepted',
+                                'All',
                                 style: GoogleFonts.poppins(fontSize: 11.7),
                               )),
                             ),
@@ -437,9 +437,11 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                                 snapshot.data!.docs.isEmpty) {
                               return Center(
                                 child: Text(
-                                  isDateFiltered || isPlateFiltered
+                                  isDateFiltered  // || isPlateFiltered
                                       ? "You don't have any complaint\nfor the selected date."
-                                      : "You don't have any complaint,\nride safe :)",
+                                      : _tabController.index == 0 //&& !isDateFiltered 
+                                          ? "You don't have any complaint,\nride safe :)"
+                                          : "You don't have any ${["Accepted", "Pending", "Rejected"][_tabController.index - 1]} complaint",  // Updated message
                                   style: GoogleFonts.poppins(
                                       fontSize: 20, color: Colors.grey),
                                   textAlign: TextAlign.center,
