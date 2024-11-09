@@ -437,11 +437,16 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                                 snapshot.data!.docs.isEmpty) {
                               return Center(
                                 child: Text(
-                                  isDateFiltered  // || isPlateFiltered
+                                  isDateFiltered // || isPlateFiltered
                                       ? "You don't have any complaint\nfor the selected date."
-                                      : _tabController.index == 0 //&& !isDateFiltered 
+                                      : _tabController.index ==
+                                              0 //&& !isDateFiltered
                                           ? "You don't have any complaint,\nride safe :)"
-                                          : "You don't have any ${["Accepted", "Pending", "Rejected"][_tabController.index - 1]} complaint",  // Updated message
+                                          : "You don't have any ${[
+                                              "Accepted",
+                                              "Pending",
+                                              "Rejected"
+                                            ][_tabController.index - 1]} complaint", // Updated message
                                   style: GoogleFonts.poppins(
                                       fontSize: 20, color: Colors.grey),
                                   textAlign: TextAlign.center,
@@ -556,17 +561,22 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                                         size: 20,
                                       ),
                                       onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                Complaintdetail(
-                                              ComplaintID:
-                                                  filteredList[index].id ?? '',
-                                              driverid: widget.driverId,
+                                        if (filteredList != null &&
+                                            filteredList.isNotEmpty &&
+                                            filteredList[index] != null) {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  Complaintdetail(
+                                                ComplaintID:
+                                                    filteredList[index].id ??
+                                                        '',
+                                                driverid: widget.driverId,
+                                              ),
                                             ),
-                                          ),
-                                        );
+                                          );
+                                        }
                                       },
                                     ),
                                   ),
