@@ -10,6 +10,7 @@ class Crash {
   GeoPoint? position; 
   int? time;  
   String? status;
+  final Timestamp? timestamp; // Use Timestamp if it comes from Firestore
 
   Crash({
     required this.cid,
@@ -19,6 +20,8 @@ class Crash {
     required this.position,
     required this.time,
         required this.status,
+            this.timestamp,
+
 
   });
 
@@ -52,6 +55,8 @@ class Crash {
           : null,
     
       time: parsedJSON['time'] as int?,   
+            timestamp: parsedJSON['timestamp'] as Timestamp?, // Ensure the field name matches Firestore
+
     );
   }
 }
