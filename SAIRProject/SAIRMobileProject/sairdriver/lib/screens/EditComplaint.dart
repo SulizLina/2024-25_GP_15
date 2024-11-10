@@ -31,7 +31,7 @@ class _editcomplaintState extends State<editcomplaint> {
   @override
   void initState() {
     super.initState();
-    complainttext.text = widget.complaint.Description ?? '';
+      complainttext.text = widget.complaint.Description ?? '';
 
     complainttext.addListener(() {
       if (complainttext.text.length > maxChararcter) {
@@ -55,33 +55,33 @@ class _editcomplaintState extends State<editcomplaint> {
     try {
       User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null) {
-        QuerySnapshot snapshot = await FirebaseFirestore.instance
-            .collection('Complaint')
-            .where('ComplaintID', isEqualTo: widget.complaint.ComID)
-            .get();
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('Complaint')
+          .where('ComplaintID', isEqualTo: widget.complaint.ComID)
+          .get();
 
-        if (snapshot.docs.isNotEmpty) {
-          for (var doc in snapshot.docs) {
-            await doc.reference.update({'Description': description});
-          }
-
-          widget.onComplaintUpdated(description);
-        } else {
-          setState(() {
-            errorMessage = 'Complaint not found.';
-          });
+      if (snapshot.docs.isNotEmpty) {
+        for (var doc in snapshot.docs) {
+          await doc.reference.update({'Description': description});
         }
+        
+        widget.onComplaintUpdated(description);
       } else {
         setState(() {
-          errorMessage = 'User is not logged in.';
+          errorMessage = 'Complaint not found.';
         });
       }
-    } catch (e) {
+    } else {
       setState(() {
-        errorMessage = 'Failed to update complaint. Please try again.';
+        errorMessage = 'User is not logged in.';
       });
     }
+  } catch (e) {
+    setState(() {
+      errorMessage = 'Failed to update complaint. Please try again.';
+    });
   }
+}
 
   Future<void> _updateComplaint() async {
     setState(() {
@@ -92,15 +92,15 @@ class _editcomplaintState extends State<editcomplaint> {
       String description = complainttext.text;
       complainttext.text = description;
 
-      // Show a confirmation message
-      SuccessMessageDialog.show(context, "Complaint updated successfully!");
+    // Show a confirmation message
+    SuccessMessageDialog.show(context, "Complaint updated successfully!");
 
-      // Close the current screen after showing the dialog
-      Future.delayed(Duration(seconds: 1), () {
-        Navigator.pop(context);
-      });
-    }
+    // Close the current screen after showing the dialog
+    Future.delayed(Duration(seconds: 1), () {
+      Navigator.pop(context);
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -174,8 +174,9 @@ class _editcomplaintState extends State<editcomplaint> {
                     SizedBox(height: 15),
                     TextFormField(
                       controller: complainttext,
-                      maxLines: 5,
-                      keyboardType: TextInputType.multiline,
+                      maxLines: 5, // Allow text to wrap within the field
+                      keyboardType: TextInputType
+                          .multiline, // Supports multi-line wrap without newlines
                       inputFormatters: [
                         FilteringTextInputFormatter.deny(
                             RegExp(r'\n')), // Block newline input
@@ -229,7 +230,7 @@ class _editcomplaintState extends State<editcomplaint> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _updateComplaint,
+                        onPressed: _updateComplaint, //update method
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color.fromARGB(201, 3, 152, 85),
                           shape: RoundedRectangleBorder(

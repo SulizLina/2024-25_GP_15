@@ -1,8 +1,5 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 
 class SuccessMessageDialog {
   static void show(BuildContext context, String successMessage) {
@@ -18,6 +15,19 @@ class SuccessMessageDialog {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Close "X" Button
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Transform.translate(
+                    offset: const Offset(0, -15),
+                    child: IconButton(
+                      icon: const Icon(Icons.close, color: Color(0xFF211D1D)),
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                    ),
+                  ),
+                ),
                 Text(
                   "Done Successfully!",
                   style: GoogleFonts.poppins(
