@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/models/violation.dart';
-import 'package:sairdriver/models/complaint.dart';
+import 'package:sairdriver/messages/success.dart';
 import 'package:sairdriver/services/Complaint_database.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 
 class Raisecomplaint extends StatefulWidget {
@@ -47,16 +46,18 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
   Future<void> submitComplaint() async {
     if (_formKey.currentState!.validate()) {
       try {
-        // Call raiseComplaint with only the required positional parameters
         await ComplaintDatabase().raiseComplaint(
           widget.violation,
           _controller.text,
           widget.driverid,
         );
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Complaint submitted successfully!")),
-        );
-        Navigator.pop(context); // Return to previous screen
+        // Show a confirmation message
+        SuccessMessageDialog.show(context, "Complaint submitted successfully!");
+
+        // Close the current screen after showing the dialog
+        Future.delayed(Duration(seconds: 1), () {
+          Navigator.pop(context);
+        });
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Failed to submit complaint: $error")),
@@ -99,7 +100,7 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
         ),
       ),
       body: GestureDetector(
-        onTap: (){
+        onTap: () {
           FocusScope.of(context).unfocus();
         },
         child: SingleChildScrollView(
@@ -137,12 +138,10 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
                     SizedBox(height: 20),
                     TextFormField(
                       controller: _controller,
-                      maxLines: 5, // Allow text to wrap within the field
-                      keyboardType: TextInputType
-                          .multiline, // Supports multi-line wrap without newlines
+                      maxLines: 5,
+                      keyboardType: TextInputType.multiline,
                       inputFormatters: [
-                        FilteringTextInputFormatter.deny(
-                            RegExp(r'\n')), // Block newline input
+                        FilteringTextInputFormatter.deny(RegExp(r'\n')),
                       ],
                       decoration: InputDecoration(
                         labelText: 'Enter Your Complaint',

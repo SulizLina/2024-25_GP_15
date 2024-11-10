@@ -5,7 +5,6 @@ import 'package:sairdriver/services/Complaint_database.dart';
 import 'package:sairdriver/screens/EditComplaint.dart';
 import 'package:sairdriver/screens/ViolationDetail.dart';
 import 'package:sairdriver/messages/Warning.dart';
-import 'package:sairdriver/services/Complaint_database.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -113,8 +112,8 @@ class _ComplaintdetailState extends State<Complaintdetail> {
         decoration: const BoxDecoration(
           color: Color(0xFFF3F3F3),
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30), // Rounded top-left corner
-            topRight: Radius.circular(30), // Rounded top-right corner
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
           ),
         ),
         child: SingleChildScrollView(
@@ -207,7 +206,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                                           onComplaintUpdated: (newDesc) {
                                             setState(() {
                                               complainttext.text =
-                                                  newDesc; // Update the phone number on the profile page
+                                                  newDesc; // Update the complaint desc on the profile page????????????are you sure its working?
                                             });
                                           },
                                         ),
@@ -310,7 +309,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                                       onComplaintUpdated: (newDesc) {
                                         setState(() {
                                           complainttext.text =
-                                              newDesc; // Update the phone number on the profile page
+                                              newDesc; // Update the complaint desc on the profile page???????????????????/are you sure!
                                         });
                                       },
                                     ),
@@ -486,10 +485,9 @@ class _ComplaintdetailState extends State<Complaintdetail> {
             ),
           ],
         ),
-        const SizedBox(height: 8), // Space between title and content
+        const SizedBox(height: 8),
         Padding(
-          padding: const EdgeInsets.only(
-              left: 32), // Indent the content a bit for better visual hierarchy
+          padding: const EdgeInsets.only(left: 32),
           child: Text(
             content ?? '',
             style: GoogleFonts.poppins(
@@ -498,7 +496,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
             ),
           ),
         ),
-        const SizedBox(height: 20), // Add space below each section
+        const SizedBox(height: 20),
       ],
     );
   }
@@ -582,10 +580,9 @@ class _ComplaintdetailState extends State<Complaintdetail> {
             ),
           ],
         ),
-        const SizedBox(height: 8), // Space between title and content
+        const SizedBox(height: 8),
         Padding(
-          padding:
-              const EdgeInsets.only(left: 32), // Indent content for hierarchy
+          padding: const EdgeInsets.only(left: 32),
           child: Text(
             content ?? '',
             style: GoogleFonts.poppins(
@@ -594,7 +591,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
             ),
           ),
         ),
-        const SizedBox(height: 20), // Space below each section
+        const SizedBox(height: 20),
       ],
     );
   }
@@ -621,7 +618,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
             ),
           ],
         ),
-        const SizedBox(height: 20), // Adjust spacing to avoid extra space
+        const SizedBox(height: 20),
       ],
     );
   }

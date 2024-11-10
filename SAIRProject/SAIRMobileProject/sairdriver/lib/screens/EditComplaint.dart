@@ -31,7 +31,7 @@ class _editcomplaintState extends State<editcomplaint> {
   @override
   void initState() {
     super.initState();
-      complainttext.text = widget.complaint.Description ?? '';
+    complainttext.text = widget.complaint.Description ?? '';
 
     complainttext.addListener(() {
       if (complainttext.text.length > maxChararcter) {
@@ -55,35 +55,33 @@ class _editcomplaintState extends State<editcomplaint> {
     try {
       User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null) {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('Complaint')
-          .where('ComplaintID', isEqualTo: widget.complaint.ComID)
-          .get();
+        QuerySnapshot snapshot = await FirebaseFirestore.instance
+            .collection('Complaint')
+            .where('ComplaintID', isEqualTo: widget.complaint.ComID)
+            .get();
 
-      if (snapshot.docs.isNotEmpty) {
-        // Loop through the matching documents and update each
-        for (var doc in snapshot.docs) {
-          await doc.reference.update({'Description': description});
+        if (snapshot.docs.isNotEmpty) {
+          for (var doc in snapshot.docs) {
+            await doc.reference.update({'Description': description});
+          }
+
+          widget.onComplaintUpdated(description);
+        } else {
+          setState(() {
+            errorMessage = 'Complaint not found.';
+          });
         }
-        
-        // Call the callback function to update the UI
-        widget.onComplaintUpdated(description);
       } else {
         setState(() {
-          errorMessage = 'Complaint not found.';
+          errorMessage = 'User is not logged in.';
         });
       }
-    } else {
+    } catch (e) {
       setState(() {
-        errorMessage = 'User is not logged in.';
+        errorMessage = 'Failed to update complaint. Please try again.';
       });
     }
-  } catch (e) {
-    setState(() {
-      errorMessage = 'Failed to update complaint. Please try again.';
-    });
   }
-}
 
   Future<void> _updateComplaint() async {
     setState(() {
@@ -94,15 +92,15 @@ class _editcomplaintState extends State<editcomplaint> {
       String description = complainttext.text;
       complainttext.text = description;
 
-    // Show a confirmation message
-    SuccessMessageDialog.show(context, "Complaint updated successfully!");
+      // Show a confirmation message
+      SuccessMessageDialog.show(context, "Complaint updated successfully!");
 
-    // Close the current screen after showing the dialog
-    Future.delayed(Duration(seconds: 2), () {
-      Navigator.pop(context);
-    });
+      // Close the current screen after showing the dialog
+      Future.delayed(Duration(seconds: 1), () {
+        Navigator.pop(context);
+      });
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -176,9 +174,8 @@ class _editcomplaintState extends State<editcomplaint> {
                     SizedBox(height: 15),
                     TextFormField(
                       controller: complainttext,
-                      maxLines: 5, // Allow text to wrap within the field
-                      keyboardType: TextInputType
-                          .multiline, // Supports multi-line wrap without newlines
+                      maxLines: 5,
+                      keyboardType: TextInputType.multiline,
                       inputFormatters: [
                         FilteringTextInputFormatter.deny(
                             RegExp(r'\n')), // Block newline input
@@ -232,7 +229,7 @@ class _editcomplaintState extends State<editcomplaint> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _updateComplaint, //update method
+                        onPressed: _updateComplaint,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color.fromARGB(201, 3, 152, 85),
                           shape: RoundedRectangleBorder(

@@ -3,7 +3,7 @@ import 'package:sairdriver/screens/bottom_nav_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class RegulationOnboarding extends StatefulWidget {
-  final String driverId;  
+  final String driverId;
   const RegulationOnboarding({required this.driverId});
 
   @override
@@ -28,7 +28,8 @@ class _RegulationOnboardingState extends State<RegulationOnboarding> {
                 onPageChanged: (value) {
                   setState(() {
                     _selectedIndex = value;
-                    isLastPage = value == demoData.length - 1; // Check if it's the last page
+                    isLastPage = value ==
+                        demoData.length - 1; // Check if it's the last page
                   });
                 },
                 itemBuilder: (context, index) {
@@ -59,17 +60,17 @@ class _RegulationOnboardingState extends State<RegulationOnboarding> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => BottomNavBar(driverId: widget.driverId),
+                      builder: (context) =>
+                          BottomNavBar(driverId: widget.driverId),
                     ),
                   );
                 } else {
-                  // Show styled dialog if the button is pressed before reaching the last page
                   showDialog(
                     context: context,
                     builder: (context) {
                       return Dialog(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20), // Rounded corners
+                          borderRadius: BorderRadius.circular(20),
                         ),
                         child: Container(
                           padding: EdgeInsets.all(16),
@@ -94,18 +95,19 @@ class _RegulationOnboardingState extends State<RegulationOnboarding> {
                               SizedBox(height: 20),
                               ElevatedButton(
                                 onPressed: () {
-                                  Navigator.pop(context); // Close the dialog
+                                  Navigator.pop(context);
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color.fromARGB(201, 3, 152, 85), // Green button
+                                  backgroundColor:
+                                      Color.fromARGB(201, 3, 152, 85),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10), // Rounded button
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
                                 child: Text(
                                   "OK",
                                   style: GoogleFonts.poppins(
-                                    color: Colors.white, // White text
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
@@ -118,9 +120,8 @@ class _RegulationOnboardingState extends State<RegulationOnboarding> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: isLastPage
-                    ? Color.fromARGB(255, 3, 152, 85) // Green when active
-                    : Colors.grey, 
+                backgroundColor:
+                    isLastPage ? Color.fromARGB(255, 3, 152, 85) : Colors.grey,
                 padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
@@ -129,7 +130,7 @@ class _RegulationOnboardingState extends State<RegulationOnboarding> {
               child: Text(
                 "Get Started".toUpperCase(),
                 style: GoogleFonts.poppins(
-                  color: Colors.black, // Text color
+                  color: Colors.black,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -154,7 +155,9 @@ class AnimatedDot extends StatelessWidget {
       height: 6,
       width: isActive ? 20 : 6,
       decoration: BoxDecoration(
-        color: isActive ? Color.fromARGB(255, 3, 152, 85) : Color(0xFF868686).withOpacity(0.25),
+        color: isActive
+            ? Color.fromARGB(255, 3, 152, 85)
+            : Color(0xFF868686).withOpacity(0.25),
         borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
     );
@@ -186,7 +189,7 @@ class OnboardingContent extends StatelessWidget {
           title,
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.bold,
-            fontSize: 25, 
+            fontSize: 25,
             color: Color.fromARGB(255, 3, 152, 85),
           ),
         ),
@@ -206,19 +209,21 @@ class OnboardingContent extends StatelessWidget {
 
 List<Map<String, dynamic>> demoData = [
   {
-    "illustration": "assets/image/OnboaringHelmet.png", 
+    "illustration": "assets/image/OnboaringHelmet.png",
     "title": "Protect Your Head",
     "text": "Don't forget your helmet",
   },
   {
-    "illustration": "assets/image/SpeedIconNOb.png", 
+    "illustration": "assets/image/SpeedIconNOb.png",
     "title": "Obey Speed Limit",
-    "text": "50 kilometers in residential areas.\n80 kilometers on main roads within cities.\n120 kilometers outside city limits",
+    "text":
+        "50 kilometers in residential areas.\n80 kilometers on main roads within cities.\n120 kilometers outside city limits",
   },
   {
-    "illustration": "assets/image/MotorRegu.png", 
+    "illustration": "assets/image/MotorRegu.png",
     "title": "See and Be Seen",
-    "text": "Stay visible and follow the rules.\nAvoid weaving between cars.\nYour safety matters more than rushing to your target!!",
+    "text":
+        "Stay visible and follow the rules.\nAvoid weaving between cars.\nYour safety matters more than rushing to your target!!",
   },
   {
     "illustration": "assets/image/checkMotorcycle.png",

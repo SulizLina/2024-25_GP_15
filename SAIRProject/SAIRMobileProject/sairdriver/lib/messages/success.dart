@@ -34,24 +34,6 @@ class SuccessMessageDialog {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
-
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(201, 3, 152, 85),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Text(
-                    "Continue",
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                    ),
-                   ),
-                ),
               ],
             ),
           ),

@@ -50,8 +50,7 @@ class _ViolationdetailState extends State<Violationdetail> {
 
   Future<void> fetchViolation() async {
     ViolationsDatabase db = ViolationsDatabase();
-    violation = await db.getViolationById(
-        widget.violationId); // Fetch violation using the violationId
+    violation = await db.getViolationById(widget.violationId);
 
     if (violation != null && violation!.gspNumber != null) {
       print(violation?.gspNumber);
@@ -120,28 +119,27 @@ class _ViolationdetailState extends State<Violationdetail> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
-        backgroundColor: Color.fromARGB(255, 3, 152, 85), // Background color
-        toolbarHeight: 100, // Adjusted toolbar height for the row layout
-        iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)), // Arrow color
+        backgroundColor: Color.fromARGB(255, 3, 152, 85),
+        toolbarHeight: 100,
+        iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)),
         title: Row(
           children: [
             IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
-                Navigator.pop(context); // Navigate back
+                Navigator.pop(context);
               },
             ),
-            SizedBox(width: 10), // Space between arrow and text
+            SizedBox(width: 10),
             Expanded(
-              // Allows the text to take up remaining space
               child: Text(
-                "Violation Details", // Adjust the text as needed
+                "Violation Details",
                 style: GoogleFonts.poppins(
-                  fontSize: 20, // Font size to match the image
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFFAFAFF), // Color for the text
+                  color: Color(0xFFFAFAFF),
                 ),
-                textAlign: TextAlign.start, // Align text to the start
+                textAlign: TextAlign.start,
               ),
             ),
           ],
@@ -154,8 +152,8 @@ class _ViolationdetailState extends State<Violationdetail> {
         decoration: const BoxDecoration(
           color: Color(0xFFF3F3F3),
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30), // Rounded top-left corner
-            topRight: Radius.circular(30), // Rounded top-right corner
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
           ),
         ),
         child: SingleChildScrollView(
@@ -167,7 +165,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'you can raise a complaint within 30 days', // Your subtitle here
+                    'you can raise a complaint within 30 days',
                     style: GoogleFonts.poppins(
                       fontSize: 14,
                       color: Colors.grey[400],
@@ -248,20 +246,17 @@ class _ViolationdetailState extends State<Violationdetail> {
                               ),
                             },
                           )
-                        : Center(
-                            child:
-                                CircularProgressIndicator()), // Shows a loader until valid coordinates are fetched
+                        : Center(child: CircularProgressIndicator()),
                   ),
                   const SizedBox(height: 30),
                   ElevatedButton(
                     onPressed: (violation != null &&
-                            !hasComplaint && // Disable if complaint exists
+                            !hasComplaint &&
                             DateTime.parse(violation!.getFormattedDate())
                                 .isAfter(
                               DateTime.now().subtract(Duration(days: 30)),
                             ))
                         ? () {
-                            // driver can raise a complaint
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -272,7 +267,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                               ),
                             );
                           }
-                        : () {// Determine the dialog message based on conditions
+                        : () {
                             String message;
                             if (hasComplaint) {
                               if (DateTime.parse(violation!.getFormattedDate())
@@ -289,9 +284,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                               message =
                                   'You can\'t raise a complaint after 30 days of the violation!';
                             }
-                      
 
-                            // Show appropriate dialog
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
@@ -437,10 +430,9 @@ class _ViolationdetailState extends State<Violationdetail> {
             ),
           ],
         ),
-        const SizedBox(height: 8), // Space between title and content
+        const SizedBox(height: 8),
         Padding(
-          padding: const EdgeInsets.only(
-              left: 32), // Indent the content a bit for better visual hierarchy
+          padding: const EdgeInsets.only(left: 32),
           child: Text(
             content ?? '',
             style: GoogleFonts.poppins(
@@ -449,7 +441,7 @@ class _ViolationdetailState extends State<Violationdetail> {
             ),
           ),
         ),
-        const SizedBox(height: 20), // Add space below each section
+        const SizedBox(height: 20),
       ],
     );
   }

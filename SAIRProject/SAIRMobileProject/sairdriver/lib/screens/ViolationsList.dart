@@ -5,7 +5,6 @@ import 'package:sairdriver/models/violation.dart';
 import 'package:sairdriver/models/driver.dart';
 import 'package:sairdriver/services/driver_database.dart';
 import 'package:sairdriver/models/motorcycle.dart';
-import 'package:sairdriver/services/motorcycle_database.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/screens/ViolationDetail.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -22,16 +21,16 @@ class _ViolationslistState extends State<Violationslist> {
   List<DocumentSnapshot> violations = []; // List to hold violation documents
   List<DocumentSnapshot> filteredViolations =
       []; // List for filtered violations based on date
-  List<bool> isHoveredList = []; // Hover state list
+  List<bool> isHoveredList = [];
 
-  List<String> plateN = []; // To store all GPS numbers from violations
-  String? selectedPlate; // Selected GPS number
+  List<String> plateN = [];
+  String? selectedPlate;
 
   driver? driverNat_Res;
-  DateTime selectDate = DateTime.now(); // Selected date for filtering
-  bool isDateFiltered = false; // Tracks if date filtering is active
-  bool isPlateFiltered = false; // Tracks if plate filtering is active
-  bool _isLoading = true; // Loading state
+  DateTime selectDate = DateTime.now();
+  bool isDateFiltered = false;
+  bool isPlateFiltered = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -60,7 +59,7 @@ class _ViolationslistState extends State<Violationslist> {
     if (driverNat_Res != null) {
       print(
           "Driver data found for ID: ${widget.driverId}, driverID: ${driverNat_Res?.driverId}");
-      await fetchViolations(); // Fetch violations when driver data is found
+      await fetchViolations();
     } else {
       print("Driver data not found for ID: ${widget.driverId}");
     }
@@ -73,8 +72,7 @@ class _ViolationslistState extends State<Violationslist> {
         .snapshots();
   }
 
-  Map<String, String?> licensePlateMap =
-      {}; // Store license plates by Violation ID
+  Map<String, String?> licensePlateMap = {};
 
   Future<void> fetchViolations({DateTime? filterDate}) async {
     try {
@@ -97,7 +95,6 @@ class _ViolationslistState extends State<Violationslist> {
       await Future.wait(fetchTasks);
 
       setState(() {
-        // Only add "Reset" if there are plates available
         if (plateN.isNotEmpty) {
           plateN = [
             "Reset",
@@ -211,7 +208,9 @@ class _ViolationslistState extends State<Violationslist> {
                   padding: const EdgeInsets.only(top: 5.0),
                   child: ColorFiltered(
                     colorFilter: ColorFilter.mode(
-                      plateN.isEmpty ? const Color.fromARGB(255, 199, 199, 199) : Colors.white,
+                      plateN.isEmpty
+                          ? const Color.fromARGB(255, 199, 199, 199)
+                          : Colors.white,
                       BlendMode.srcIn,
                     ),
                     child: Image.asset(
@@ -259,7 +258,9 @@ class _ViolationslistState extends State<Violationslist> {
                     ? HugeIcons.strokeRoundedCalendarRemove02
                     : HugeIcons.strokeRoundedCalendar03,
                 size: 24,
-                color: violations.isEmpty ? const Color.fromARGB(255, 199, 199, 199) : Color(0xFFF3F3F3),
+                color: violations.isEmpty
+                    ? const Color.fromARGB(255, 199, 199, 199)
+                    : Color(0xFFF3F3F3),
               ),
             ),
           ],
@@ -350,15 +351,15 @@ class _ViolationslistState extends State<Violationslist> {
                       margin: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 5),
                       color: Colors.white,
-                      elevation: 2, 
+                      elevation: 2,
                       child: ListTile(
                         title: Text(
                           'Violation ID: ${violation.Vid}',
-                           style: GoogleFonts.poppins(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
+                          style: GoogleFonts.poppins(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -383,7 +384,9 @@ class _ViolationslistState extends State<Violationslist> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => Violationdetail(
-                                  violationId: filteredList[index].id, driverid: widget.driverId,),
+                                violationId: filteredList[index].id,
+                                driverid: widget.driverId,
+                              ),
                             ),
                           );
                         },

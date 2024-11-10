@@ -4,9 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sairdriver/models/driver.dart';
 import 'package:sairdriver/services/driver_database.dart';
 import 'package:sairdriver/models/motorcycle.dart';
-import 'package:sairdriver/services/motorcycle_database.dart';
 import 'package:sairdriver/models/complaint.dart';
-import 'package:sairdriver/services/Complaint_database.dart';
 import 'package:sairdriver/screens/ComplaintDetail.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:board_datetime_picker/board_datetime_picker.dart';
@@ -77,7 +75,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
     driverNat_Res = await dbD.getDriversnById(widget.driverId);
 
     if (driverNat_Res != null) {
-      await fetchComplaint(); // Fetch complaints after driver data is ready
+      await fetchComplaint();
     }
   }
 
@@ -112,7 +110,6 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
       await Future.wait(fetchTasks);
 
       setState(() {
-        // Only add "Reset" if there are plates available
         if (plateN.isNotEmpty) {
           plateN = {
             "Reset",
@@ -437,11 +434,16 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                                 snapshot.data!.docs.isEmpty) {
                               return Center(
                                 child: Text(
-                                  isDateFiltered  // || isPlateFiltered
+                                  isDateFiltered // || isPlateFiltered
                                       ? "You don't have any complaint\nfor the selected date."
-                                      : _tabController.index == 0 //&& !isDateFiltered 
+                                      : _tabController.index ==
+                                              0 //&& !isDateFiltered
                                           ? "You don't have any complaint,\nride safe :)"
-                                          : "You don't have any ${["Accepted", "Pending", "Rejected"][_tabController.index - 1]} complaint",  // Updated message
+                                          : "You don't have any ${[
+                                              "Accepted",
+                                              "Pending",
+                                              "Rejected"
+                                            ][_tabController.index - 1]} complaint", // Updated message
                                   style: GoogleFonts.poppins(
                                       fontSize: 20, color: Colors.grey),
                                   textAlign: TextAlign.center,
@@ -562,8 +564,8 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                                             builder: (context) =>
                                                 Complaintdetail(
                                               ComplaintID:
-                                                filteredList[index].id ?? '',
-                                                driverid: widget.driverId,
+                                                  filteredList[index].id ?? '',
+                                              driverid: widget.driverId,
                                             ),
                                           ),
                                         );
