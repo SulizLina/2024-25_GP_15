@@ -51,7 +51,7 @@ class _editcomplaintState extends State<editcomplaint> {
   }
 
   //Update complaint description in Firebase
-  Future<void> updateComplaintInFirebase(String description) async {
+  Future<bool> updateComplaintInFirebase(String description) async {
     try {
       User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null) {
@@ -60,28 +60,32 @@ class _editcomplaintState extends State<editcomplaint> {
           .where('ComplaintID', isEqualTo: widget.complaint.ComID)
           .get();
 
-      if (snapshot.docs.isNotEmpty) {
-        for (var doc in snapshot.docs) {
-          await doc.reference.update({'Description': description});
-        }
+        if (snapshot.docs.isNotEmpty) {
+          for (var doc in snapshot.docs) {
+            await doc.reference.update({'Description': description});
+          }
         
-        widget.onComplaintUpdated(description);
+          widget.onComplaintUpdated(description);
+          return true; // Update was successful
+        } else {
+          setState(() {
+            errorMessage = 'Complaint not found.';
+          });
+          return false;
+        }
       } else {
         setState(() {
-          errorMessage = 'Complaint not found.';
+          errorMessage = 'User is not logged in.';
         });
+        return false;
       }
-    } else {
+    } catch (e) {
       setState(() {
-        errorMessage = 'User is not logged in.';
+        errorMessage = 'Failed to update complaint. Please try again.';
       });
+      return false;
     }
-  } catch (e) {
-    setState(() {
-      errorMessage = 'Failed to update complaint. Please try again.';
-    });
   }
-}
 
   Future<void> _updateComplaint() async {
     setState(() {
@@ -90,17 +94,20 @@ class _editcomplaintState extends State<editcomplaint> {
 
     if (_formKey.currentState != null && _formKey.currentState!.validate()) {
       String description = complainttext.text;
-      complainttext.text = description;
+      bool updateSuccessful = await updateComplaintInFirebase(description);
 
-    // Show a confirmation message
-    SuccessMessageDialog.show(context, "Complaint updated successfully!");
 
-    // Close the current screen after showing the dialog
-    Future.delayed(Duration(seconds: 1), () {
-      Navigator.pop(context);
-    });
+      if (updateSuccessful) {
+        // Show a confirmation message
+        SuccessMessageDialog.show(context, "Complaint updated successfully!");
+
+        // Close the current screen after showing the dialog
+        Future.delayed(Duration(seconds: 1), () {
+          Navigator.pop(context);
+        });
+      }
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
