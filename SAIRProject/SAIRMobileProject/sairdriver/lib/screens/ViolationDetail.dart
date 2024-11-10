@@ -185,10 +185,9 @@ class _ViolationdetailState extends State<Violationdetail> {
                       'Motorcycle Model',
                       motorcycle?.model ?? '',
                       HugeIcons.strokeRoundedMotorbike02),
-                  buildDetailSection(
+                  buildDetailSectionWithImage(
                       'Motorcycle Licence Plate',
-                      motorcycle?.licensePlate ?? '',
-                      HugeIcons.strokeRoundedCreditCard),
+                      motorcycle?.licensePlate ?? '',),
                   buildDetailSection(
                       'GPS Serial Number',
                       violation?.gspNumber ?? '',
@@ -439,6 +438,42 @@ class _ViolationdetailState extends State<Violationdetail> {
               fontSize: 14,
               color: Color(0xFF211D1D),
             ),
+          ),
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
+    Widget buildDetailSectionWithImage(String title, String? content) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Image.asset(
+              'assets/image/licenseplate.png',
+              width: 30,
+              height: 30,
+              color: Color.fromARGB(255, 3, 152, 85),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF211D1D),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.only(left: 32),
+          child: Text(
+            content ?? '',
+            style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D)),
           ),
         ),
         const SizedBox(height: 20),

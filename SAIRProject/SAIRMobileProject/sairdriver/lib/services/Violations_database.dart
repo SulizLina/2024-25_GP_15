@@ -37,4 +37,22 @@ class ViolationsDatabase {
       return null; // Return null on error
     }
   }
+
+
+    Future<Violation?> getViolationCDOCid(String violationId) async {
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('Violation')
+          .doc(violationId) // Use the document ID directly
+          .get();
+
+      if (snapshot.exists) {
+        return Violation.fromJson(snapshot); // Return the violation object
+      }
+      return null; // Return null if no violation found
+    } catch (e) {
+      print("Error fetching violation: $e");
+      return null; // Return null on error
+    }
+  }
 }
