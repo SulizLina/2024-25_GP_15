@@ -7,8 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class EditPhonePage extends StatefulWidget {
   final String driverId; // DriverID passed from previous page
-  final Function(String)
-      onPhoneUpdated; // Callback function to update the profile page
+  final Function(String)onPhoneUpdated; // Callback function to update the profile page
 
   const EditPhonePage({required this.driverId, required this.onPhoneUpdated});
 

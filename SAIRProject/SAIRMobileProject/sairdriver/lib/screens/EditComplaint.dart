@@ -1,15 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/models/complaint.dart';
+import 'package:sairdriver/messages/success.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class editcomplaint extends StatefulWidget {
   final Complaint complaint;
   final String driverid;
+  final Function(String) onComplaintUpdated;
 
   const editcomplaint(
-      {Key? key, required this.complaint, required this.driverid})
-      : super(key: key);
+      {Key? key,
+      required this.complaint,
+      required this.driverid,
+      required this.onComplaintUpdated});
 
   @override
   State<editcomplaint> createState() => _editcomplaintState();
@@ -20,13 +26,12 @@ class _editcomplaintState extends State<editcomplaint> {
   final maxChararcter = 250;
   final _formKey = GlobalKey<FormState>();
   TextEditingController complainttext = TextEditingController();
+  String? errorMessage;
 
   @override
   void initState() {
     super.initState();
-    if (mounted) {
       complainttext.text = widget.complaint.Description ?? '';
-    }
 
     complainttext.addListener(() {
       if (complainttext.text.length > maxChararcter) {
@@ -41,11 +46,63 @@ class _editcomplaintState extends State<editcomplaint> {
 
   @override
   void dispose() {
-    //_controller.dispose();
+    complainttext.dispose();
     super.dispose();
   }
 
-  //change it to update not submit
+  //Update complaint description in Firebase
+  Future<void> updateComplaintInFirebase(String description) async {
+    try {
+      User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('Complaint')
+          .where('ComplaintID', isEqualTo: widget.complaint.ComID)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        // Loop through the matching documents and update each
+        for (var doc in snapshot.docs) {
+          await doc.reference.update({'Description': description});
+        }
+        
+        // Call the callback function to update the UI
+        widget.onComplaintUpdated(description);
+      } else {
+        setState(() {
+          errorMessage = 'Complaint not found.';
+        });
+      }
+    } else {
+      setState(() {
+        errorMessage = 'User is not logged in.';
+      });
+    }
+  } catch (e) {
+    setState(() {
+      errorMessage = 'Failed to update complaint. Please try again.';
+    });
+  }
+}
+
+  Future<void> _updateComplaint() async {
+    setState(() {
+      errorMessage = null; //if new==privios => error msg???
+    });
+
+    if (_formKey.currentState != null && _formKey.currentState!.validate()) {
+      String description = complainttext.text;
+      complainttext.text = description;
+
+    // Show a confirmation message
+    SuccessMessageDialog.show(context, "Complaint updated successfully!");
+
+    // Close the current screen after showing the dialog
+    Future.delayed(Duration(seconds: 2), () {
+      Navigator.pop(context);
+    });
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -175,7 +232,7 @@ class _editcomplaintState extends State<editcomplaint> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: null, //update method
+                        onPressed: _updateComplaint, //update method
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color.fromARGB(201, 3, 152, 85),
                           shape: RoundedRectangleBorder(
@@ -184,7 +241,7 @@ class _editcomplaintState extends State<editcomplaint> {
                           padding: EdgeInsets.symmetric(vertical: 16),
                         ),
                         child: Text(
-                          'Submit',
+                          'Update',
                           style: GoogleFonts.poppins(
                             fontSize: 18,
                             color: Colors.white,

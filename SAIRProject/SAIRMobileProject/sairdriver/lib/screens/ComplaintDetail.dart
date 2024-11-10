@@ -198,15 +198,21 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                                     : Colors.grey),
                             onPressed: complaint!.Status == "Pending"
                                 ? () {
-                                  Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => editcomplaint(
-                                      complaint: complaint!,
-                                      driverid: widget.driverid,
-                                    ),
-                                  ),
-                                );
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => editcomplaint(
+                                          complaint: complaint!,
+                                          driverid: widget.driverid,
+                                          onComplaintUpdated: (newDesc) {
+                                            setState(() {
+                                              complainttext.text =
+                                                  newDesc; // Update the phone number on the profile page
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    );
                                   }
                                 : () {
                                     showDialog(
@@ -301,6 +307,12 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                                     builder: (context) => editcomplaint(
                                       complaint: complaint!,
                                       driverid: widget.driverid,
+                                      onComplaintUpdated: (newDesc) {
+                                        setState(() {
+                                          complainttext.text =
+                                              newDesc; // Update the phone number on the profile page
+                                        });
+                                      },
                                     ),
                                   ),
                                 );
