@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sairdriver/models/complaint.dart';
 import 'package:sairdriver/models/violation.dart';
 import 'package:sairdriver/services/Complaint_database.dart';
 import 'package:sairdriver/screens/EditComplaint.dart';
 import 'package:sairdriver/screens/ViolationDetail.dart';
+import 'package:sairdriver/messages/success.dart';
 import 'package:sairdriver/messages/Warning.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -25,6 +27,8 @@ class _ComplaintdetailState extends State<Complaintdetail> {
   Complaint? complaint;
   Violation? violation;
   String? vioDocid;
+  String? errorMessage;
+  final _formKey = GlobalKey<FormState>();
 
   TextEditingController complainttext = TextEditingController();
 
@@ -70,6 +74,67 @@ class _ComplaintdetailState extends State<Complaintdetail> {
       print("No matching violation found.");
       print("Violation Document ID: ${complaint?.Vid ?? 'hi'}");
       return null; // Return null if no violation found
+    }
+  }
+
+  //Delete complaint description in Firebase
+  Future<bool> DeleteComplaintFromFirebase() async {
+    try {
+      User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        DocumentSnapshot snapshot = await FirebaseFirestore.instance
+            .collection('Complaint')
+            .doc(widget.ComplaintID)
+            .get();
+
+        // Check if the complaint exists
+        if (snapshot.exists) {
+          // Delete the document
+          await snapshot.reference.delete();
+          return true; // Deletion was successful
+        } else {
+          setState(() {
+            errorMessage = 'Complaint not found.';
+          });
+          return false;
+        }
+      } else {
+        setState(() {
+          errorMessage = 'User is not logged in.';
+        });
+        return false;
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = 'Failed to delete complaint. Please try again.';
+      });
+      return false;
+    }
+  }
+
+  Future<void> _DeleteComplaint() async {
+    setState(() {
+      errorMessage = null;
+    });
+
+    if (_formKey.currentState != null && _formKey.currentState!.validate()) {
+      String description = complainttext.text;
+      bool updateSuccessful = await DeleteComplaintFromFirebase();
+
+      if (updateSuccessful) {
+        Navigator.of(context).pop(); // Close the dialog
+        SuccessMessageDialog.show(context, "Complaint deleted successfully!");
+
+        Future.delayed(Duration(seconds: 1), () {
+          Navigator.pop(context); // Navigate back to previous screen
+        });
+      } else {
+        setState(() {
+          SuccessMessageDialog.show(context,
+              "Failed to delete the complaint. Please try again."); //////////////remove it pls
+          errorMessage = 'Failed to delete the complaint. Please try again.';
+        });
+      }
     }
   }
 
@@ -408,7 +473,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                                             ),
                                             ElevatedButton(
                                               onPressed: () {
-                                                Navigator.of(context).pop();
+                                                _DeleteComplaint();
                                               },
                                               style: ElevatedButton.styleFrom(
                                                 backgroundColor: Colors.red,
@@ -432,8 +497,18 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                                 );
                               },
                             );
-                          }
-                        : null, // Disables button when status is not "pending"
+                          } // Disables button when status is not "pending"
+                        : () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return const WarningDialog(
+                                  message:
+                                      "You can't delete the complaint unless the complaint status is pending",
+                                );
+                              },
+                            );
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
                           complaint != null && complaint!.Status == "Pending"
