@@ -15,25 +15,33 @@ class SuccessMessageDialog {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Close "X" Button
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Transform.translate(
-                    offset: const Offset(0, -15),
-                    child: IconButton(
-                      icon: const Icon(Icons.close, color: Color(0xFF211D1D)),
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Close the dialog
-                      },
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Text(
+                          "Done Successfully!",
+                          style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(201, 3, 152, 85),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                Text(
-                  "Done Successfully!",
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                    Transform.translate(
+                      offset: const Offset(0, -10),
+                      child: IconButton(
+                        icon: const Icon(Icons.close, color: Color(0xFF211D1D)),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(height: 20),
                 Text(
