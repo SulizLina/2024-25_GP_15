@@ -282,7 +282,9 @@ class _editcomplaintState extends State<editcomplaint> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromARGB(201, 3, 152, 85),
+                          backgroundColor: isTextChanged
+                              ? Color.fromARGB(202, 3, 152, 85)
+                              : Colors.grey,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15.0),
                           ),
