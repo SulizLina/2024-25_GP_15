@@ -50,32 +50,35 @@ class _CrashdetailState extends State<Crashdetail> {
     }
   }
 
-Future<BitmapDescriptor> getCustomMapIcon() async {
-  const double size = 120;
-  final icon = Icons.location_pin;
-  final pictureRecorder = ui.PictureRecorder();
-  final canvas = Canvas(pictureRecorder, Rect.fromPoints(Offset(0, 0), Offset(size, size)));
+  Future<BitmapDescriptor> getCustomMapIcon() async {
+    const double size = 120;
+    final icon = Icons.location_pin;
+    final pictureRecorder = ui.PictureRecorder();
+    final canvas = Canvas(
+        pictureRecorder, Rect.fromPoints(Offset(0, 0), Offset(size, size)));
 
-  final paint = Paint();
-  paint.color = Colors.transparent;
-  canvas.drawRect(Rect.fromLTWH(0, 0, size, size), paint);
+    final paint = Paint();
+    paint.color = Colors.transparent;
+    canvas.drawRect(Rect.fromLTWH(0, 0, size, size), paint);
 
-  TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
-  textPainter.text = TextSpan(
-    text: String.fromCharCode(icon.codePoint),
-    style: TextStyle(
-      fontSize: size - 20,
-      fontFamily: icon.fontFamily,
-      color: Colors.green,
-    ),
-  );
-  textPainter.layout();
-  textPainter.paint(canvas, Offset(0, 0));
+    TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
+    textPainter.text = TextSpan(
+      text: String.fromCharCode(icon.codePoint),
+      style: TextStyle(
+        fontSize: size - 20,
+        fontFamily: icon.fontFamily,
+        color: Colors.green,
+      ),
+    );
+    textPainter.layout();
+    textPainter.paint(canvas, Offset(0, 0));
 
-  final image = await pictureRecorder.endRecording().toImage(size.toInt(), size.toInt());
-  final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-  return BitmapDescriptor.fromBytes(bytes!.buffer.asUint8List());
-}
+    final image = await pictureRecorder
+        .endRecording()
+        .toImage(size.toInt(), size.toInt());
+    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+    return BitmapDescriptor.fromBytes(bytes!.buffer.asUint8List());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +130,9 @@ Future<BitmapDescriptor> getCustomMapIcon() async {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SizedBox(height: 20,),
+                  SizedBox(
+                    height: 20,
+                  ),
                   buildDetailSection(
                       'Motorcycle Brand',
                       motorcycle?.brand ?? '',
@@ -138,19 +143,17 @@ Future<BitmapDescriptor> getCustomMapIcon() async {
                       'Motorcycle Model',
                       motorcycle?.model ?? '',
                       HugeIcons.strokeRoundedMotorbike02),
-                  buildDetailSection(
-                      'Motorcycle License Plate',
-                      motorcycle?.licensePlate ?? '',
-                      HugeIcons.strokeRoundedCreditCard),
+                  buildDetailSectionWithImageMo(
+                    'Motorcycle License Plate',
+                    motorcycle?.licensePlate ?? '',
+                  ),
                   buildDetailSection(
                       'GPS Serial Number',
                       crash?.gspNumber ?? '',
                       HugeIcons.strokeRoundedShareLocation01),
-
                   Divider(color: Colors.grey[350]),
                   const SizedBox(height: 15),
-                  buildDetailSectionWithImage(
-                      'Crash ID', crash?.cid ?? 'N/A'),
+                  buildDetailSectionWithImage('Crash ID', crash?.cid ?? 'N/A'),
                   buildDetailSectionWithImage('Status', crash?.status ?? ''),
                   buildDetailSection(
                       'Time',
@@ -160,7 +163,6 @@ Future<BitmapDescriptor> getCustomMapIcon() async {
                       HugeIcons.strokeRoundedCalendar01),
                   buildDetailSection('Crash Location', crash?.location ?? '',
                       HugeIcons.strokeRoundedMapsSquare02),
-
                   const SizedBox(height: 15),
                   Container(
                     height: 200,
@@ -188,6 +190,42 @@ Future<BitmapDescriptor> getCustomMapIcon() async {
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildDetailSectionWithImageMo(String title, String? content) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Image.asset(
+              'assets/image/licenseplate.png',
+              width: 30,
+              height: 30,
+              color: Color.fromARGB(255, 3, 152, 85),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF211D1D),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.only(left: 32),
+          child: Text(
+            content ?? '',
+            style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D)),
+          ),
+        ),
+        const SizedBox(height: 20),
+      ],
     );
   }
 
@@ -231,7 +269,7 @@ Future<BitmapDescriptor> getCustomMapIcon() async {
           children: [
             Image.asset(
               'assets/icons/CRASHiconCrash.png',
-             width: 30,
+              width: 30,
               height: 30,
               color: Color.fromARGB(255, 3, 152, 85),
             ),
