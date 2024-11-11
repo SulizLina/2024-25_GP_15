@@ -143,7 +143,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'you can raise a complaint within 30 days',
+                    'You can raise a complaint within 30 days',
                     style: GoogleFonts.poppins(
                       fontSize: 14,
                       color: Colors.grey[400],
