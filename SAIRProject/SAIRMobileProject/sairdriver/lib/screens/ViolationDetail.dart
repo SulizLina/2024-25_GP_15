@@ -30,7 +30,7 @@ class _ViolationdetailState extends State<Violationdetail> {
   Violation? violation;
   Motorcycle? motorcycle;
   static const LatLng defaultLoc = LatLng(0.0, 0.0);
-int ? sum ; 
+  int? sum; 
   @override
   void initState() {
     super.initState();
@@ -184,7 +184,7 @@ int ? sum ;
                     violation != null
                         ? ((violation?.count30 ?? 0) > 0 ||
                                 (violation?.count50 ?? 0) > 0
-                            ? '${violation?.price ?? ''} SAR\nThis is a rickless violation, and it is your $sum time committing this offense. As a result, the violation amount has been increased.'
+                            ? '${violation?.price ?? ''} SAR\nThis is a rickless violation, and it is your ${getOrdinal(sum!)} time committing this offense. As a result, the violation amount has been increased.'
                             : '${violation?.price ?? ''} SAR')
                         : 'Amount unavailable',
                     HugeIcons.strokeRoundedInvoice,
@@ -516,6 +516,37 @@ int ? sum ;
       ],
     );
   }
+
+String getOrdinal(int sum) {
+  // Special cases for 11, 12, 13
+  if (sum % 100 >= 11 && sum % 100 <= 13) {
+    return '$sum th'; 
+  }
+
+  // General case
+  switch (sum) {
+    case 1:
+      return 'first';
+    case 2:
+      return 'second';
+    case 3:
+      return 'third';
+    case 4:
+      return 'fourth';
+    case 5:
+      return 'fifth';
+    case 6:
+      return 'sixth';
+    case 7:
+      return 'seventh';
+    case 8:
+      return 'eighth';
+    case 9:
+      return 'ninth';
+    default:
+      return '${sum}th';
+  }
+}
 
   void submitComplaint() {
     Navigator.of(context).pop();
