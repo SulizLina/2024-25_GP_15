@@ -143,7 +143,7 @@ class _EditPhonePageState extends State<EditPhonePage> {
 
       // Update the phone number in Firebase
       await updatePhoneNumberInFirebase(phoneNumber);
-
+ Navigator.pop(context);
       // Show confirmation dialog
       showSuccessDialog(context);
     }
