@@ -208,6 +208,14 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Text(
+                    'You can edit and delete the complaint only when pending',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.grey[400],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                   const SizedBox(height: 20),
                   buildDetailSection(
                     'Complaint ID ',
