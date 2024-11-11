@@ -1,5 +1,6 @@
 import 'dart:convert';
-
+import 'dart:io';
+import 'package:googleapis_auth/auth_io.dart';
 import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -182,11 +183,23 @@ class _ViolationslistState extends State<Violationslist> {
   }
 
   Map<String, String?> licensePlateMap = {};
-  Future<String> _getAccessToken() async {
-    // Implement the logic to fetch the access token from your service account
-    // This could involve making a separate API call or using a library like google_auth_library
-    return '802d6231a58cab3b144e9f8e25faca4bc1f58148';
-  }
+Future<String> _getAccessToken() async {
+  // Update this path to where your JSON file is located
+  final serviceAccountCredentials = ServiceAccountCredentials.fromJson(
+    await File('config/sair-7310d-firebase-adminsdk-9tvud-802d6231a5.json').readAsString(),
+  );
+  
+  // Define the required scopes
+  const List<String> scopes = [
+    'https://www.googleapis.com/auth/firebase.messaging'
+  ];
+
+  // Get the authenticated client
+  final client = await clientViaServiceAccount(serviceAccountCredentials, scopes);
+
+  // Return the access token
+  return client.credentials.accessToken.data;
+}
 
   Future<void> sendPushMessage(String token, String body, String title) async {
     final String accessToken =

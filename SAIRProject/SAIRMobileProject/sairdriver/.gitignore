@@ -42,3 +42,5 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 /lib/config.dart
+# .gitignore
+config/sair-7310d-firebase-adminsdk-9tvud-802d6231a5.json
