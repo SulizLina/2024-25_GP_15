@@ -51,33 +51,42 @@ class _ComplaintdetailState extends State<Complaintdetail> {
     }
   }
 
-  Future<Violation?> fetchViolation() async {
-    final violationDoc = await FirebaseFirestore.instance
-        .collection('Violation')
-        .where('violationID', isEqualTo: complaint?.Vid ?? '')
-        .limit(1)
-        .get();
+  Future<void> fetchViolation() async {
+    try {
+      print('==============test!=================');
+      print("Violation field ID: ${complaint?.Vid ?? 'hi'}");
 
-    if (violationDoc.docs.isNotEmpty) {
-      final doc = violationDoc.docs.first;
-      vioDocid = doc
-          .id; // violation doc id "i need it to navigate to violation details :::))"
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('Violation')
+          .where('violationID', isEqualTo: complaint?.Vid ?? "")
+          .limit(1)
+          .get();
 
-      print('==============hellooo=================');
-      print("Violation Document ID: $vioDocid");
-      print('===============================');
+      if (snapshot.docs.isNotEmpty) {
+        final DocumentSnapshot doc = snapshot.docs.first;
 
-      // Use the fromJson method to convert the Firestore document into a Violation object
-      return Violation.fromJson(doc); // Converts Firestore doc into Violation
-    } else {
-      print('==============Soory=================');
-      print("No matching violation found.");
-      print("Violation Document ID: ${complaint?.Vid ?? 'hi'}");
-      return null; // Return null if no violation found
+        violation = Violation.fromJson(doc);
+        vioDocid = doc.id;
+
+        setState(() {
+          vioDocid = doc.id;
+        });
+
+        print('==============Hello=================');
+        print("Violation Document ID: $vioDocid");
+        print('===============================');
+      } else {
+        print('==============Sorry=================');
+        print("No matching violation found.");
+      }
+    } catch (e) {
+      print("Error fetching violation: $e");
+      errorMessage = "Failed to load violation data.";
+      setState(() {});
     }
   }
 
-  //Delete complaint description in Firebase
+  //Delete complaint in Firebase
   Future<bool> DeleteComplaintFromFirebase() async {
     try {
       User? currentUser = FirebaseAuth.instance.currentUser;
@@ -87,11 +96,9 @@ class _ComplaintdetailState extends State<Complaintdetail> {
             .doc(widget.ComplaintID)
             .get();
 
-        // Check if the complaint exists
         if (snapshot.exists) {
-          // Delete the document
           await snapshot.reference.delete();
-          return true; // Deletion was successful
+          return true;
         } else {
           setState(() {
             errorMessage = 'Complaint not found.';
@@ -117,24 +124,16 @@ class _ComplaintdetailState extends State<Complaintdetail> {
       errorMessage = null;
     });
 
-    if (_formKey.currentState != null && _formKey.currentState!.validate()) {
-      String description = complainttext.text;
-      bool updateSuccessful = await DeleteComplaintFromFirebase();
+    bool deleteSuccessful = await DeleteComplaintFromFirebase();
 
-      if (updateSuccessful) {
-        Navigator.of(context).pop(); // Close the dialog
-        SuccessMessageDialog.show(context, "Complaint deleted successfully!");
-
-        Future.delayed(Duration(seconds: 1), () {
-          Navigator.pop(context); // Navigate back to previous screen
-        });
-      } else {
-        setState(() {
-          SuccessMessageDialog.show(context,
-              "Failed to delete the complaint. Please try again."); //////////////remove it pls
-          errorMessage = 'Failed to delete the complaint. Please try again.';
-        });
-      }
+    if (deleteSuccessful) {
+      SuccessMessageDialog.show(context, "Complaint deleted successfully!");
+      Future.delayed(Duration(seconds: 1), () {
+        Navigator.pop(context);
+      });
+    } else {
+      SuccessMessageDialog.show(
+          context, "Failed to delete the complaint. Please try again.");
     }
   }
 
@@ -197,7 +196,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                   ),
                   const SizedBox(height: 15),
                   buildDetailSection(
-                    'Time ',
+                    'Time',
                     complaint?.getFormattedDate() ?? '',
                     HugeIcons.strokeRoundedClock03,
                   ),
@@ -216,7 +215,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
 
                   const SizedBox(height: 15),
                   buildDetailSectionNoContent(
-                    'Complaint ',
+                    'Complaint',
                     HugeIcons.strokeRoundedFileEdit,
                   ),
 
@@ -318,8 +317,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                       complaint?.gspNumber ?? '',
                       HugeIcons.strokeRoundedMotorbike02), //////////////
                   const SizedBox(height: 15),
-                  buildDetailSectionWithImage(
-                      'Motorcycle Licence Plate',
+                  buildDetailSectionWithImage('Motorcycle Licence Plate',
                       complaint?.gspNumber ?? ''), //////////////
                   const SizedBox(height: 15),
                   buildDetailSection(
@@ -471,8 +469,10 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                                               ),
                                             ),
                                             ElevatedButton(
-                                              onPressed: () {
-                                                _DeleteComplaint();
+                                              onPressed: () async {
+                                                Navigator.of(context)
+                                                    .pop(); // Close dialog first
+                                                await _DeleteComplaint(); // Execute delete action
                                               },
                                               style: ElevatedButton.styleFrom(
                                                 backgroundColor: Colors.red,
@@ -496,7 +496,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                                 );
                               },
                             );
-                          } // Disables button when status is not "pending"
+                          }
                         : () {
                             showDialog(
                               context: context,
@@ -537,7 +537,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
     );
   }
 
-    Widget buildDetailSectionWithImage(String title, String? content) {
+  Widget buildDetailSectionWithImage(String title, String? content) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -572,7 +572,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
       ],
     );
   }
-  
+
   Widget buildDetailSection(String title, String? content, IconData? icon) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

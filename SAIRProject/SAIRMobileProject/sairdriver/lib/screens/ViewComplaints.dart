@@ -488,10 +488,8 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                             return ListView.builder(
                               itemCount: filteredList.length,
                               itemBuilder: (BuildContext context, int index) {
-                                Complaint complaint =
-                                    Complaint.fromJson(filteredList[index]);
-                                String formattedDate =
-                                    complaint.getFormattedDate();
+                                Complaint complaint = Complaint.fromJson(filteredList[index]);
+                                String formattedDate = complaint.getFormattedDate();
 
                                 Color statusColor;
                                 if (complaint.Status == 'Pending') {
@@ -503,16 +501,14 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                                 }
 
                                 return MouseRegion(
-                                  onEnter: (_) => setState(
-                                      () => isHoveredList[index] = true),
-                                  onExit: (_) => setState(
-                                      () => isHoveredList[index] = false),
+                                  onEnter: (_) => setState(() => isHoveredList[index] = true),
+                                  onExit: (_) => setState(() => isHoveredList[index] = false),
                                   child: Card(
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(15),
                                     ),
                                     margin: const EdgeInsets.symmetric(
-                                        horizontal: 10),
+                                        horizontal: 10, vertical: 5),
                                     color: Colors.white,
                                     elevation: 2,
                                     child: ListTile(
