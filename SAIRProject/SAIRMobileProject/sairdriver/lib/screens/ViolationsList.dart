@@ -44,13 +44,13 @@ class _ViolationslistState extends State<Violationslist> {
   @override
   void initState() {
     super.initState();
-   // requestPermisstion();
-    //getToken();
-    //initInfo();
+   requestPermisstion();
+    getToken();
+    initInfo();
     fetchDriverData();
   }
 
-/*  Future<void> initInfo() async {
+ Future<void> initInfo() async {
     var androidInitialize =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     var iOSInitialize = DarwinInitializationSettings();
@@ -146,7 +146,7 @@ class _ViolationslistState extends State<Violationslist> {
     } else {
       print("User declined permission");
     }
-  }*/
+  }
 
   Future<String?> fetchLicensePlate(String? gspNumber) async {
     if (gspNumber == null) return null;
@@ -183,7 +183,7 @@ class _ViolationslistState extends State<Violationslist> {
   }
 
   Map<String, String?> licensePlateMap = {};
-/*Future<String> _getAccessToken() async {
+Future<String> _getAccessToken() async {
   // Update this path to where your JSON file is located
   final serviceAccountCredentials = ServiceAccountCredentials.fromJson(
     await File('config/sair-7310d-firebase-adminsdk-9tvud-802d6231a5.json').readAsString(),
@@ -235,7 +235,7 @@ class _ViolationslistState extends State<Violationslist> {
     } catch (kDebugMode) {
       print("Error push notification");
     }
-  }*/
+  }
 
   Future<void> fetchViolations({DateTime? filterDate}) async {
     try {
