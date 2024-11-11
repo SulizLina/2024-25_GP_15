@@ -42,7 +42,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
       if (_tabController.indexIsChanging) {
         setState(() {
           selectedStatus =
-              ["Accepted", "All", "Pending", "Rejected"][_tabController.index];
+              ["All", "Accepted", "Pending", "Rejected"][_tabController.index];
         });
         filterComplaints();
       }
@@ -350,7 +350,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                               ),
                               child: Center(
                                   child: Text(
-                                'Accepted',
+                                'All',
                                 style: GoogleFonts.poppins(fontSize: 11.7),
                               )),
                             ),
@@ -367,7 +367,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                               ),
                               child: Center(
                                   child: Text(
-                                'All',
+                                'Accepted',
                                 style: GoogleFonts.poppins(fontSize: 11.7),
                               )),
                             ),
@@ -455,17 +455,22 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                             final filteredList = complaints.where((doc) {
                               Complaint complaint = Complaint.fromJson(doc);
 
+                              // Date match filter
                               bool dateMatch = isDateFiltered
                                   ? complaint
                                           .getFormattedDate()
                                           .split(' ')[0] ==
                                       selectDate.toString().split(' ')[0]
                                   : true;
+
+                              // Plate match filter
                               bool plateMatch = selectedPlate != null
                                   ? licensePlateMap[complaint.Vid] ==
                                       selectedPlate
                                   : true;
-                              bool statusMatch = selectedStatus == "Accepted" ||
+
+                              // Status match filter (only apply if selected status is not "All")
+                              bool statusMatch = selectedStatus == "All" ||
                                   complaint.Status == selectedStatus;
 
                               return dateMatch && plateMatch && statusMatch;
@@ -477,7 +482,11 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                             if (filteredList.isEmpty) {
                               return Center(
                                 child: Text(
-                                  "No complaint found for the selected date",
+                                  isDateFiltered
+                                      ? "You don't have any complaint\nfor the selected date."
+                                      : selectedStatus == "All"
+                                          ? "You don't have any complaint,\nride safe :)"
+                                          : "You don't have any ${selectedStatus} complaint",
                                   style: GoogleFonts.poppins(
                                       fontSize: 18, color: Colors.grey),
                                   textAlign: TextAlign.center,
@@ -488,8 +497,10 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                             return ListView.builder(
                               itemCount: filteredList.length,
                               itemBuilder: (BuildContext context, int index) {
-                                Complaint complaint = Complaint.fromJson(filteredList[index]);
-                                String formattedDate = complaint.getFormattedDate();
+                                Complaint complaint =
+                                    Complaint.fromJson(filteredList[index]);
+                                String formattedDate =
+                                    complaint.getFormattedDate();
 
                                 Color statusColor;
                                 if (complaint.Status == 'Pending') {
@@ -501,8 +512,10 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                                 }
 
                                 return MouseRegion(
-                                  onEnter: (_) => setState(() => isHoveredList[index] = true),
-                                  onExit: (_) => setState(() => isHoveredList[index] = false),
+                                  onEnter: (_) => setState(
+                                      () => isHoveredList[index] = true),
+                                  onExit: (_) => setState(
+                                      () => isHoveredList[index] = false),
                                   child: Card(
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(15),
