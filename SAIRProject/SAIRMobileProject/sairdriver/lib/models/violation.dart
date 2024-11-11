@@ -14,6 +14,8 @@ class Violation {
   int? speed; // Motorcycle speed
   int? time; // Time and date
   bool? newV;
+  int? count30;
+  int? count50;
   Violation(
       {required this.Vid,
       required this.driverId,
@@ -24,6 +26,8 @@ class Violation {
       required this.speed,
       required this.price,
       required this.time,
+      required this.count50,
+       required this.count30, 
       required this.newV});
 
   // Function to convert GPS timestamp to readable DateTime format
@@ -60,6 +64,8 @@ class Violation {
       Maxspeed: parsedJSON['streetMaxSpeed'] as int?,
       price: parsedJSON['price'] as int?,
       time: parsedJSON['time'] as int?,
+      count30: parsedJSON['count30'] as int?,
+      count50: parsedJSON['count50'] as int?,
       newV: parsedJSON['new'] as bool?,
     );
   }
