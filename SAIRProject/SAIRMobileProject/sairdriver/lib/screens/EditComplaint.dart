@@ -22,51 +22,67 @@ class editcomplaint extends StatefulWidget {
 }
 
 class _editcomplaintState extends State<editcomplaint> {
-  //final _controller = TextEditingController();
-  final maxChararcter = 250;
+  final maxCharacter = 250;
   final _formKey = GlobalKey<FormState>();
-  TextEditingController complainttext = TextEditingController();
+  TextEditingController complaintText = TextEditingController();
   String? errorMessage;
+  bool isInitialized = false;
 
-  @override
-  void initState() {
-    super.initState();
-      complainttext.text = widget.complaint.Description ?? '';
-
-    complainttext.addListener(() {
-      if (complainttext.text.length > maxChararcter) {
-        complainttext.text = complainttext.text.substring(0, maxChararcter);
-        complainttext.selection = TextSelection.fromPosition(
-          TextPosition(offset: complainttext.text.length),
-        );
-      }
-      setState(() {});
-    });
+ @override
+void initState() {
+  super.initState();
+  
+  // Fetch the initial complaint data and set the text once.
+  getInitialComplaintData();
+  
+  // Add listener to handle character limit
+  complaintText.addListener(() {
+    if (complaintText.text.length > maxCharacter) {
+      complaintText.text = complaintText.text.substring(0, maxCharacter);
+      complaintText.selection = TextSelection.fromPosition(
+        TextPosition(offset: complaintText.text.length),
+      );
+    }
+    setState(() {}); // Updates character count display
+  });
+}
+Future<void> getInitialComplaintData() async {
+  QuerySnapshot snapshot = await FirebaseFirestore.instance
+      .collection('Complaint')
+      .where('ComplaintID', isEqualTo: widget.complaint.ComID)
+      .get();
+  
+  if (snapshot.docs.isNotEmpty) {
+    var data = snapshot.docs.first.data() as Map<String, dynamic>?;
+    complaintText.text = data?['Description'] ?? '';
   }
+  setState(() {
+    isInitialized = true;
+  });
+}
 
   @override
   void dispose() {
-    complainttext.dispose();
+    complaintText.dispose();
     super.dispose();
   }
 
-  //Update complaint description in Firebase
   Future<bool> updateComplaintInFirebase(String description) async {
     try {
       User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null) {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('Complaint')
-          .where('ComplaintID', isEqualTo: widget.complaint.ComID)
-          .get();
+        QuerySnapshot snapshot = await FirebaseFirestore.instance
+            .collection('Complaint')
+            .where('ComplaintID', isEqualTo: widget.complaint.ComID)
+            .get();
 
         if (snapshot.docs.isNotEmpty) {
           for (var doc in snapshot.docs) {
             await doc.reference.update({'Description': description});
           }
-        
+
           widget.onComplaintUpdated(description);
-          return true; // Update was successful
+          return true;
         } else {
           setState(() {
             errorMessage = 'Complaint not found.';
@@ -89,19 +105,16 @@ class _editcomplaintState extends State<editcomplaint> {
 
   Future<void> _updateComplaint() async {
     setState(() {
-      errorMessage = null; //if new==privios => error msg???
+      errorMessage = null;
     });
 
     if (_formKey.currentState != null && _formKey.currentState!.validate()) {
-      String description = complainttext.text;
+      String description = complaintText.text;
       bool updateSuccessful = await updateComplaintInFirebase(description);
 
-
       if (updateSuccessful) {
-        // Show a confirmation message
         SuccessMessageDialog.show(context, "Complaint updated successfully!");
 
-        // Close the current screen after showing the dialog
         Future.delayed(Duration(seconds: 1), () {
           Navigator.pop(context);
         });
@@ -109,84 +122,91 @@ class _editcomplaintState extends State<editcomplaint> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Stream<QuerySnapshot> getComplaintStream() {
+    return FirebaseFirestore.instance
+        .collection('Complaint')
+        .where('ComplaintID', isEqualTo: widget.complaint.ComID)
+        .snapshots();
+  }
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Color.fromARGB(255, 3, 152, 85),
+    appBar: AppBar(
+      automaticallyImplyLeading: false,
+      elevation: 0,
       backgroundColor: Color.fromARGB(255, 3, 152, 85),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        elevation: 0,
-        backgroundColor: Color.fromARGB(255, 3, 152, 85),
-        toolbarHeight: 100,
-        iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)),
-        title: Row(
-          children: [
-            IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                "Update Complaint",
-                style: GoogleFonts.poppins(
-                  fontSize: 23,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFFAFAFF),
-                ),
-                textAlign: TextAlign.start,
+      toolbarHeight: 100,
+      iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)),
+      title: Row(
+        children: [
+          IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              "Update Complaint",
+              style: GoogleFonts.poppins(
+                fontSize: 23,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFFAFAFF),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-      body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
-        child: SingleChildScrollView(
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.only(top: 16.0),
-            decoration: const BoxDecoration(
-              color: Color(0xFFFAFAFF),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
-              ),
+    ),
+    body: GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: SingleChildScrollView(
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.only(top: 16.0),
+          decoration: const BoxDecoration(
+            color: Color(0xFFFAFAFF),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Update complaint on violation number: ${widget.complaint.Vid}',
-                      style: GoogleFonts.poppins(
-                        fontSize: 21,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(201, 3, 152, 85),
-                      ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Update complaint on violation number: ${widget.complaint.Vid}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 21,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(201, 3, 152, 85),
                     ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Describe your complaint about the violation below',
-                      style:
-                          GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
-                    ),
-                    SizedBox(height: 15),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Describe your complaint about the violation below',
+                    style:
+                        GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+                  ),
+                  SizedBox(height: 15),
+                  
+                  if (!isInitialized)
+                    CircularProgressIndicator() // Show loading indicator while initializing
+                  else
                     TextFormField(
-                      controller: complainttext,
-                      maxLines: 5, // Allow text to wrap within the field
-                      keyboardType: TextInputType
-                          .multiline, // Supports multi-line wrap without newlines
+                      controller: complaintText,
+                      maxLines: 5,
+                      keyboardType: TextInputType.multiline,
                       inputFormatters: [
-                        FilteringTextInputFormatter.deny(
-                            RegExp(r'\n')), // Block newline input
+                        FilteringTextInputFormatter.deny(RegExp(r'\n')),
                       ],
                       decoration: InputDecoration(
                         enabledBorder: OutlineInputBorder(
@@ -225,43 +245,44 @@ class _editcomplaintState extends State<editcomplaint> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 8),
-                    Text(
-                      '${complainttext.text.length}/$maxChararcter characters',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 12,
+                  
+                  SizedBox(height: 8),
+                  Text(
+                    '${complaintText.text.length}/$maxCharacter characters',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12,
+                    ),
+                  ),
+                  SizedBox(height: 32),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _updateComplaint,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color.fromARGB(201, 3, 152, 85),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: Text(
+                        'Update',
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                    SizedBox(height: 32),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _updateComplaint, //update method
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromARGB(201, 3, 152, 85),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15.0),
-                          ),
-                          padding: EdgeInsets.symmetric(vertical: 16),
-                        ),
-                        child: Text(
-                          'Update',
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 165),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 165),
+                ],
               ),
             ),
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
