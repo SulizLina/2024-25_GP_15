@@ -182,19 +182,28 @@ class _ViolationslistState extends State<Violationslist> {
   }
 
   Map<String, String?> licensePlateMap = {};
+  Future<String> _getAccessToken() async {
+    // Implement the logic to fetch the access token from your service account
+    // This could involve making a separate API call or using a library like google_auth_library
+    return '802d6231a58cab3b144e9f8e25faca4bc1f58148';
+  }
 
-  void sendPushMessage(String token, String body, String title) async {
+  Future<void> sendPushMessage(String token, String body, String title) async {
+    final String accessToken =
+        await _getAccessToken(); // Fetch the access token dynamically
+
     try {
       await http.post(
-        Uri.parse('https://fcm.googleapis.com/v1/projects/myproject-b5ae1/messages:send'),
+        Uri.parse(
+            'https://fcm.googleapis.com/v1/projects/sair-7310d/messages:send'),
         headers: <String, String>{
           'Contenct-Type': 'application/json',
           'Authorization':
-              'key=AAAMtVmPhA:APA91bFzVKmsQfaVFd_-uyoM7dg' // server key chnage it & new Doc
+              'Bearer $accessToken' // server key chnage it & new Doc
         },
         body: jsonEncode(
           <String, dynamic>{
-            'priorty': 'high',
+            'priority': 'high',
             'data': <String, dynamic>{
               'click_action': 'FLUTTER_NOTIFICATION_CLICK',
               'status': 'done',

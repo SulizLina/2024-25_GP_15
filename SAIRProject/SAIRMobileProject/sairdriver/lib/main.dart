@@ -71,12 +71,4 @@ class SplashPage extends StatelessWidget {
               nextScreen: LoginEmail(), // The next screen to transition to
               splashTransition: SplashTransition
                   .scaleTransition, // Add animation for the logo
-              backgroundColor: Colors
-                  .transparent, // Make the background transparent to retain the design
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+              
