@@ -6,10 +6,11 @@ import 'dart:math';
 class ComplaintDatabase {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  String generateComplaintID() {
-    Random random = Random();
-    return List.generate(10, (_) => random.nextInt(10)).join();
-  }
+String generateComplaintID() {
+  Random random = Random();
+  return '3' + List.generate(9, (_) => random.nextInt(10)).join();
+}
+
 
   //method to raise complaint
   Future<void> raiseComplaint(Violation v, String desc, String driverid) async {
