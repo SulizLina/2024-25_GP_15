@@ -43,9 +43,9 @@ class _CrashdetailState extends State<Crashdetail> {
   }
 
   Future<void> fetchMotor() async {
-    if (crash?.gspNumber != null) {
+    if (crash?.cid != null) {
       MotorcycleDatabase mdb = MotorcycleDatabase();
-      motorcycle = await mdb.getMotorcycleByGPS(crash!.gspNumber!);
+      motorcycle = await mdb.getMotorcycleByIDhis(crash!.cid!);
       setState(() {});
     }
   }
