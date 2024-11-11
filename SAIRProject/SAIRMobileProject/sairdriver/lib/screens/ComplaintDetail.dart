@@ -10,6 +10,8 @@ import 'package:sairdriver/messages/Warning.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:sairdriver/services/motorcycle_database.dart';
+import 'package:sairdriver/models/motorcycle.dart';
 
 class Complaintdetail extends StatefulWidget {
   final String ComplaintID;
@@ -26,6 +28,7 @@ class Complaintdetail extends StatefulWidget {
 class _ComplaintdetailState extends State<Complaintdetail> {
   Complaint? complaint;
   Violation? violation;
+  Motorcycle? motorcycle;
   String? vioDocid;
   String? errorMessage;
   final _formKey = GlobalKey<FormState>();
@@ -37,6 +40,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
     super.initState();
     fetchComplaint().then((_) {
       if (complaint != null) {
+        fetchMotor();
         fetchViolation();
       }
     });
@@ -50,6 +54,13 @@ class _ComplaintdetailState extends State<Complaintdetail> {
         complainttext.text = complaint?.Description ?? '';
       });
     }
+
+    if (complaint != null && complaint!.Vid != null) {
+      print('__________________________--------------------');
+      print(complaint?.Vid);
+      await fetchMotor();
+    }
+    setState(() {});
   }
 
   Future<void> fetchViolation() async {
@@ -83,6 +94,14 @@ class _ComplaintdetailState extends State<Complaintdetail> {
     } catch (e) {
       print("Error fetching violation: $e");
       errorMessage = "Failed to load violation data.";
+      setState(() {});
+    }
+  }
+
+    Future<void> fetchMotor() async {
+    if (complaint?.Vid != null) {
+      MotorcycleDatabase mdb = MotorcycleDatabase();
+      motorcycle = await mdb.getMotorcycleByIDhis(complaint!.Vid!);
       setState(() {});
     }
   }
@@ -302,21 +321,22 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                   const SizedBox(height: 15),
                   buildDetailSection(
                       'Motorcycle Brand',
-                      complaint?.gspNumber ?? '',
+                      motorcycle?.brand ?? '',
                       HugeIcons.strokeRoundedMotorbike02),
                   const SizedBox(height: 15),
                   buildDetailSection(
                       'Motorcycle Type',
-                      complaint?.gspNumber ?? '',
+                      motorcycle?.type ?? '',
                       HugeIcons.strokeRoundedMotorbike02),
                   const SizedBox(height: 15),
                   buildDetailSection(
                       'Motorcycle Model',
-                      complaint?.gspNumber ?? '',
+                      motorcycle?.model ?? '',
                       HugeIcons.strokeRoundedMotorbike02),
                   const SizedBox(height: 15),
-                  buildDetailSectionWithImage('Motorcycle Licence Plate',
-                      complaint?.gspNumber ?? ''),
+                  buildDetailSectionWithImage(
+                    'Motorcycle Licence Plate',
+                      motorcycle?.licensePlate ?? ''),
                   const SizedBox(height: 15),
                   buildDetailSection(
                       'GPS Serial Number',
