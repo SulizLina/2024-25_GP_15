@@ -30,7 +30,7 @@ class _ViolationdetailState extends State<Violationdetail> {
   Violation? violation;
   Motorcycle? motorcycle;
   static const LatLng defaultLoc = LatLng(0.0, 0.0);
-
+int ? sum ; 
   @override
   void initState() {
     super.initState();
@@ -47,7 +47,7 @@ class _ViolationdetailState extends State<Violationdetail> {
   Future<void> fetchViolation() async {
     ViolationsDatabase db = ViolationsDatabase();
     violation = await db.getViolationById(widget.violationId);
-
+    sum= (violation!.count30! + violation!.count50!)! ; 
     if (violation != null && violation!.gspNumber != null) {
       await fetchMotor();
     }
@@ -184,7 +184,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                     violation != null
                         ? ((violation?.count30 ?? 0) > 0 ||
                                 (violation?.count50 ?? 0) > 0
-                            ? '${violation?.price ?? ''} SAR\nThe amount has been doubled due to the reckless nature of this violation.'
+                            ? '${violation?.price ?? ''} SAR\nThis is a rickless violation, and it is your $sum time committing this offense. As a result, the violation amount has been increased.'
                             : '${violation?.price ?? ''} SAR')
                         : 'Amount unavailable',
                     HugeIcons.strokeRoundedInvoice,
@@ -469,10 +469,10 @@ class _ViolationdetailState extends State<Violationdetail> {
             content ?? '',
             style: GoogleFonts.poppins(
               fontSize: 14,
-              color: ((violation?.count30 ?? 0) > 0 ||
+              color:((violation?.count30 ?? 0) > 0 ||
                       (violation?.count50 ?? 0) > 0)
                   ? const ui.Color.fromARGB(255, 216, 6, 6)
-                  : Colors.black,
+                  : Color(0xFF211D1D),
             ),
           ),
         ),
