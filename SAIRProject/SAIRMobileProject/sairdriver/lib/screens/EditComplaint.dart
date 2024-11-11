@@ -270,4 +270,19 @@ Widget build(BuildContext context) {
                         'Update',
                         style: GoogleFonts.poppins(
                           fontSize: 18,
-                          color: Colo
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 165),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+}
