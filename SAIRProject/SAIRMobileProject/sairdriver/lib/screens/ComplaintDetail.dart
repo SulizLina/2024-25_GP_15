@@ -45,9 +45,10 @@ class _ComplaintdetailState extends State<Complaintdetail> {
   Future<void> fetchComplaint() async {
     ComplaintDatabase db = ComplaintDatabase();
     complaint = await db.getComplaintById(widget.ComplaintID);
-    setState(() {});
     if (mounted) {
-      complainttext.text = complaint?.Description ?? '';
+      setState(() {
+        complainttext.text = complaint?.Description ?? '';
+      });
     }
   }
 
@@ -86,7 +87,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
     }
   }
 
-  //Delete complaint in Firebase
+  // Delete complaint in Firebase
   Future<bool> DeleteComplaintFromFirebase() async {
     try {
       User? currentUser = FirebaseAuth.instance.currentUser;
@@ -212,13 +213,11 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                     complaint?.Status ?? '',
                     complaint?.Status,
                   ),
-
                   const SizedBox(height: 15),
                   buildDetailSectionNoContent(
                     'Complaint',
                     HugeIcons.strokeRoundedFileEdit,
                   ),
-
                   Padding(
                     padding: const EdgeInsets.only(left: 32),
                     child: Stack(
@@ -256,10 +255,12 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                           right: 0,
                           child: IconButton(
                             icon: Icon(Icons.edit,
-                                color: complaint!.Status == "Pending"
+                                color: (complaint != null &&
+                                        complaint!.Status == "Pending")
                                     ? Color.fromARGB(202, 3, 152, 85)
                                     : Colors.grey),
-                            onPressed: complaint!.Status == "Pending"
+                            onPressed: complaint != null &&
+                                    complaint!.Status == "Pending"
                                 ? () {
                                     Navigator.push(
                                       context,
@@ -269,8 +270,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                                           driverid: widget.driverid,
                                           onComplaintUpdated: (newDesc) {
                                             setState(() {
-                                              complainttext.text =
-                                                  newDesc; // Update the complaint desc on the profile page????????????are you sure its working?
+                                              complainttext.text = newDesc;
                                             });
                                           },
                                         ),
@@ -293,9 +293,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 15),
-
                   Divider(color: Colors.grey[350]),
                   const SizedBox(height: 15),
                   buildDetailSection('Violation ID', complaint?.Vid ?? '',
@@ -305,27 +303,26 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                   buildDetailSection(
                       'Motorcycle Brand',
                       complaint?.gspNumber ?? '',
-                      HugeIcons.strokeRoundedMotorbike02), //////////////
+                      HugeIcons.strokeRoundedMotorbike02),
                   const SizedBox(height: 15),
                   buildDetailSection(
                       'Motorcycle Type',
                       complaint?.gspNumber ?? '',
-                      HugeIcons.strokeRoundedMotorbike02), //////////////
+                      HugeIcons.strokeRoundedMotorbike02),
                   const SizedBox(height: 15),
                   buildDetailSection(
                       'Motorcycle Model',
                       complaint?.gspNumber ?? '',
-                      HugeIcons.strokeRoundedMotorbike02), //////////////
+                      HugeIcons.strokeRoundedMotorbike02),
                   const SizedBox(height: 15),
                   buildDetailSectionWithImage('Motorcycle Licence Plate',
-                      complaint?.gspNumber ?? ''), //////////////
+                      complaint?.gspNumber ?? ''),
                   const SizedBox(height: 15),
                   buildDetailSection(
                       'GPS Serial Number',
                       complaint?.gspNumber ?? '',
                       HugeIcons.strokeRoundedShareLocation01),
                   const SizedBox(height: 30),
-
                   ElevatedButton(
                     onPressed: complaint != null
                         ? () {
@@ -333,8 +330,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => Violationdetail(
-                                  violationId: vioDocid ??
-                                      '', ///////////JAKcz2eO2NKEOsBvazb4
+                                  violationId: vioDocid ?? '',
                                   driverid: widget.driverid,
                                 ),
                               ),
@@ -356,41 +352,36 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                     ),
                   ),
                   const SizedBox(height: 20),
-
-                  //edit complaint
                   ElevatedButton(
-                    onPressed:
-                        (complaint != null && complaint!.Status == "Pending")
-                            ? () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => editcomplaint(
-                                      complaint: complaint!,
-                                      driverid: widget.driverid,
-                                      onComplaintUpdated: (newDesc) {
-                                        setState(() {
-                                          complainttext.text =
-                                              newDesc; // Update the complaint desc on the profile page???????????????????/are you sure!
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                );
-                              }
-                            : () {
-                                // Disables button when status is not "pending"
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return const WarningDialog(
-                                      message:
-                                          "You can't edit the complaint unless the complaint status is pending",
-                                    );
+                    onPressed: (complaint != null &&
+                            complaint!.Status == "Pending")
+                        ? () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => editcomplaint(
+                                  complaint: complaint!,
+                                  driverid: widget.driverid,
+                                  onComplaintUpdated: (newDesc) {
+                                    setState(() {
+                                      complainttext.text = newDesc;
+                                    });
                                   },
+                                ),
+                              ),
+                            );
+                          }
+                        : () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return const WarningDialog(
+                                  message:
+                                      "You can't edit the complaint unless the complaint status is pending",
                                 );
                               },
-                    //edit complaint
+                            );
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
                           complaint != null && complaint!.Status == "Pending"
@@ -410,7 +401,6 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: (complaint != null &&
@@ -433,8 +423,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                                           style: GoogleFonts.poppins(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
-                                            color:
-                                                Color.fromARGB(202, 3, 152, 85),
+                                            color: Color.fromARGB(202, 3, 152, 85),
                                           ),
                                         ),
                                         SizedBox(height: 20),
