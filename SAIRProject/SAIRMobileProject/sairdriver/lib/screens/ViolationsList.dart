@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:board_datetime_picker/board_datetime_picker.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:sairdriver/main.dart';
 import 'package:sairdriver/models/violation.dart';
 import 'package:sairdriver/models/driver.dart';
 import 'package:sairdriver/services/driver_database.dart';
@@ -8,10 +13,13 @@ import 'package:sairdriver/models/motorcycle.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/screens/ViolationDetail.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:http/http.dart' as http;
 
 class Violationslist extends StatefulWidget {
+  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
   final String driverId; // DriverID passed from previous page
-  const Violationslist({required this.driverId});
+  Violationslist({required this.driverId});
 
   @override
   State<Violationslist> createState() => _ViolationslistState();
@@ -25,7 +33,7 @@ class _ViolationslistState extends State<Violationslist> {
 
   List<String> plateN = [];
   String? selectedPlate;
-
+  String? mtoken = "";
   driver? driverNat_Res;
   DateTime selectDate = DateTime.now();
   bool isDateFiltered = false;
@@ -35,7 +43,108 @@ class _ViolationslistState extends State<Violationslist> {
   @override
   void initState() {
     super.initState();
+    requestPermisstion();
+    getToken();
+    initInfo();
     fetchDriverData();
+  }
+
+  Future<void> initInfo() async {
+    var androidInitialize =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    var iOSInitialize = DarwinInitializationSettings();
+
+    var initializationSettings = InitializationSettings(
+      android: androidInitialize,
+      iOS: iOSInitialize,
+    );
+
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) async {
+        try {
+          // Handle the notification response
+          if (response.payload != null && response.payload!.isNotEmpty) {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (BuildContext context) {
+              return Violationslist(driverId: widget.driverId);
+            }));
+          } else {
+            // Handle the case where there is no payload
+          }
+        } catch (e) {}
+      },
+    );
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      print("...............onMessage................");
+      print(
+          "onMessage: ${message.notification?.title}/${message.notification?.body}");
+
+      // Create the BigTextStyleInformation
+      BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
+        message.notification!.body.toString(),
+        htmlFormatBigText: true,
+        contentTitle: message.notification!.title.toString(),
+        htmlFormatContentTitle: true,
+      );
+      // Create AndroidNotificationDetails
+      AndroidNotificationDetails androidPlatformChannelSpecifics =
+          AndroidNotificationDetails(
+        'dbfood', // Channel ID
+        'dbfood', // Channel name
+        importance: Importance.high,
+        priority: Priority.high,
+        playSound: false,
+        styleInformation: bigTextStyleInformation,
+      );
+
+      // Create NotificationDetails
+      NotificationDetails platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+      );
+      await flutterLocalNotificationsPlugin.show(0, message.notification?.title,
+          message.notification?.body, platformChannelSpecifics,
+          payload: message.data['body']);
+    });
+  }
+
+  void getToken() async {
+    await FirebaseMessaging.instance.getToken().then((token) {
+      setState(() {
+        mtoken = token;
+        print("My token is $mtoken");
+      });
+    });
+  }
+
+  void saveToken(String token) async {
+    await FirebaseFirestore.instance
+        .collection("UserTokens")
+        .doc("User1")
+        .set({'token': token});
+  }
+
+  void requestPermisstion() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print("User granted permission");
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      print("User granted provisional permission");
+    } else {
+      print("User declined permission");
+    }
   }
 
   Future<String?> fetchLicensePlate(String? gspNumber) async {
@@ -74,6 +183,38 @@ class _ViolationslistState extends State<Violationslist> {
 
   Map<String, String?> licensePlateMap = {};
 
+  void sendPushMessage(String token, String body, String title) async {
+    try {
+      await http.post(
+        Uri.parse('https://fcm.googleapis.com/v1/projects/myproject-b5ae1/messages:send'),
+        headers: <String, String>{
+          'Contenct-Type': 'application/json',
+          'Authorization':
+              'key=AAAMtVmPhA:APA91bFzVKmsQfaVFd_-uyoM7dg' // server key chnage it & new Doc
+        },
+        body: jsonEncode(
+          <String, dynamic>{
+            'priorty': 'high',
+            'data': <String, dynamic>{
+              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+              'status': 'done',
+              'body': body,
+              'title': title,
+            },
+            "notification": <String, dynamic>{
+              "title": title,
+              "body": body,
+              "android_channel_id": "dbfood"
+            },
+            "to": token,
+          },
+        ),
+      );
+    } catch (kDebugMode) {
+      print("Error push notification");
+    }
+  }
+
   Future<void> fetchViolations({DateTime? filterDate}) async {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
@@ -83,6 +224,27 @@ class _ViolationslistState extends State<Violationslist> {
 
       List<Future<void>> fetchTasks = snapshot.docs.map((doc) async {
         Violation violation = Violation.fromJson(doc);
+        if (violation.newV != null && violation.newV == true) {
+          DocumentSnapshot snap = await FirebaseFirestore.instance
+              .collection("UserTokens")
+              .doc(widget.driverId)
+              .get();
+          String Token = snap['token'];
+          print(Token);
+
+          sendPushMessage(
+              Token, "You got a new violation!", "A New Violation Detected");
+          /*  noti.Notification.showBigTextNotification(
+              title: "A New Violation Detected",
+              body: "You got a new violation!",
+              fln: flutterLocalNotificationsPlugin);*/
+          await FirebaseFirestore.instance
+              .collection('Violation')
+              .doc(widget.driverId)
+              .update({
+            'new': false,
+          });
+        }
         if (violation.gspNumber != null) {
           String? plate = await fetchLicensePlate(violation.gspNumber!);
           if (plate != null && violation.Vid != null) {
