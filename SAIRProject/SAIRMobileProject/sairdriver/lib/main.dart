@@ -6,18 +6,18 @@ import 'package:sairdriver/screens/welcomepage.dart';
 import 'package:sairdriver/screens/login_email.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+//final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  //  FlutterLocalNotificationsPlugin();
 
-    Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async{
-      print('handlinf a background message ${message.messageId}');
-    }
+    //Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async{
+      //print('handlinf a background message ${message.messageId}');
+   // }
 void main() async {
   // Ensure that Firebase is initialized before running the app
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await FirebaseMessaging.instance.getInitialMessage();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  //await FirebaseMessaging.instance.getInitialMessage();
+ // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(const MainApp());
 }
 

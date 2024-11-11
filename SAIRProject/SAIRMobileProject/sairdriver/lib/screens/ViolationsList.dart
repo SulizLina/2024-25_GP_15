@@ -44,13 +44,13 @@ class _ViolationslistState extends State<Violationslist> {
   @override
   void initState() {
     super.initState();
-    requestPermisstion();
-    getToken();
-    initInfo();
+   // requestPermisstion();
+    //getToken();
+    //initInfo();
     fetchDriverData();
   }
 
-  Future<void> initInfo() async {
+/*  Future<void> initInfo() async {
     var androidInitialize =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     var iOSInitialize = DarwinInitializationSettings();
@@ -146,7 +146,7 @@ class _ViolationslistState extends State<Violationslist> {
     } else {
       print("User declined permission");
     }
-  }
+  }*/
 
   Future<String?> fetchLicensePlate(String? gspNumber) async {
     if (gspNumber == null) return null;
@@ -183,7 +183,7 @@ class _ViolationslistState extends State<Violationslist> {
   }
 
   Map<String, String?> licensePlateMap = {};
-Future<String> _getAccessToken() async {
+/*Future<String> _getAccessToken() async {
   // Update this path to where your JSON file is located
   final serviceAccountCredentials = ServiceAccountCredentials.fromJson(
     await File('config/sair-7310d-firebase-adminsdk-9tvud-802d6231a5.json').readAsString(),
@@ -235,7 +235,7 @@ Future<String> _getAccessToken() async {
     } catch (kDebugMode) {
       print("Error push notification");
     }
-  }
+  }*/
 
   Future<void> fetchViolations({DateTime? filterDate}) async {
     try {
@@ -246,27 +246,24 @@ Future<String> _getAccessToken() async {
 
       List<Future<void>> fetchTasks = snapshot.docs.map((doc) async {
         Violation violation = Violation.fromJson(doc);
-        if (violation.newV != null && violation.newV == true) {
+      /*  if (violation.newV != null && violation.newV == true) {
           DocumentSnapshot snap = await FirebaseFirestore.instance
               .collection("UserTokens")
               .doc(widget.driverId)
               .get();
           String Token = snap['token'];
-          print(Token);
+          print(Token);*/
 
-          sendPushMessage(
+          /*sendPushMessage(
               Token, "You got a new violation!", "A New Violation Detected");
-          /*  noti.Notification.showBigTextNotification(
-              title: "A New Violation Detected",
-              body: "You got a new violation!",
-              fln: flutterLocalNotificationsPlugin);*/
-          await FirebaseFirestore.instance
+              await FirebaseFirestore.instance
               .collection('Violation')
               .doc(widget.driverId)
               .update({
             'new': false,
-          });
-        }
+          }
+          );
+        }*/
         if (violation.gspNumber != null) {
           String? plate = await fetchLicensePlate(violation.gspNumber!);
           if (plate != null && violation.Vid != null) {
