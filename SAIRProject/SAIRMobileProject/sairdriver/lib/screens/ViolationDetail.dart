@@ -1,5 +1,4 @@
 import 'dart:ui' as ui;
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -27,6 +26,10 @@ class Violationdetail extends StatefulWidget {
 class _ViolationdetailState extends State<Violationdetail> {
   bool hasComplaint = false;
   String? compID;
+  BitmapDescriptor? customMapIcon;
+  Violation? violation;
+  Motorcycle? motorcycle;
+  static const LatLng defaultLoc = LatLng(0.0, 0.0);
 
   @override
   void initState() {
@@ -34,26 +37,18 @@ class _ViolationdetailState extends State<Violationdetail> {
     fetchViolation();
     loadCustomMapIcon();
     fetchMotor();
-    checkIfComplaintExists();
   }
 
-  BitmapDescriptor? customMapIcon;
   Future<void> loadCustomMapIcon() async {
     customMapIcon = await getCustomMapIcon();
     setState(() {});
   }
-
-  BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
-  static const LatLng defaultLoc = LatLng(0.0, 0.0);
-  Violation? violation;
-  Motorcycle? motorcycle;
 
   Future<void> fetchViolation() async {
     ViolationsDatabase db = ViolationsDatabase();
     violation = await db.getViolationById(widget.violationId);
 
     if (violation != null && violation!.gspNumber != null) {
-      print(violation?.gspNumber);
       await fetchMotor();
     }
     setState(() {});
@@ -67,29 +62,12 @@ class _ViolationdetailState extends State<Violationdetail> {
     }
   }
 
-  // Fetch whether a complaint exists for this violation
-  Future<void> checkIfComplaintExists() async {
-    final complaintSnapshot = await FirebaseFirestore.instance
-        .collection('Complaint')
-        .where('ViolationID', isEqualTo: violation?.Vid)
-        .get();
-
-    // Set hasComplaint to true and fetch ComplaintID if any complaints exist
-    if (complaintSnapshot.docs.isNotEmpty) {
-      setState(() {
-        hasComplaint = true;
-        compID = complaintSnapshot.docs.first.id;
-      });
-    }
-  }
-
-  // Create a custom painter for the icon
   Future<BitmapDescriptor> getCustomMapIcon() async {
-    final icon = Icons.location_pin; //Solid:  on_outlined;
+    final icon = Icons.location_pin;
     final pictureRecorder = ui.PictureRecorder();
     final canvas = Canvas(pictureRecorder);
 
-    const double size = 48; //icon size as the defult icon from google :)
+    const double size = 48;
 
     TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
     textPainter.text = TextSpan(
@@ -97,7 +75,7 @@ class _ViolationdetailState extends State<Violationdetail> {
       style: TextStyle(
         fontSize: size,
         fontFamily: icon.fontFamily,
-        color: Colors.green, // Customize the color of the icon
+        color: Colors.green,
       ),
     );
     textPainter.layout();
@@ -172,35 +150,27 @@ class _ViolationdetailState extends State<Violationdetail> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-
                   const SizedBox(height: 20),
-
                   buildDetailSection(
                       'Motorcycle Brand',
                       motorcycle?.brand ?? '',
                       HugeIcons.strokeRoundedMotorbike02),
                   buildDetailSection('Motorcycle Type', motorcycle?.type ?? '',
                       HugeIcons.strokeRoundedMotorbike02),
-                  buildDetailSection(
-                      'Motorcycle Model',
-                      motorcycle?.model ?? '',
-                      HugeIcons.strokeRoundedMotorbike02),
+                  buildDetailSection('Motorcycle Model',
+                      motorcycle?.model ?? '', HugeIcons.strokeRoundedMotorbike02),
                   buildDetailSectionWithImage(
-                      'Motorcycle Licence Plate',
-                      motorcycle?.licensePlate ?? '',),
+                      'Motorcycle Licence Plate', motorcycle?.licensePlate ?? ''),
                   buildDetailSection(
                       'GPS Serial Number',
                       violation?.gspNumber ?? '',
                       HugeIcons.strokeRoundedShareLocation01),
-
                   Divider(color: Colors.grey[350]),
                   const SizedBox(height: 15),
-
                   buildDetailSection(
                       'Violation ID',
                       violation?.Vid ?? '',
-                      HugeIcons
-                          .strokeRoundedDoNotTouch02), /////////////////check!!
+                      HugeIcons.strokeRoundedDoNotTouch02),
                   buildDetailSection(
                       'Street Speed',
                       '${violation?.Maxspeed ?? ''} Km/h',
@@ -224,9 +194,8 @@ class _ViolationdetailState extends State<Violationdetail> {
                   buildDetailSection(
                       'Violation Location',
                       violation?.location ?? '',
-                      HugeIcons.strokeRoundedMapsSquare02), ///////
+                      HugeIcons.strokeRoundedMapsSquare02),
                   const SizedBox(height: 15),
-
                   Container(
                     height: 200,
                     child: (latitude != defaultLoc.latitude ||
@@ -248,155 +217,167 @@ class _ViolationdetailState extends State<Violationdetail> {
                         : Center(child: CircularProgressIndicator()),
                   ),
                   const SizedBox(height: 30),
-                  ElevatedButton(
-                    onPressed: (violation != null &&
-                            !hasComplaint &&
-                            DateTime.parse(violation!.getFormattedDate())
-                                .isAfter(
-                              DateTime.now().subtract(Duration(days: 30)),
-                            ))
-                        ? () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Raisecomplaint(
-                                  violation: violation!,
-                                  driverid: widget.driverid,
-                                ),
-                              ),
-                            );
-                          }
-                        : () {
-                            String message;
-                            if (hasComplaint) {
-                              if (DateTime.parse(violation!.getFormattedDate())
-                                  .isAfter(
-                                DateTime.now().subtract(Duration(days: 30)),
-                              )) {
-                                message =
-                                    'A complaint has already been raised for this violation!';
-                              } else {
-                                message =
-                                    'A complaint has already been raised for this violation!';
-                              }
-                            } else {
-                              message =
-                                  'You can\'t raise a complaint after 30 days of the violation!';
-                            }
+                  StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('Complaint')
+                        .where('ViolationID', isEqualTo: violation?.Vid)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      if (snapshot.hasError) {
+                        return Text('Error loading complaints');
+                      }
+                      hasComplaint = snapshot.data?.docs.isNotEmpty ?? false;
+                      if (hasComplaint) {
+                        compID = snapshot.data?.docs.first.id;
+                      }
 
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return Dialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Container(
-                                    padding: EdgeInsets.all(16),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            SizedBox(width: 48),
-                                            Expanded(
-                                              child: Center(
-                                                child: Text(
-                                                  "Warning",
-                                                  style: GoogleFonts.poppins(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.red,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            Transform.translate(
-                                              offset: Offset(0, -15),
-                                              child: IconButton(
-                                                icon: Icon(Icons.close,
-                                                    color: Color(0xFF211D1D)),
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 20),
-                                        Text(
-                                          message, // Show dynamic warning message
-                                          style:
-                                              GoogleFonts.poppins(fontSize: 16),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        SizedBox(height: 20),
-                                        if (hasComplaint)
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      Complaintdetail(
-                                                    ComplaintID: compID ?? '',
-                                                    driverid: widget.driverid,
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Color.fromARGB(
-                                                  202, 3, 152, 85),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 10,
-                                                      horizontal: 20),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                            ),
-                                            child: Text(
-                                              'View Complaint Details',
-                                              style: GoogleFonts.poppins(
-                                                color: Colors.white,
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                          ),
-                                      ],
+                      return ElevatedButton(
+                        onPressed: (violation != null &&
+                                !hasComplaint &&
+                                DateTime.parse(violation!.getFormattedDate())
+                                    .isAfter(
+                                  DateTime.now().subtract(Duration(days: 30)),
+                                ))
+                            ? () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Raisecomplaint(
+                                      violation: violation!,
+                                      driverid: widget.driverid,
                                     ),
                                   ),
                                 );
-                              },
-                            );
-                          },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: (violation != null &&
-                              !hasComplaint &&
-                              DateTime.parse(violation!.getFormattedDate())
-                                  .isAfter(
-                                DateTime.now().subtract(Duration(days: 30)),
-                              ))
-                          ? Color.fromARGB(202, 3, 152, 85) // Active color
-                          : const Color.fromARGB(
-                              255, 199, 199, 199), // Disabled color
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      textStyle: GoogleFonts.poppins(fontSize: 18),
-                    ),
-                    child: Text(
-                      'Raise a Complaint',
-                      style: GoogleFonts.poppins(
-                          color: Colors.white, fontSize: 16),
-                    ),
-                  ),
+                              }
+                            : () {
+                                String message;
+                                if (hasComplaint) {
+                                  message =
+                                      'A complaint has already been raised for this violation!';
+                                } else {
+                                  message =
+                                      'You can\'t raise a complaint after 30 days of the violation!';
+                                }
 
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Dialog(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Container(
+                                        padding: EdgeInsets.all(16),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                SizedBox(width: 48),
+                                                Expanded(
+                                                  child: Center(
+                                                    child: Text(
+                                                      "Warning",
+                                                      style: GoogleFonts.poppins(
+                                                        fontSize: 18,
+                                                        fontWeight: FontWeight.bold,
+                                                        color: Colors.red,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Transform.translate(
+                                                  offset: Offset(0, -15),
+                                                  child: IconButton(
+                                                    icon: Icon(Icons.close,
+                                                        color: Color(0xFF211D1D)),
+                                                    onPressed: () {
+                                                      Navigator.of(context).pop();
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(height: 20),
+                                            Text(
+                                              message, // Show dynamic warning message
+                                              style: GoogleFonts.poppins(
+                                                  fontSize: 16),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            SizedBox(height: 20),
+                                            if (hasComplaint)
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          Complaintdetail(
+                                                        ComplaintID: compID ?? '',
+                                                        driverid: widget.driverid,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      Color.fromARGB(
+                                                          202, 3, 152, 85),
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      vertical: 10,
+                                                      horizontal: 20),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  'View Complaint Details',
+                                                  style: GoogleFonts.poppins(
+                                                    color: Colors.white,
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: (violation != null &&
+                                  !hasComplaint &&
+                                  DateTime.parse(violation!.getFormattedDate())
+                                      .isAfter(
+                                    DateTime.now().subtract(Duration(days: 30)),
+                                  ))
+                              ? Color.fromARGB(202, 3, 152, 85) // Active color
+                              : const Color.fromARGB(
+                                  255, 199, 199, 199), // Disabled color
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          textStyle: GoogleFonts.poppins(fontSize: 18),
+                        ),
+                        child: Text(
+                          'Raise a Complaint',
+                          style: GoogleFonts.poppins(
+                              color: Colors.white, fontSize: 16),
+                        ),
+                      );
+                    },
+                  ),
                   const SizedBox(height: 20),
                 ],
               ),
@@ -445,7 +426,7 @@ class _ViolationdetailState extends State<Violationdetail> {
     );
   }
 
-    Widget buildDetailSectionWithImage(String title, String? content) {
+  Widget buildDetailSectionWithImage(String title, String? content) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -473,7 +454,8 @@ class _ViolationdetailState extends State<Violationdetail> {
           padding: const EdgeInsets.only(left: 32),
           child: Text(
             content ?? '',
-            style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D)),
+            style: GoogleFonts.poppins(
+                fontSize: 14, color: Color(0xFF211D1D)),
           ),
         ),
         const SizedBox(height: 20),
@@ -481,7 +463,7 @@ class _ViolationdetailState extends State<Violationdetail> {
     );
   }
 
-  void submitComplint() {
+  void submitComplaint() {
     Navigator.of(context).pop();
   }
 }
