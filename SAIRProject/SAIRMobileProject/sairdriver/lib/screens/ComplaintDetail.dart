@@ -225,13 +225,13 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                   const SizedBox(height: 15),
                   buildDetailSection(
                     'Time',
-                    complaint?.getFormattedDate() ?? '',
+                    complaint?.getFormattedTime() ?? '',
                     HugeIcons.strokeRoundedClock03,
                   ),
                   const SizedBox(height: 15),
                   buildDetailSection(
                     'Date',
-                    complaint?.getFormattedTime() ?? '',
+                    complaint?.getFormattedDate() ?? '',
                     HugeIcons.strokeRoundedCalendar01,
                   ),
                   const SizedBox(height: 15),
