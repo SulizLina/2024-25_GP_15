@@ -60,9 +60,9 @@ class _ViolationdetailState extends State<Violationdetail> {
   }
 
   Future<void> fetchMotor() async {
-    if (violation?.gspNumber != null) {
+    if (violation?.Vid != null) {
       MotorcycleDatabase mdb = MotorcycleDatabase();
-      motorcycle = await mdb.getMotorcycleByGPS(violation!.gspNumber!);
+      motorcycle = await mdb.getMotorcycleByIDhis(violation!.Vid!);
       setState(() {});
     }
   }

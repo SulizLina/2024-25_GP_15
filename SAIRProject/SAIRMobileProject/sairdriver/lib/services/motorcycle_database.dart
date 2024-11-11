@@ -47,6 +47,26 @@ Future<Motorcycle?> getMotorcycleByGPS(String GPSNumber) async {
     return null; // Return null on error
   }
 }
+
+Future<Motorcycle?> getMotorcycleByIDhis(String id) async {
+  try {
+    var snapshot = await FirebaseFirestore.instance
+        .collection('History')
+        .where('ID', isEqualTo: id)
+        .limit(1) 
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      var motorcycleData = snapshot.docs.first.data();
+      return Motorcycle.fromMap(motorcycleData, snapshot.docs.first.id); // Use fromMap method
+    }
+    return null; 
+  } catch (e) {
+    print("Error fetching motorcycle info: $e");
+    return null; 
+  }
+}
+
 Future<Motorcycle?> getMotorcycleByDriverID(String driverID) async {
   try {
     var snapshot = await FirebaseFirestore.instance
