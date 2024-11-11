@@ -22,13 +22,15 @@ dependencies:
   board_datetime_picker: ^2.1.4
   hugeicons: ^0.0.7
   twilio_flutter: ^0.9.0
+  flutter_local_notifications: ^18.0.0
+  firebase_messaging: ^14.9.4
+  http: ^1.2.2
 
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  http: ^1.2.2
   flutter_lints: ^5.0.0
   google_fonts: ^6.2.1
   awesome_snackbar_content: ^0.1.4
@@ -40,4 +42,4 @@ flutter:
     - assets/icons/
     - assets/image/
     - assets/image/greenMapMarker.png
-    - assets/image/SGreenCircularPattern.png
+    - assets/i
