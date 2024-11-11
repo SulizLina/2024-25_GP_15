@@ -154,7 +154,9 @@ class _CrashdetailState extends State<Crashdetail> {
                   Divider(color: Colors.grey[350]),
                   const SizedBox(height: 15),
                   buildDetailSectionWithImage('Crash ID', crash?.cid ?? 'N/A'),
-                  buildDetailSectionWithImage('Status', crash?.status ?? ''),
+                  buildDetailSectionIconStatus('Status',     crash?.status ?? '',
+                    crash?.status,),
+
                   buildDetailSection(
                       'Time',
                       crash?.getFormattedTimeOnly() ?? '',
@@ -261,6 +263,64 @@ class _CrashdetailState extends State<Crashdetail> {
     );
   }
 
+  Widget buildDetailSectionIconStatus(String title, String? content, String? status) {
+    Color circleColor;
+
+    switch (status) {
+      case 'Pending':
+        circleColor = Colors.orange;
+        break;
+      case 'Accepted':
+        circleColor = Colors.green;
+        break;
+      default:
+        circleColor = Colors.red;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            SizedBox(
+              width: 25,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: circleColor,
+                  shape: BoxShape.circle,
+                ),
+                width: 10,
+                height: 10,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                title,
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF211D1D),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.only(left: 32),
+          child: Text(
+            content ?? '',
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              color: Color(0xFF211D1D),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
   Widget buildDetailSectionWithImage(String title, String? content) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
