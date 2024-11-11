@@ -553,6 +553,7 @@ Future<String> _getAccessToken() async {
                               'Licence Plate: ${licensePlateMap[violation.Vid] ?? ""}',
                               style: GoogleFonts.poppins(color: Colors.grey),
                             ),
+                          
                           ],
                         ),
                         trailing: Icon(

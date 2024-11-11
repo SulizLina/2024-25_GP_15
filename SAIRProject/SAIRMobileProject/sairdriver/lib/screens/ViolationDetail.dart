@@ -30,7 +30,7 @@ class _ViolationdetailState extends State<Violationdetail> {
   Violation? violation;
   Motorcycle? motorcycle;
   static const LatLng defaultLoc = LatLng(0.0, 0.0);
-
+int ? sum ; 
   @override
   void initState() {
     super.initState();
@@ -47,7 +47,7 @@ class _ViolationdetailState extends State<Violationdetail> {
   Future<void> fetchViolation() async {
     ViolationsDatabase db = ViolationsDatabase();
     violation = await db.getViolationById(widget.violationId);
-
+    sum= (violation!.count30! + violation!.count50!)! ; 
     if (violation != null && violation!.gspNumber != null) {
       await fetchMotor();
     }
@@ -157,19 +157,19 @@ class _ViolationdetailState extends State<Violationdetail> {
                       HugeIcons.strokeRoundedMotorbike02),
                   buildDetailSection('Motorcycle Type', motorcycle?.type ?? '',
                       HugeIcons.strokeRoundedMotorbike02),
-                  buildDetailSection('Motorcycle Model',
-                      motorcycle?.model ?? '', HugeIcons.strokeRoundedMotorbike02),
-                  buildDetailSectionWithImage(
-                      'Motorcycle Licence Plate', motorcycle?.licensePlate ?? ''),
+                  buildDetailSection(
+                      'Motorcycle Model',
+                      motorcycle?.model ?? '',
+                      HugeIcons.strokeRoundedMotorbike02),
+                  buildDetailSectionWithImage('Motorcycle Licence Plate',
+                      motorcycle?.licensePlate ?? ''),
                   buildDetailSection(
                       'GPS Serial Number',
                       violation?.gspNumber ?? '',
                       HugeIcons.strokeRoundedShareLocation01),
                   Divider(color: Colors.grey[350]),
                   const SizedBox(height: 15),
-                  buildDetailSection(
-                      'Violation ID',
-                      violation?.Vid ?? '',
+                  buildDetailSection('Violation ID', violation?.Vid ?? '',
                       HugeIcons.strokeRoundedDoNotTouch02),
                   buildDetailSection(
                       'Street Speed',
@@ -179,10 +179,16 @@ class _ViolationdetailState extends State<Violationdetail> {
                       'Motorcycle Speed',
                       '${violation?.speed ?? ''} Km/h',
                       HugeIcons.strokeRoundedDashboardSpeed02),
-                  buildDetailSection(
-                      'Violation Amount',
-                      '${violation?.price ?? ''} SAR',
-                      HugeIcons.strokeRoundedInvoice),
+                  buildDetailPriceSection(
+                    'Violation Amount',
+                    violation != null
+                        ? ((violation?.count30 ?? 0) > 0 ||
+                                (violation?.count50 ?? 0) > 0
+                            ? '${violation?.price ?? ''} SAR\nThis is a rickless violation, and it is your $sum time committing this offense. As a result, the violation amount has been increased.'
+                            : '${violation?.price ?? ''} SAR')
+                        : 'Amount unavailable',
+                    HugeIcons.strokeRoundedInvoice,
+                  ),
                   buildDetailSection(
                       'Time',
                       violation?.getFormattedTimeOnly() ?? '',
@@ -276,16 +282,19 @@ class _ViolationdetailState extends State<Violationdetail> {
                                           children: [
                                             Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment.spaceBetween,
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
                                                 SizedBox(width: 48),
                                                 Expanded(
                                                   child: Center(
                                                     child: Text(
                                                       "Warning",
-                                                      style: GoogleFonts.poppins(
+                                                      style:
+                                                          GoogleFonts.poppins(
                                                         fontSize: 18,
-                                                        fontWeight: FontWeight.bold,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                         color: Colors.red,
                                                       ),
                                                     ),
@@ -295,9 +304,11 @@ class _ViolationdetailState extends State<Violationdetail> {
                                                   offset: Offset(0, -15),
                                                   child: IconButton(
                                                     icon: Icon(Icons.close,
-                                                        color: Color(0xFF211D1D)),
+                                                        color:
+                                                            Color(0xFF211D1D)),
                                                     onPressed: () {
-                                                      Navigator.of(context).pop();
+                                                      Navigator.of(context)
+                                                          .pop();
                                                     },
                                                   ),
                                                 ),
@@ -319,8 +330,10 @@ class _ViolationdetailState extends State<Violationdetail> {
                                                     MaterialPageRoute(
                                                       builder: (context) =>
                                                           Complaintdetail(
-                                                        ComplaintID: compID ?? '',
-                                                        driverid: widget.driverid,
+                                                        ComplaintID:
+                                                            compID ?? '',
+                                                        driverid:
+                                                            widget.driverid,
                                                       ),
                                                     ),
                                                   );
@@ -330,7 +343,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                                                       Color.fromARGB(
                                                           202, 3, 152, 85),
                                                   padding: const EdgeInsets
-                                                          .symmetric(
+                                                      .symmetric(
                                                       vertical: 10,
                                                       horizontal: 20),
                                                   shape: RoundedRectangleBorder(
@@ -426,6 +439,48 @@ class _ViolationdetailState extends State<Violationdetail> {
     );
   }
 
+  Widget buildDetailPriceSection(
+      String title, String? content, IconData? icon) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 24, color: Color.fromARGB(255, 3, 152, 85)),
+              const SizedBox(width: 8),
+            ],
+            Expanded(
+              child: Text(
+                title,
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF211D1D),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.only(left: 32),
+          child: Text(
+            content ?? '',
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              color:((violation?.count30 ?? 0) > 0 ||
+                      (violation?.count50 ?? 0) > 0)
+                  ? const ui.Color.fromARGB(255, 216, 6, 6)
+                  : Color(0xFF211D1D),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
   Widget buildDetailSectionWithImage(String title, String? content) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -454,8 +509,7 @@ class _ViolationdetailState extends State<Violationdetail> {
           padding: const EdgeInsets.only(left: 32),
           child: Text(
             content ?? '',
-            style: GoogleFonts.poppins(
-                fontSize: 14, color: Color(0xFF211D1D)),
+            style: GoogleFonts.poppins(fontSize: 14, color: Color(0xFF211D1D)),
           ),
         ),
         const SizedBox(height: 20),
