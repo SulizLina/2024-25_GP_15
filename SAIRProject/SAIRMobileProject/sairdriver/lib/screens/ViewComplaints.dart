@@ -475,7 +475,13 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
 
                               return dateMatch && plateMatch && statusMatch;
                             }).toList();
-
+                           // Sort filtered list by date (descending)
+                            filteredList.sort((a, b) {
+                              Complaint complaintA = Complaint.fromJson(a);
+                              Complaint complaintB = Complaint.fromJson(b);
+                              return complaintB.timestamp!.compareTo(
+                                  complaintA.timestamp!); // Sort by time, descending
+                            });
                             isHoveredList = List.generate(
                                 filteredList.length, (index) => false);
 
