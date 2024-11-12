@@ -1,24 +1,23 @@
-import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/cupertino.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:googleapis_auth/auth_io.dart' as auth;
-import 'package:googleapis/servicecontrol/v1.dart' as servicecontrol;
 
 class NotificationService {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-  Future<Map<String, dynamic>> loadServiceAccountJson() async {
-  final contents = await rootBundle.loadString('config/sair-7310d-1d891d1a328d.json');
-  final serviceAccountJson = jsonDecode(contents);
-  return serviceAccountJson;
-}
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   Future<void> init(String driverId) async {
+    // Initialize local notifications
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
     // Get the device token
     String? token = await messaging.getToken();
     print("Device token: $token");
@@ -31,81 +30,28 @@ class NotificationService {
           .set({'token': token});
     }
 
-    // Configure background message handler (when app is in the background)
+    // Configure background message handler
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     // Foreground message handling
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print(
-          'Message received: ${message.notification?.title}, ${message.notification?.body}');
-      // You can show a local notification or any other UI action here
+      print('Message received: ${message.notification?.title}, ${message.notification?.body}');
+      // Show local notification
+      if (message.notification != null) {
+        _showNotification(message.notification!);
+      }
     });
   }
 
-
-// Background handler for messages when the app is in the background
-  Future<void> _firebaseMessagingBackgroundHandler(
-      RemoteMessage message) async {
-    print(
-        'Background message received: ${message.notification?.title}, ${message.notification?.body}');
-    // Additional handling if needed, like saving the message
+  // Background handler for messages when the app is in the background
+  static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+    print('Background message received: ${message.notification?.title}, ${message.notification?.body}');
+    // Additional handling if needed
   }
 
   Future<String> getAccessToken() async {
-    final serviceAccountJson = await loadServiceAccountJson();
-
-    List<String> scopes = [
-      "https://www.googleapis.com/auth/firebase.messaging",
-    ];
-
-    // Obtain authenticated client
-    final client = await auth.clientViaServiceAccount(
-      auth.ServiceAccountCredentials.fromJson(serviceAccountJson),
-      scopes,
-    );
-
-    // Get the access token from client
-    final token = client.credentials.accessToken.data;
-    client.close();
-
-    return token;
-  }
-
-  Future<void> sendNotificationToSlectedDriver(
-      String token, String messageTitle, String messageBody) async {
-    final String serverAccessToken = await getAccessToken();
-    String endpointFirebaseCloudMessaging =
-        'https://fcm.googleapis.com/v1/projects/sair-7310d/messages:send';
-
-    final Map<String, dynamic> message = {
-      'message': {
-        'token': token, //Which user
-        'notification': {
-          'title': messageTitle,
-          'body': messageBody,
-        },
-        /* IDK :)
-        'data':{ //key value => driver id 
-          'tripID': tripID
-        }
-        */
-      },
-    };
-
-    final http.Response response = await http.post(
-      Uri.parse(endpointFirebaseCloudMessaging),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'authorization': 'Bearer $serverAccessToken'
-      },
-      body: jsonEncode(message),
-    );
-
-    if (response.statusCode == 200) {
-      print("FCM Notification sent successfully");
-    } else {
-      print(
-          "Failed to send FCM Notification: ${response.statusCode}, ${response.body}");
-    }
-  }
-}
+    final serviceAccountJson = {
+      "type": "service_account",
+      "project_id": "sair-7310d",
+      "private_key_id": "1d891d1a328d253ba53ba5eb5d0324d64aa10ee3",
+      "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCc8pRNmnc+KeBe\nHW+mUP/pZrutlH0W5Jl1FWIdUQdTAQthsue+Y0RdbqzCRnhLERaRzwXph1DRMXfA\n8Ja20nQoV53aWVcTg3hBulcISYqCcUTDU+RzQVGtND6C9NU/c5tV+hQQ9b3sgvM/\nsZzb2srgbZ8RoikwY2LLjCxb+WFD6MHDz481NW2ujYpHnEO1MZylvljhyE1UjIeQ\n5DJNIIUvJILcoxUGXmibmTieKQuhKJJ4hzc10U2roQQ9P19rW9iOZM55teXcIaTx\nY+S7iJX48HSIgsJ7jhzA5w9TBG8zJ4jBpgvxA2Y/jqS5wKswvPeCctPE71u/D85F\nx6Ql7vehAgMBAAECggEAASS9UuFsu/23Hkhtn1MYwj0W4flife+1dIZu3BLSkFbC\nG/ifOqJjhaDATnwP9VAPD4noG576RkPrgPLfzj4zTXXx9vzOpxw+nI/8gVlz0mZ7\n30Z1tCdGLpJiYDbjdN5lQ9eaHNOFijscBZtILsvlzYPO9GRvk2Qt/JitXBAxlrqQ\n/dUxrAHvlVsRH0g6OZt1CpauU6N+A0I1m88wagTeX4Jzf5Wc7HFWh8RmCTk+kUYn\nQEkNF2OC9mdaqCp4UHH2r4tHDxyeLyEZkV4DWsN4zmQI9n/AoB3awe8ojHwBhC/W\nIkTesbeRJnADxPChlZAAR1J6o0rOekaVx1t7KID7gQKBgQDUbU1pzSUZuv39Y8w7\nI36gCEOoO7tNIWQ/6PI5XmOTgCzmT8qD/VmVLbVBTDDTOZI8mdfor6kNe9x+dhDL\nXN4H01l78EoPx/9K0nxEIhQ8f7DrdKK0FgPp0t+Q5pvok1t5nx0WCd9YID5W5HE6\n6oM2c67M0ZdItL8mFjqRMWiaMQKBgQC9JANZkheEUH96eXjowh7vuT0Uu5fGsywa\nnIblQJ0aOesCIH0nHtwYQ9e9nwV3qFcPIle3Xm3CPhLDsJi9636Mo3lw4yCeuaUP\nnexVZL05pdTsx1yjgoBZG6UfuIJCbtINeFAmpMoOp+/1ZZTal2ckVe6rqey0Xrii\n2vjTs09ocQKBgQCkJOWpuJRPgpeawg/hLrc8z8X/7E/59LBzVfw96jrFkkifms5h\nGVasmE
