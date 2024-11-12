@@ -480,8 +480,7 @@ Future<String> _getAccessToken() async {
                     isDateFiltered || isPlateFiltered
                         ? "You don't have any violations\nfor the selected date."
                         : "You don't have any violations,\nride safe :)",
-                    style:
-                        GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
+                    style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
                     textAlign: TextAlign.center,
                   ),
                 );
@@ -502,15 +501,20 @@ Future<String> _getAccessToken() async {
                 return dateMatch && plateMatch;
               }).toList();
 
-              isHoveredList =
-                  List.generate(filteredList.length, (index) => false);
+              // Sort filtered list by date (descending)
+              filteredList.sort((a, b) {
+                Violation violationA = Violation.fromJson(a);
+                Violation violationB = Violation.fromJson(b);
+                return violationB.time!.compareTo(violationA.time!); // Sort by time, descending
+              });
+
+              isHoveredList = List.generate(filteredList.length, (index) => false);
 
               if (filteredList.isEmpty) {
                 return Center(
                   child: Text(
                     "No violations found for the selected date.",
-                    style:
-                        GoogleFonts.poppins(fontSize: 18, color: Colors.grey),
+                    style: GoogleFonts.poppins(fontSize: 18, color: Colors.grey),
                     textAlign: TextAlign.center,
                   ),
                 );
@@ -530,8 +534,7 @@ Future<String> _getAccessToken() async {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
+                      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       color: Colors.white,
                       elevation: 2,
                       child: ListTile(
@@ -554,7 +557,6 @@ Future<String> _getAccessToken() async {
                               'Licence Plate: ${licensePlateMap[violation.Vid] ?? ""}',
                               style: GoogleFonts.poppins(color: Colors.grey),
                             ),
-                          
                           ],
                         ),
                         trailing: Icon(
@@ -580,7 +582,7 @@ Future<String> _getAccessToken() async {
                 itemCount: filteredList.length,
               );
             },
-          ),
+          )
         ),
       ),
     );
