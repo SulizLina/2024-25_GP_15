@@ -645,8 +645,8 @@ class _CrasheslistState extends State<Crasheslist>
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => Crashdetail(
-                                            crashId:
-                                                filteredList[index - 1].id),
+                                            crashId: filteredList[index - 1].id,
+                                            driverid: widget.driverId,),
                                       ),
                                     );
                                   },

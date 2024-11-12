@@ -10,7 +10,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 class Crashdetail extends StatefulWidget {
   final String crashId;
-  const Crashdetail({Key? key, required this.crashId}) : super(key: key);
+  final String driverid;
+
+  const Crashdetail({Key? key, required this.crashId, required this.driverid}) : super(key: key);
 
   @override
   State<Crashdetail> createState() => _CrashdetailState();
