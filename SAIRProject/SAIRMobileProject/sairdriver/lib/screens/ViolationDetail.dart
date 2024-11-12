@@ -47,7 +47,7 @@ class _ViolationdetailState extends State<Violationdetail> {
   Future<void> fetchViolation() async {
     ViolationsDatabase db = ViolationsDatabase();
     violation = await db.getViolationById(widget.violationId);
-    sum= (violation!.count30! + violation!.count50!)! ; 
+    sum= (violation!.count30! + violation!.count50!) ; 
     if (violation != null && violation!.gspNumber != null) {
       await fetchMotor();
     }

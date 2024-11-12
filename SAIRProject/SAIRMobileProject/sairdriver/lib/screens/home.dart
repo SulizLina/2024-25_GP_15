@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:sairdriver/screens/login_email.dart';
-import 'package:sairdriver/screens/welcomepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Home extends StatefulWidget {
