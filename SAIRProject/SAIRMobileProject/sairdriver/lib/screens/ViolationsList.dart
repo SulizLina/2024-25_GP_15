@@ -10,6 +10,7 @@ import 'package:sairdriver/main.dart';
 import 'package:sairdriver/models/violation.dart';
 import 'package:sairdriver/models/driver.dart';
 import 'package:sairdriver/services/driver_database.dart';
+import 'package:sairdriver/services/NotificationService.dart';
 import 'package:sairdriver/models/motorcycle.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/screens/ViolationDetail.dart';
@@ -18,8 +19,6 @@ import 'package:http/http.dart' as http;
 
 // ignore: must_be_immutable
 class Violationslist extends StatefulWidget {
-  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
   final String driverId; // DriverID passed from previous page
   Violationslist({required this.driverId});
 
@@ -32,6 +31,7 @@ class _ViolationslistState extends State<Violationslist> {
   List<DocumentSnapshot> filteredViolations =
       []; // List for filtered violations based on date
   List<bool> isHoveredList = [];
+  NotificationService _notificationService = NotificationService();
 
   List<String> plateN = [];
   String? selectedPlate;
@@ -45,108 +45,8 @@ class _ViolationslistState extends State<Violationslist> {
   @override
   void initState() {
     super.initState();
-   requestPermisstion();
-    getToken();
-    initInfo();
+    _notificationService.init(widget.driverId);
     fetchDriverData();
-  }
-
- Future<void> initInfo() async {
-    var androidInitialize =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-    var iOSInitialize = DarwinInitializationSettings();
-
-    var initializationSettings = InitializationSettings(
-      android: androidInitialize,
-      iOS: iOSInitialize,
-    );
-
-    await flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse response) async {
-        try {
-          // Handle the notification response
-          if (response.payload != null && response.payload!.isNotEmpty) {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (BuildContext context) {
-              return Violationslist(driverId: widget.driverId);
-            }));
-          } else {
-            // Handle the case where there is no payload
-          }
-        } catch (e) {}
-      },
-    );
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      print("...............onMessage................");
-      print(
-          "onMessage: ${message.notification?.title}/${message.notification?.body}");
-
-      // Create the BigTextStyleInformation
-      BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
-        message.notification!.body.toString(),
-        htmlFormatBigText: true,
-        contentTitle: message.notification!.title.toString(),
-        htmlFormatContentTitle: true,
-      );
-      // Create AndroidNotificationDetails
-      AndroidNotificationDetails androidPlatformChannelSpecifics =
-          AndroidNotificationDetails(
-        'dbfood', // Channel ID
-        'dbfood', // Channel name
-        importance: Importance.high,
-        priority: Priority.high,
-        playSound: false,
-        styleInformation: bigTextStyleInformation,
-      );
-
-      // Create NotificationDetails
-      NotificationDetails platformChannelSpecifics = NotificationDetails(
-        android: androidPlatformChannelSpecifics,
-      );
-      await flutterLocalNotificationsPlugin.show(0, message.notification?.title,
-          message.notification?.body, platformChannelSpecifics,
-          payload: message.data['body']);
-    });
-  }
-
-  void getToken() async {
-    await FirebaseMessaging.instance.getToken().then((token) {
-      setState(() {
-        mtoken = token;
-        print("My token is $mtoken");
-      });
-    });
-  }
-
-  void saveToken(String token) async {
-    await FirebaseFirestore.instance
-        .collection("UserTokens")
-        .doc("User1")
-        .set({'token': token});
-  }
-
-  void requestPermisstion() async {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-    NotificationSettings settings = await messaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
-
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print("User granted permission");
-    } else if (settings.authorizationStatus ==
-        AuthorizationStatus.provisional) {
-      print("User granted provisional permission");
-    } else {
-      print("User declined permission");
-    }
   }
 
   Future<String?> fetchLicensePlate(String? gspNumber) async {
@@ -184,138 +84,120 @@ class _ViolationslistState extends State<Violationslist> {
   }
 
   Map<String, String?> licensePlateMap = {};
-Future<String> _getAccessToken() async {
-  // Update this path to where your JSON file is located
-  final serviceAccountCredentials = ServiceAccountCredentials.fromJson(
-    await File('config/sair-7310d-firebase-adminsdk-9tvud-802d6231a5.json').readAsString(),
-  );
-  
-  // Define the required scopes
-  const List<String> scopes = [
-    'https://www.googleapis.com/auth/firebase.messaging'
-  ];
 
-  // Get the authenticated client
-  final client = await clientViaServiceAccount(serviceAccountCredentials, scopes);
+Future<void> fetchViolations({DateTime? filterDate}) async {
+  try {
+    
+  print('++++++++++++++++++hi fetchViolations=+++++++++++++++++++++++++');
+    // Fetch all violations for the driver from Firestore
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('Violation')
+        .where('driverID', isEqualTo: driverNat_Res?.driverId)
+        .get();
 
-  // Return the access token
-  return client.credentials.accessToken.data;
-}
+    // Store the violations
+    violations = snapshot.docs;
 
-  Future<void> sendPushMessage(String token, String body, String title) async {
-    final String accessToken =
-        await _getAccessToken(); // Fetch the access token dynamically
-
-    try {
-      await http.post(
-        Uri.parse(
-            'https://fcm.googleapis.com/v1/projects/sair-7310d/messages:send'),
-        headers: <String, String>{
-          'Contenct-Type': 'application/json',
-          'Authorization':
-              'Bearer $accessToken' // server key chnage it & new Doc
-        },
-        body: jsonEncode(
-          <String, dynamic>{
-            'priority': 'high',
-            'data': <String, dynamic>{
-              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-              'status': 'done',
-              'body': body,
-              'title': title,
-            },
-            "notification": <String, dynamic>{
-              "title": title,
-              "body": body,
-              "android_channel_id": "dbfood"
-            },
-            "to": token,
-          },
-        ),
-      );
-    } catch (kDebugMode) {
-      print("Error push notification");
-    }
-  }
-
-  Future<void> fetchViolations({DateTime? filterDate}) async {
-    try {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('Violation')
-          .where('driverID', isEqualTo: driverNat_Res?.driverId)
-          .get();
-
-      List<Future<void>> fetchTasks = snapshot.docs.map((doc) async {
-        Violation violation = Violation.fromJson(doc);
-      /*  if (violation.newV != null && violation.newV == true) {
-          DocumentSnapshot snap = await FirebaseFirestore.instance
-              .collection("UserTokens")
-              .doc(widget.driverId)
-              .get();
-          String Token = snap['token'];
-          print(Token);*/
-
-          /*sendPushMessage(
-              Token, "You got a new violation!", "A New Violation Detected");
-              await FirebaseFirestore.instance
-              .collection('Violation')
-              .doc(widget.driverId)
-              .update({
-            'new': false,
-          }
-          );
-        }*/
-        if (violation.gspNumber != null) {
-          String? plate = await fetchLicensePlate(violation.gspNumber!);
-          if (plate != null && violation.Vid != null) {
-            licensePlateMap[violation.Vid!] = plate;
-            plateN.add(plate);
-          }
+    // Process license plates for each violation
+    List<Future<void>> fetchTasks = violations.map((doc) async {
+      Violation violation = Violation.fromJson(doc);
+      if (violation.gspNumber != null) {
+        String? plate = await fetchLicensePlate(violation.gspNumber!);
+        if (plate != null && violation.Vid != null) {
+          licensePlateMap[violation.Vid!] = plate;
+          plateN.add(plate);
         }
+      }
+    }).toList();
+
+    await Future.wait(fetchTasks);
+
+    setState(() {
+      // Process license plates list
+      if (plateN.isNotEmpty) {
+        plateN = [
+          "Reset",
+          ...{...plateN}
+        ].toSet().toList();
+      } else {
+        plateN = []; // Empty list when no plates
+      }
+
+      // Reset selected plate if it's not available
+      if (!plateN.contains(selectedPlate)) {
+        selectedPlate = null;
+      }
+
+      // Apply filters based on selectedPlate and filterDate
+      filteredViolations = violations.where((doc) {
+        Violation violation = Violation.fromJson(doc);
+
+        bool dateMatch = isDateFiltered
+            ? violation.getFormattedDate().split(' ')[0] ==
+                selectDate.toString().split(' ')[0]
+            : true;
+
+        bool plateMatch = selectedPlate == null
+            ? true
+            : licensePlateMap[violation.Vid] == selectedPlate;
+
+        return dateMatch && plateMatch;
       }).toList();
 
-      await Future.wait(fetchTasks);
+      // Update hover state for the violation list
+      isHoveredList = List.generate(filteredViolations.length, (index) => false);
+      _isLoading = false;
+    });
 
-      setState(() {
-        if (plateN.isNotEmpty) {
-          plateN = [
-            "Reset",
-            ...{...plateN}
-          ].toSet().toList();
-        } else {
-          plateN = []; // Empty list when no plates
+    // Check for new violations and send notifications if needed
+    await checkAndNotifyNewViolations();
+
+  } catch (e) {
+    print("Error fetching violations: $e");
+  }
+}
+
+Future<void> checkAndNotifyNewViolations() async {
+  print('++++++++++++++++++hi= checkAndNotifyNewViolations+++++++++++++++++++++++++');
+  for (var doc in violations) {
+    Violation violation = Violation.fromJson(doc);
+    
+        print("==================after loop");
+        print(driverNat_Res?.driverId);
+        print(widget.driverId);
+    
+    // If the violation is new, send a notification and update Firestore
+    if (violation.newV == true) {
+      DocumentSnapshot tokenDoc = await FirebaseFirestore.instance
+          .collection('UserTokens')
+          .doc("Driver_${widget.driverId}")
+          .get();
+
+        print("==================before if");
+      if (tokenDoc.exists) {
+        String? token = tokenDoc['token'];
+        
+        print("==================after 1st if");
+        if (token != null) {
+          
+        print("==================token not null");
+          await _notificationService.sendNotificationToSlectedDriver(token, 'New Violation!', 'You have a new violation. Please check the details.');
+          
+          print("==================before update");
+          // Update the violation to mark it as not new
+          await FirebaseFirestore.instance
+              .collection('Violation')
+              .doc(doc.id)
+              .update({'new': false});
+          
+          print("================after update");
         }
-
-        if (!plateN.contains(selectedPlate)) {
-          selectedPlate = null;
-        }
-
-        violations = snapshot.docs;
-
-        // Apply filters based on selectedPlate and filterDate
-        filteredViolations = violations.where((doc) {
-          Violation violation = Violation.fromJson(doc);
-
-          bool dateMatch = isDateFiltered
-              ? violation.getFormattedDate().split(' ')[0] ==
-                  selectDate.toString().split(' ')[0]
-              : true;
-
-          bool plateMatch = selectedPlate == null
-              ? true
-              : licensePlateMap[violation.Vid] == selectedPlate;
-
-          return dateMatch && plateMatch;
-        }).toList();
-
-        isHoveredList =
-            List.generate(filteredViolations.length, (index) => false);
-        _isLoading = false;
-      });
-    } catch (e) {
-      print("Error fetching violations: $e");
+      print("token null");
+      }
+      print("end if");
     }
   }
+}
 
   // Choose date using the date picker
   void _chooseDate() async {

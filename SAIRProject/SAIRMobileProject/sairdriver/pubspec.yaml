@@ -14,7 +14,7 @@ dependencies:
   firebase_auth: ^4.2.0
   provider: ^6.1.2
   firebase_app_check: ^0.2.2+7
-  firebase_core: 2.32.0
+  firebase_core: ^2.32.0
   persistent_bottom_nav_bar: ^6.2.1
   animated_splash_screen: ^1.3.0
   google_maps_flutter: ^2.9.0
@@ -26,6 +26,7 @@ dependencies:
   firebase_messaging: ^14.9.4
   http: ^1.2.2
   googleapis_auth: ^1.6.0
+  googleapis: ^13.2.0
 
 
 
@@ -43,3 +44,4 @@ flutter:
     - assets/icons/
     - assets/image/
     - assets/image/greenMapMarker.png
+    - config/sair-7310d-1d891d1a328d.json
