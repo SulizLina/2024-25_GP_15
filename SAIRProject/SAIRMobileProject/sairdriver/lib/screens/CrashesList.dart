@@ -563,7 +563,13 @@ class _CrasheslistState extends State<Crasheslist>
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               checkForPendingCrashes(filteredList);
                             });
-
+                            // Sort filtered list by date (descending)
+                            filteredList.sort((a, b) {
+                              Crash crashA = Crash.fromJson(a);
+                              Crash crashB = Crash.fromJson(b);
+                              return crashB.time!.compareTo(
+                                  crashA.time!); // Sort by time, descending
+                            });
                             if (filteredList.isEmpty) {
                               return Center(
                                 child: Text(
