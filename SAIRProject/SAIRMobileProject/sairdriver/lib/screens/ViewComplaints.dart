@@ -351,7 +351,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                                   child: Text(
                                     'All',
                                     style: GoogleFonts.poppins(
-                                      fontSize: 11.7,
+                                      fontSize: 13,
                                       fontWeight: _tabController.index == 0
                                           ? FontWeight.w600
                                           : FontWeight.normal,
@@ -381,7 +381,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                                   child: Text(
                                     'Accepted',
                                     style: GoogleFonts.poppins(
-                                      fontSize: 11.7,
+                                      fontSize: 13,
                                       fontWeight: _tabController.index == 1
                                           ? FontWeight.w600
                                           : FontWeight.normal,
@@ -411,7 +411,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                                   child: Text(
                                     'Pending',
                                     style: GoogleFonts.poppins(
-                                      fontSize: 11.7,
+                                      fontSize: 13,
                                       fontWeight: _tabController.index == 2
                                           ? FontWeight.w600
                                           : FontWeight.normal,
@@ -441,7 +441,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                                   child: Text(
                                     'Rejected',
                                     style: GoogleFonts.poppins(
-                                      fontSize: 11.7,
+                                      fontSize: 13,
                                       fontWeight: _tabController.index == 3
                                           ? FontWeight.w600
                                           : FontWeight.normal,
