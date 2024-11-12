@@ -573,7 +573,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                                             builder: (context) =>
                                                 Complaintdetail(
                                               ComplaintID:
-                                                  filteredList[index].id ?? '',
+                                                  filteredList[index].id,
                                               driverid: widget.driverId,
                                             ),
                                           ),
