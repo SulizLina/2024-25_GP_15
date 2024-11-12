@@ -329,81 +329,126 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                         color: Colors.grey[300],
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: TabBar(
-                        controller: _tabController,
-                        labelColor: Colors.black,
-                        unselectedLabelColor: Colors.black,
-                        indicator: BoxDecoration(),
-                        indicatorColor: Colors.transparent,
-                        labelPadding: EdgeInsets.symmetric(vertical: 3),
-                        padding: EdgeInsets.only(left: 3, right: 3),
-                        tabs: [
-                          Tab(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 2, horizontal: 12),
-                              decoration: BoxDecoration(
-                                color: _tabController.index == 0
-                                    ? Colors.white
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Center(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _tabController.index = 0;
+                                  selectedStatus = "All";
+                                });
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: _tabController.index == 0
+                                      ? Colors.white
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Center(
                                   child: Text(
-                                'All',
-                                style: GoogleFonts.poppins(fontSize: 11.7),
-                              )),
+                                    'All',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 11.7,
+                                      fontWeight: _tabController.index == 0
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                          Tab(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 2, horizontal: 12),
-                              decoration: BoxDecoration(
-                                color: _tabController.index == 1
-                                    ? Colors.white
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Center(
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _tabController.index = 1;
+                                  selectedStatus = "Accepted";
+                                });
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: _tabController.index == 1
+                                      ? Colors.white
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Center(
                                   child: Text(
-                                'Accepted',
-                                style: GoogleFonts.poppins(fontSize: 11.7),
-                              )),
+                                    'Accepted',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 11.7,
+                                      fontWeight: _tabController.index == 1
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                          Tab(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 2, horizontal: 12),
-                              decoration: BoxDecoration(
-                                color: _tabController.index == 2
-                                    ? Colors.white
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Center(
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _tabController.index = 2;
+                                  selectedStatus = "Pending";
+                                });
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: _tabController.index == 2
+                                      ? Colors.white
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Center(
                                   child: Text(
-                                'Pending',
-                                style: GoogleFonts.poppins(fontSize: 11.7),
-                              )),
+                                    'Pending',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 11.7,
+                                      fontWeight: _tabController.index == 2
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                          Tab(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 2, horizontal: 12),
-                              decoration: BoxDecoration(
-                                color: _tabController.index == 3
-                                    ? Colors.white
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Center(
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _tabController.index = 3;
+                                  selectedStatus = "Rejected";
+                                });
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: _tabController.index == 3
+                                      ? Colors.white
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Center(
                                   child: Text(
-                                'Rejected',
-                                style: GoogleFonts.poppins(fontSize: 11.7),
-                              )),
+                                    'Rejected',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 11.7,
+                                      fontWeight: _tabController.index == 3
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -475,12 +520,12 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
 
                               return dateMatch && plateMatch && statusMatch;
                             }).toList();
-                           // Sort filtered list by date (descending)
+                            // Sort filtered list by date (descending)
                             filteredList.sort((a, b) {
                               Complaint complaintA = Complaint.fromJson(a);
                               Complaint complaintB = Complaint.fromJson(b);
-                              return complaintB.timestamp!.compareTo(
-                                  complaintA.timestamp!); // Sort by time, descending
+                              return complaintB.timestamp!.compareTo(complaintA
+                                  .timestamp!); // Sort by time, descending
                             });
                             isHoveredList = List.generate(
                                 filteredList.length, (index) => false);
