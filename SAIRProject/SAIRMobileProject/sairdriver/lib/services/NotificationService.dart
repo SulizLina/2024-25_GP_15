@@ -1,24 +1,28 @@
-import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/cupertino.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:googleapis_auth/auth_io.dart' as auth;
-import 'package:googleapis/servicecontrol/v1.dart' as servicecontrol;
 
 class NotificationService {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   Future<Map<String, dynamic>> loadServiceAccountJson() async {
   final contents = await rootBundle.loadString('config/sair-7310d-1d891d1a328d.json');
   final serviceAccountJson = jsonDecode(contents);
   return serviceAccountJson;
 }
-
   Future<void> init(String driverId) async {
+    // Initialize local notifications
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
     // Get the device token
     String? token = await messaging.getToken();
     print("Device token: $token");
@@ -31,24 +35,23 @@ class NotificationService {
           .set({'token': token});
     }
 
-    // Configure background message handler (when app is in the background)
+    // Configure background message handler
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     // Foreground message handling
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print(
-          'Message received: ${message.notification?.title}, ${message.notification?.body}');
-      // You can show a local notification or any other UI action here
+      print('Message received: ${message.notification?.title}, ${message.notification?.body}');
+      // Show local notification
+      if (message.notification != null) {
+        _showNotification(message.notification!);
+      }
     });
   }
 
-
-// Background handler for messages when the app is in the background
-  Future<void> _firebaseMessagingBackgroundHandler(
-      RemoteMessage message) async {
-    print(
-        'Background message received: ${message.notification?.title}, ${message.notification?.body}');
-    // Additional handling if needed, like saving the message
+  // Background handler for messages when the app is in the background
+  static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+    print('Background message received: ${message.notification?.title}, ${message.notification?.body}');
+    // Additional handling if needed
   }
 
   Future<String> getAccessToken() async {
@@ -71,7 +74,7 @@ class NotificationService {
     return token;
   }
 
-  Future<void> sendNotificationToSlectedDriver(
+  Future<void> sendNotificationToSelectedDriver(
       String token, String messageTitle, String messageBody) async {
     final String serverAccessToken = await getAccessToken();
     String endpointFirebaseCloudMessaging =
@@ -79,16 +82,11 @@ class NotificationService {
 
     final Map<String, dynamic> message = {
       'message': {
-        'token': token, //Which user
+        'token': token, // Which user
         'notification': {
           'title': messageTitle,
           'body': messageBody,
         },
-        /* IDK :)
-        'data':{ //key value => driver id 
-          'tripID': tripID
-        }
-        */
       },
     };
 
@@ -104,8 +102,19 @@ class NotificationService {
     if (response.statusCode == 200) {
       print("FCM Notification sent successfully");
     } else {
-      print(
-          "Failed to send FCM Notification: ${response.statusCode}, ${response.body}");
+      print("Failed to send FCM Notification: ${response.statusCode}, ${response.body}");
     }
+  }
+
+  Future<void> _showNotification(RemoteNotification notification) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'your_channel_id', 'your_channel_name', channelDescription: 'your_channel_description',
+      importance: Importance.max, priority: Priority.high, showWhen: false);
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
+    
+    await flutterLocalNotificationsPlugin.show(
+      0, notification.title, notification.body, platformChannelSpecifics,
+      payload: 'item x');
   }
 }

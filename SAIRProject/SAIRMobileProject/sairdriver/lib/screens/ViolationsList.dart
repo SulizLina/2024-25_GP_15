@@ -181,7 +181,7 @@ Future<void> checkAndNotifyNewViolations() async {
         if (token != null) {
           
         print("==================token not null");
-          await _notificationService.sendNotificationToSlectedDriver(token, 'New Violation!', 'You have a new violation. Please check the details.');
+          await _notificationService.sendNotificationToSelectedDriver(token, 'New Violation!', 'You have a new violation. Please check the details.');
           
           print("==================before update");
           // Update the violation to mark it as not new
@@ -192,7 +192,7 @@ Future<void> checkAndNotifyNewViolations() async {
           
           print("================after update");
         }
-      print("token null");
+      print("token not null");
       }
       print("end if");
     }
