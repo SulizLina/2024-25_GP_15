@@ -447,64 +447,100 @@ class _CrasheslistState extends State<Crasheslist>
                         color: Colors.grey[300],
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: TabBar(
-                        controller: _tabController,
-                        labelColor: Colors.black,
-                        unselectedLabelColor: Colors.black,
-                        indicator: BoxDecoration(),
-                        indicatorColor: Colors.transparent,
-                        labelPadding: EdgeInsets.symmetric(vertical: 3),
-                        padding: EdgeInsets.only(left: 3, right: 3),
-                        tabs: [
-                          Tab(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 2, horizontal: 12),
-                              decoration: BoxDecoration(
-                                color: _tabController.index == 0
-                                    ? Colors.white
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  selectedStatus = "All";
+                                  _tabController.index = 0;
+                                });
+                                filterCrashes();
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: selectedStatus == "All"
+                                      ? Colors.white
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Center(
                                   child: Text(
-                                'All',
-                                style: GoogleFonts.poppins(fontSize: 11.7),
-                              )),
+                                    'All',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 11.7,
+                                      fontWeight: selectedStatus == "All"
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                          Tab(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 2, horizontal: 12),
-                              decoration: BoxDecoration(
-                                color: _tabController.index == 1
-                                    ? Colors.white
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Center(
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  selectedStatus = "Confirmed";
+                                  _tabController.index = 1;
+                                });
+                                filterCrashes();
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: selectedStatus == "Confirmed"
+                                      ? Colors.white
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Center(
                                   child: Text(
-                                'Confirmed',
-                                style: GoogleFonts.poppins(fontSize: 11.7),
-                              )),
+                                    'Confirmed',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 11.7,
+                                      fontWeight: selectedStatus == "Confirmed"
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                          Tab(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 2, horizontal: 12),
-                              decoration: BoxDecoration(
-                                color: _tabController.index == 2
-                                    ? Colors.white
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Center(
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  selectedStatus = "Rejected";
+                                  _tabController.index = 2;
+                                });
+                                filterCrashes();
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: selectedStatus == "Rejected"
+                                      ? Colors.white
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Center(
                                   child: Text(
-                                'Rejected',
-                                style: GoogleFonts.poppins(fontSize: 11.7),
-                              )),
+                                    'Rejected',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 11.7,
+                                      fontWeight: selectedStatus == "Rejected"
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -563,7 +599,13 @@ class _CrasheslistState extends State<Crasheslist>
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               checkForPendingCrashes(filteredList);
                             });
-
+                            // Sort filtered list by date (descending)
+                            filteredList.sort((a, b) {
+                              Crash crashA = Crash.fromJson(a);
+                              Crash crashB = Crash.fromJson(b);
+                              return crashB.time!.compareTo(
+                                  crashA.time!); // Sort by time, descending
+                            });
                             if (filteredList.isEmpty) {
                               return Center(
                                 child: Text(
@@ -586,7 +628,7 @@ class _CrasheslistState extends State<Crasheslist>
                               itemCount: filteredList.length + 1,
                               itemBuilder: (context, index) {
                                 if (index == 0) {
-                                  return SizedBox(height: 10);
+                                  return SizedBox(height: 0);
                                 }
 
                                 Crash crash =
@@ -618,7 +660,7 @@ class _CrasheslistState extends State<Crasheslist>
                                     elevation: 2,
                                     child: ListTile(
                                       leading: SizedBox(
-                                        width: 25,
+                                        width: 24,
                                         child: Container(
                                           decoration: BoxDecoration(
                                             color: crash.status
