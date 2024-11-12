@@ -471,7 +471,7 @@ class _CrasheslistState extends State<Crasheslist>
                                   child: Text(
                                     'All',
                                     style: GoogleFonts.poppins(
-                                      fontSize: 11.7,
+                                      fontSize: 13,
                                       fontWeight: selectedStatus == "All"
                                           ? FontWeight.w600
                                           : FontWeight.normal,
@@ -502,7 +502,7 @@ class _CrasheslistState extends State<Crasheslist>
                                   child: Text(
                                     'Confirmed',
                                     style: GoogleFonts.poppins(
-                                      fontSize: 11.7,
+                                      fontSize: 13,
                                       fontWeight: selectedStatus == "Confirmed"
                                           ? FontWeight.w600
                                           : FontWeight.normal,
@@ -533,7 +533,7 @@ class _CrasheslistState extends State<Crasheslist>
                                   child: Text(
                                     'Rejected',
                                     style: GoogleFonts.poppins(
-                                      fontSize: 11.7,
+                                      fontSize: 13,
                                       fontWeight: selectedStatus == "Rejected"
                                           ? FontWeight.w600
                                           : FontWeight.normal,
