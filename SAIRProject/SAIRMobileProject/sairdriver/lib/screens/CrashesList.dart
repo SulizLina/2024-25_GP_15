@@ -592,7 +592,7 @@ class _CrasheslistState extends State<Crasheslist>
                               itemCount: filteredList.length + 1,
                               itemBuilder: (context, index) {
                                 if (index == 0) {
-                                  return SizedBox(height: 10);
+                                  return SizedBox(height: 0);
                                 }
 
                                 Crash crash =
@@ -624,7 +624,7 @@ class _CrasheslistState extends State<Crasheslist>
                                     elevation: 2,
                                     child: ListTile(
                                       leading: SizedBox(
-                                        width: 25,
+                                        width: 24,
                                         child: Container(
                                           decoration: BoxDecoration(
                                             color: crash.status
