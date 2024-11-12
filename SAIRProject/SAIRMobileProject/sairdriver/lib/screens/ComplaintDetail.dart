@@ -31,7 +31,6 @@ class _ComplaintdetailState extends State<Complaintdetail> {
   Motorcycle? motorcycle;
   String? vioDocid;
   String? errorMessage;
-  final _formKey = GlobalKey<FormState>();
 
   TextEditingController complainttext = TextEditingController();
 
