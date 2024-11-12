@@ -15,6 +15,7 @@ class NotificationService {
   final serviceAccountJson = jsonDecode(contents);
   return serviceAccountJson;
 }
+
   Future<void> init(String driverId) async {
     // Initialize local notifications
     const AndroidInitializationSettings initializationSettingsAndroid =
@@ -36,7 +37,7 @@ class NotificationService {
     }
 
     // Configure background message handler
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
     // Foreground message handling
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -48,10 +49,47 @@ class NotificationService {
     });
   }
 
-  // Background handler for messages when the app is in the background
-  static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-    print('Background message received: ${message.notification?.title}, ${message.notification?.body}');
-    // Additional handling if needed
+  static Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // Initialize FlutterLocalNotificationsPlugin
+  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  
+  // Initialize settings for Android
+  const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+  const InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+  
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  // Define notification details
+    const AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails('your_channel_id', 'your_channel_name',
+            channelDescription: 'your_channel_description',
+            importance: Importance.max,
+            priority: Priority.high);
+    const NotificationDetails notificationDetails =
+        NotificationDetails(android: androidNotificationDetails);
+
+  // Display notification
+  flutterLocalNotificationsPlugin.show(
+    message.hashCode,
+    message.notification?.title,
+    message.notification?.body,
+    notificationDetails,
+  );
+}
+
+  Future<void> _showNotification(RemoteNotification notification) async {
+    const AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails('your_channel_id', 'your_channel_name',
+            channelDescription: 'your_channel_description',
+            importance: Importance.max,
+            priority: Priority.high,
+            showWhen: false);
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidNotificationDetails);
+
+    await flutterLocalNotificationsPlugin.show(
+      0, notification.title, notification.body, platformChannelSpecifics,
+    );
   }
 
   Future<String> getAccessToken() async {
@@ -106,15 +144,4 @@ class NotificationService {
     }
   }
 
-  Future<void> _showNotification(RemoteNotification notification) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      'your_channel_id', 'your_channel_name', channelDescription: 'your_channel_description',
-      importance: Importance.max, priority: Priority.high, showWhen: false);
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
-    
-    await flutterLocalNotificationsPlugin.show(
-      0, notification.title, notification.body, platformChannelSpecifics,
-      payload: 'item x');
-  }
 }
