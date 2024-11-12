@@ -77,7 +77,7 @@ class _CrasheslistState extends State<Crasheslist>
 
     List<DocumentSnapshot> pendingCrashes = crashes.where((doc) {
       Crash crash = Crash.fromJson(doc);
-      return crash.status == 'Pending' && crash.driverId == driverA?.id;
+      return crash.status == 'pending' && crash.driverId == driverA?.id;
     }).toList();
 
     if (pendingCrashes.isNotEmpty) {
@@ -114,7 +114,7 @@ class _CrasheslistState extends State<Crasheslist>
       barrierDismissible: false,
       builder: (BuildContext context) {
         _timer = Timer(Duration(minutes: 10), () {
-          updateCrashStatus('Confirmed');
+          updateCrashStatus('confirmed');
           Navigator.of(context).pop();
           _pendingPopupShown = false;
         });
@@ -151,7 +151,7 @@ class _CrasheslistState extends State<Crasheslist>
                     ElevatedButton(
                       onPressed: () {
                         _timer?.cancel();
-                        updateCrashStatus('Rejected');
+                        updateCrashStatus('rejected');
                         Navigator.of(context).pop();
                         setState(() {
                           _pendingPopupShown = false;
@@ -164,7 +164,7 @@ class _CrasheslistState extends State<Crasheslist>
                         ),
                       ),
                       child: Text(
-                        'Reject',
+                        'reject',
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                         ),
@@ -173,7 +173,7 @@ class _CrasheslistState extends State<Crasheslist>
                     ElevatedButton(
                       onPressed: () {
                         _timer?.cancel();
-                        updateCrashStatus('Confirmed');
+                        updateCrashStatus('confirmed');
                         Navigator.of(context).pop();
                         setState(() {
                           _pendingPopupShown = false;
@@ -186,7 +186,7 @@ class _CrasheslistState extends State<Crasheslist>
                         ),
                       ),
                       child: Text(
-                        'Confirm',
+                        'confirm',
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                         ),
@@ -270,20 +270,21 @@ class _CrasheslistState extends State<Crasheslist>
     return null;
   }
 
-@override
-void initState() {
-  super.initState();
-  _tabController = TabController(length: 3, vsync: this); 
-  _tabController.addListener(() {
-    if (_tabController.indexIsChanging) {
-      setState(() {
-        selectedStatus = ["All", "Confirmed", "Rejected"][_tabController.index];
-      });
-      filterCrashes();
-    }
-  });
-  fetchDriverData();
-}
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        setState(() {
+          selectedStatus =
+              ["All", "confirmed", "rejected"][_tabController.index];
+        });
+        filterCrashes();
+      }
+    });
+    fetchDriverData();
+  }
 
   void filterCrashes() {
     setState(() {
@@ -489,7 +490,7 @@ void initState() {
                               ),
                               child: Center(
                                   child: Text(
-                                'Confirmed',
+                                'confirmed',
                                 style: GoogleFonts.poppins(fontSize: 11.7),
                               )),
                             ),
@@ -506,7 +507,7 @@ void initState() {
                               ),
                               child: Center(
                                   child: Text(
-                                'Rejected',
+                                'rejected',
                                 style: GoogleFonts.poppins(fontSize: 11.7),
                               )),
                             ),
@@ -538,15 +539,7 @@ void initState() {
                                 snapshot.data!.docs.isEmpty) {
                               return Center(
                                 child: Text(
-                                  isDateFiltered // || isPlateFiltered
-                                      ? "You don't have any complaint\nfor the selected date."
-                                      : _tabController.index ==
-                                              0 //&& !isDateFiltered
-                                          ? "You don't have any complaint,\nride safe :)"
-                                          : "You don't have any ${[
-                                              "Confirmed",
-                                              "Rejected"
-                                            ][_tabController.index - 1]} complaint", // Updated message
+                                  "You don't have any crashes,\nride safe :)",
                                   style: GoogleFonts.poppins(
                                       fontSize: 20, color: Colors.grey),
                                   textAlign: TextAlign.center,
@@ -575,9 +568,15 @@ void initState() {
                             if (filteredList.isEmpty) {
                               return Center(
                                 child: Text(
-                                  isDateFiltered || isPlateFiltered
+                                  isDateFiltered // || isPlateFiltered
                                       ? "You don't have any crashes\nfor the selected date."
-                                      : "You don't have any crashes,\nride safe :)",
+                                      : _tabController.index ==
+                                              0 //&& !isDateFiltered
+                                          ? "You don't have any crash,\nride safe :)"
+                                          : "You don't have any ${[
+                                              "Confirmed",
+                                              "Rejected"
+                                            ][_tabController.index - 1]} crash", // Updated message
                                   style: GoogleFonts.poppins(
                                       fontSize: 20, color: Colors.grey),
                                   textAlign: TextAlign.center,
