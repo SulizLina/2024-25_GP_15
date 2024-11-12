@@ -18,7 +18,8 @@ class Crasheslist extends StatefulWidget {
   State<Crasheslist> createState() => _CrasheslistState();
 }
 
-class _CrasheslistState extends State<Crasheslist> {
+class _CrasheslistState extends State<Crasheslist>
+    with SingleTickerProviderStateMixin {
   List<DocumentSnapshot> crashes = [];
   List<String> plateN = [];
   String? selectedPlate;
@@ -30,6 +31,9 @@ class _CrasheslistState extends State<Crasheslist> {
   bool isDateFiltered = false;
   bool isPlateFiltered = false;
   bool _isLoading = true;
+  String selectedStatus = "All";
+  late TabController _tabController;
+  List<DocumentSnapshot> filteredCrashes = [];
   Map<String, String?> licensePlateMap = {};
   Timer? _timer; // Timer for auto-confirmation
 
@@ -56,7 +60,7 @@ class _CrasheslistState extends State<Crasheslist> {
     // Only show the popup once if there is a pending crash
     bool hasPending = crashes.any((doc) {
       Crash crash = Crash.fromJson(doc);
-      return crash.status == 'pending';
+      return crash.status == 'Pending';
     });
 
     if (hasPending && !_pendingPopupShown) {
@@ -73,7 +77,7 @@ class _CrasheslistState extends State<Crasheslist> {
 
     List<DocumentSnapshot> pendingCrashes = crashes.where((doc) {
       Crash crash = Crash.fromJson(doc);
-      return crash.status == 'pending' && crash.driverId == driverA?.id;
+      return crash.status == 'Pending' && crash.driverId == driverA?.id;
     }).toList();
 
     if (pendingCrashes.isNotEmpty) {
@@ -110,7 +114,7 @@ class _CrasheslistState extends State<Crasheslist> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         _timer = Timer(Duration(minutes: 10), () {
-          updateCrashStatus('confirmed');
+          updateCrashStatus('Confirmed');
           Navigator.of(context).pop();
           _pendingPopupShown = false;
         });
@@ -147,7 +151,7 @@ class _CrasheslistState extends State<Crasheslist> {
                     ElevatedButton(
                       onPressed: () {
                         _timer?.cancel();
-                        updateCrashStatus('rejected');
+                        updateCrashStatus('Rejected');
                         Navigator.of(context).pop();
                         setState(() {
                           _pendingPopupShown = false;
@@ -169,7 +173,7 @@ class _CrasheslistState extends State<Crasheslist> {
                     ElevatedButton(
                       onPressed: () {
                         _timer?.cancel();
-                        updateCrashStatus('confirmed');
+                        updateCrashStatus('Confirmed');
                         Navigator.of(context).pop();
                         setState(() {
                           _pendingPopupShown = false;
@@ -266,10 +270,44 @@ class _CrasheslistState extends State<Crasheslist> {
     return null;
   }
 
-  @override
-  void initState() {
-    super.initState();
-    fetchDriverData();
+@override
+void initState() {
+  super.initState();
+  _tabController = TabController(length: 3, vsync: this); 
+  _tabController.addListener(() {
+    if (_tabController.indexIsChanging) {
+      setState(() {
+        selectedStatus = ["All", "Confirmed", "Rejected"][_tabController.index];
+      });
+      filterCrashes();
+    }
+  });
+  fetchDriverData();
+}
+
+  void filterCrashes() {
+    setState(() {
+      filteredCrashes = crashes.where((doc) {
+        Crash crash = Crash.fromJson(doc);
+
+        bool statusMatch =
+            selectedStatus == "All" || crash.status == selectedStatus;
+        bool dateMatch = isDateFiltered
+            ? crash.getFormattedDate().split(' ')[0] ==
+                selectDate.toString().split(' ')[0]
+            : true;
+        bool plateMatch = selectedPlate == null
+            ? true
+            : licensePlateMap[crash.cid] == selectedPlate;
+
+        // Debug logging to ensure filters are being applied as expected
+        print('------------------________________-------------------');
+        print(
+            "Crash status: ${crash.status}, Selected status: $selectedStatus, Status match: $statusMatch");
+
+        return statusMatch && dateMatch && plateMatch;
+      }).toList();
+    });
   }
 
   void _chooseDate() async {
@@ -304,6 +342,7 @@ class _CrasheslistState extends State<Crasheslist> {
 
   @override
   void dispose() {
+    _tabController.dispose();
     _timer?.cancel();
     super.dispose();
   }
@@ -388,144 +427,257 @@ class _CrasheslistState extends State<Crasheslist> {
           ],
         ),
       ),
-      body: Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          color: Color(0xFFF3F3F3),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
-        ),
-        child: StreamBuilder<QuerySnapshot>(
-          stream: fetchVCrashStream(),
-          builder: (context, snapshot) {
-            if (_isLoading ||
-                snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            }
-
-            if (snapshot.hasError) {
-              return Center(child: Text("Error loading crashes"));
-            }
-
-            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return Center(
-                child: Text(
-                  "You don't have any crashes,\nride safe :)",
-                  style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
-                  textAlign: TextAlign.center,
+      body: Column(
+        children: [
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Color(0xFFF3F3F3),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
                 ),
-              );
-            }
-
-            final filteredList = snapshot.data!.docs.where((doc) {
-              Crash crash = Crash.fromJson(doc);
-              bool dateMatch = isDateFiltered
-                  ? crash.getFormattedDate().split(' ')[0] ==
-                      selectDate.toString().split(' ')[0]
-                  : true;
-              bool plateMatch = selectedPlate != null
-                  ? licensePlateMap[crash.cid] == selectedPlate
-                  : true;
-
-              return dateMatch && plateMatch;
-            }).toList();
-
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              checkForPendingCrashes(filteredList);
-            });
-
-            if (filteredList.isEmpty) {
-              return Center(
-                child: Text(
-                  isDateFiltered || isPlateFiltered
-                      ? "You don't have any crashes\nfor the selected date."
-                      : "You don't have any crashes,\nride safe :)",
-                  style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
-                  textAlign: TextAlign.center,
-                ),
-              );
-            }
-
-            return ListView.builder(
-              itemCount: filteredList.length + 1,
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return SizedBox(height: 10);
-                }
-
-                Crash crash = Crash.fromJson(filteredList[index - 1]);
-                isHoveredList.add(false);
-
-                String licensePlate = licensePlateMap[crash.cid] ?? "Unknown";
-                String d = crash.getFormattedDate();
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            Crashdetail(crashId: filteredList[index - 1].id),
+              ),
+              child: Column(
+                children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 15, horizontal: 9),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    );
-                  },
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    color: Colors.white,
-                    elevation: 2,
-                    child: ListTile(
-                      leading: SizedBox(
-                        width: 25,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: crash.status == 'pending'
-                                ? Colors.orange
-                                : (crash.status == 'confirmed'
-                                    ? Colors.green
-                                    : Colors.red),
-                            shape: BoxShape.circle,
+                      child: TabBar(
+                        controller: _tabController,
+                        labelColor: Colors.black,
+                        unselectedLabelColor: Colors.black,
+                        indicator: BoxDecoration(),
+                        indicatorColor: Colors.transparent,
+                        labelPadding: EdgeInsets.symmetric(vertical: 3),
+                        padding: EdgeInsets.only(left: 3, right: 3),
+                        tabs: [
+                          Tab(
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 2, horizontal: 12),
+                              decoration: BoxDecoration(
+                                color: _tabController.index == 0
+                                    ? Colors.white
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                  child: Text(
+                                'All',
+                                style: GoogleFonts.poppins(fontSize: 11.7),
+                              )),
+                            ),
                           ),
-                          width: 10,
-                          height: 10,
-                        ),
-                      ),
-                      title: Text(
-                        "Crash ID: ${crash.cid}",
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Date: $d",
-                            style: GoogleFonts.poppins(color: Colors.grey),
+                          Tab(
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 2, horizontal: 12),
+                              decoration: BoxDecoration(
+                                color: _tabController.index == 1
+                                    ? Colors.white
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                  child: Text(
+                                'Confirmed',
+                                style: GoogleFonts.poppins(fontSize: 11.7),
+                              )),
+                            ),
                           ),
-                          Text(
-                            "License Plate: $licensePlate",
-                            style: GoogleFonts.poppins(color: Colors.grey),
+                          Tab(
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 2, horizontal: 12),
+                              decoration: BoxDecoration(
+                                color: _tabController.index == 2
+                                    ? Colors.white
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                  child: Text(
+                                'Rejected',
+                                style: GoogleFonts.poppins(fontSize: 11.7),
+                              )),
+                            ),
                           ),
                         ],
                       ),
-                      trailing: Icon(
-                        HugeIcons.strokeRoundedInformationCircle,
-                        color: Color.fromARGB(202, 3, 152, 85),
-                        size: 20,
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      width: double.infinity,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5),
+                        child: StreamBuilder<QuerySnapshot>(
+                          stream: fetchVCrashStream(),
+                          builder: (context, snapshot) {
+                            if (_isLoading ||
+                                snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            }
+
+                            if (snapshot.hasError) {
+                              return Center(
+                                  child: Text("Error loading crashes"));
+                            }
+
+                            if (!snapshot.hasData ||
+                                snapshot.data!.docs.isEmpty) {
+                              return Center(
+                                child: Text(
+                                  isDateFiltered // || isPlateFiltered
+                                      ? "You don't have any complaint\nfor the selected date."
+                                      : _tabController.index ==
+                                              0 //&& !isDateFiltered
+                                          ? "You don't have any complaint,\nride safe :)"
+                                          : "You don't have any ${[
+                                              "Confirmed",
+                                              "Rejected"
+                                            ][_tabController.index - 1]} complaint", // Updated message
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 20, color: Colors.grey),
+                                  textAlign: TextAlign.center,
+                                ),
+                              );
+                            }
+
+                            final filteredList =
+                                snapshot.data!.docs.where((doc) {
+                              Crash crash = Crash.fromJson(doc);
+                              bool dateMatch = isDateFiltered
+                                  ? crash.getFormattedDate().split(' ')[0] ==
+                                      selectDate.toString().split(' ')[0]
+                                  : true;
+                              bool plateMatch = selectedPlate != null
+                                  ? licensePlateMap[crash.cid] == selectedPlate
+                                  : true;
+
+                              return dateMatch && plateMatch;
+                            }).toList();
+
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              checkForPendingCrashes(filteredList);
+                            });
+
+                            if (filteredList.isEmpty) {
+                              return Center(
+                                child: Text(
+                                  isDateFiltered || isPlateFiltered
+                                      ? "You don't have any crashes\nfor the selected date."
+                                      : "You don't have any crashes,\nride safe :)",
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 20, color: Colors.grey),
+                                  textAlign: TextAlign.center,
+                                ),
+                              );
+                            }
+
+                            return ListView.builder(
+                              itemCount: filteredList.length + 1,
+                              itemBuilder: (context, index) {
+                                if (index == 0) {
+                                  return SizedBox(height: 10);
+                                }
+
+                                Crash crash =
+                                    Crash.fromJson(filteredList[index - 1]);
+                                isHoveredList.add(false);
+
+                                String licensePlate =
+                                    licensePlateMap[crash.cid] ?? "Unknown";
+                                String d = crash.getFormattedDate();
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => Crashdetail(
+                                            crashId:
+                                                filteredList[index - 1].id),
+                                      ),
+                                    );
+                                  },
+                                  child: Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 5),
+                                    color: Colors.white,
+                                    elevation: 2,
+                                    child: ListTile(
+                                      leading: SizedBox(
+                                        width: 25,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: crash.status == 'Pending'
+                                                ? Colors.orange
+                                                : (crash.status == 'Confirmed'
+                                                    ? Colors.green
+                                                    : Colors.red),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          width: 10,
+                                          height: 10,
+                                        ),
+                                      ),
+                                      title: Text(
+                                        "Crash ID: ${crash.cid}",
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      subtitle: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Date: $d",
+                                            style: GoogleFonts.poppins(
+                                                color: Colors.grey),
+                                          ),
+                                          Text(
+                                            "License Plate: $licensePlate",
+                                            style: GoogleFonts.poppins(
+                                                color: Colors.grey),
+                                          ),
+                                        ],
+                                      ),
+                                      trailing: Icon(
+                                        HugeIcons
+                                            .strokeRoundedInformationCircle,
+                                        color: Color.fromARGB(202, 3, 152, 85),
+                                        size: 20,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
-                );
-              },
-            );
-          },
-        ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
