@@ -114,7 +114,7 @@ class _CrasheslistState extends State<Crasheslist>
       barrierDismissible: false,
       builder: (BuildContext context) {
         _timer = Timer(Duration(minutes: 10), () {
-          updateCrashStatus('confirmed');
+          updateCrashStatus('Confirmed');
           Navigator.of(context).pop();
           _pendingPopupShown = false;
         });
@@ -151,7 +151,7 @@ class _CrasheslistState extends State<Crasheslist>
                     ElevatedButton(
                       onPressed: () {
                         _timer?.cancel();
-                        updateCrashStatus('rejected');
+                        updateCrashStatus('Rejected');
                         Navigator.of(context).pop();
                         setState(() {
                           _pendingPopupShown = false;
@@ -173,7 +173,7 @@ class _CrasheslistState extends State<Crasheslist>
                     ElevatedButton(
                       onPressed: () {
                         _timer?.cancel();
-                        updateCrashStatus('confirmed');
+                        updateCrashStatus('Confirmed');
                         Navigator.of(context).pop();
                         setState(() {
                           _pendingPopupShown = false;
@@ -270,6 +270,26 @@ class _CrasheslistState extends State<Crasheslist>
     return null;
   }
 
+  void filterCrashes() {
+    setState(() {
+      filteredCrashes = crashes.where((doc) {
+        Crash crash = Crash.fromJson(doc);
+
+        bool statusMatch = selectedStatus == "All" ||
+            crash.status?.toLowerCase() == selectedStatus.toLowerCase();
+        bool dateMatch = isDateFiltered
+            ? crash.getFormattedDate().split(' ')[0] ==
+                selectDate.toString().split(' ')[0]
+            : true;
+        bool plateMatch = selectedPlate == null
+            ? true
+            : licensePlateMap[crash.cid] == selectedPlate;
+
+        return statusMatch && dateMatch && plateMatch;
+      }).toList();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -284,31 +304,6 @@ class _CrasheslistState extends State<Crasheslist>
       }
     });
     fetchDriverData();
-  }
-
-  void filterCrashes() {
-    setState(() {
-      filteredCrashes = crashes.where((doc) {
-        Crash crash = Crash.fromJson(doc);
-
-        bool statusMatch =
-            selectedStatus == "All" || crash.status == selectedStatus;
-        bool dateMatch = isDateFiltered
-            ? crash.getFormattedDate().split(' ')[0] ==
-                selectDate.toString().split(' ')[0]
-            : true;
-        bool plateMatch = selectedPlate == null
-            ? true
-            : licensePlateMap[crash.cid] == selectedPlate;
-
-        // Debug logging to ensure filters are being applied as expected
-        print('------------------________________-------------------');
-        print(
-            "Crash status: ${crash.status}, Selected status: $selectedStatus, Status match: $statusMatch");
-
-        return statusMatch && dateMatch && plateMatch;
-      }).toList();
-    });
   }
 
   void _chooseDate() async {
@@ -490,7 +485,7 @@ class _CrasheslistState extends State<Crasheslist>
                               ),
                               child: Center(
                                   child: Text(
-                                'confirmed',
+                                'Confirmed',
                                 style: GoogleFonts.poppins(fontSize: 11.7),
                               )),
                             ),
@@ -507,7 +502,7 @@ class _CrasheslistState extends State<Crasheslist>
                               ),
                               child: Center(
                                   child: Text(
-                                'rejected',
+                                'Rejected',
                                 style: GoogleFonts.poppins(fontSize: 11.7),
                               )),
                             ),
@@ -550,6 +545,10 @@ class _CrasheslistState extends State<Crasheslist>
                             final filteredList =
                                 snapshot.data!.docs.where((doc) {
                               Crash crash = Crash.fromJson(doc);
+
+                              bool statusMatch = selectedStatus == "All" ||
+                                  crash.status?.toLowerCase() ==
+                                      selectedStatus.toLowerCase();
                               bool dateMatch = isDateFiltered
                                   ? crash.getFormattedDate().split(' ')[0] ==
                                       selectDate.toString().split(' ')[0]
@@ -558,7 +557,7 @@ class _CrasheslistState extends State<Crasheslist>
                                   ? licensePlateMap[crash.cid] == selectedPlate
                                   : true;
 
-                              return dateMatch && plateMatch;
+                              return statusMatch && dateMatch && plateMatch;
                             }).toList();
 
                             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -568,15 +567,14 @@ class _CrasheslistState extends State<Crasheslist>
                             if (filteredList.isEmpty) {
                               return Center(
                                 child: Text(
-                                  isDateFiltered // || isPlateFiltered
+                                  isDateFiltered
                                       ? "You don't have any crashes\nfor the selected date."
-                                      : _tabController.index ==
-                                              0 //&& !isDateFiltered
+                                      : _tabController.index == 0
                                           ? "You don't have any crash,\nride safe :)"
                                           : "You don't have any ${[
-                                              "Confirmed",
-                                              "Rejected"
-                                            ][_tabController.index - 1]} crash", // Updated message
+                                              "confirmed",
+                                              "rejected"
+                                            ][_tabController.index - 1]} crash",
                                   style: GoogleFonts.poppins(
                                       fontSize: 20, color: Colors.grey),
                                   textAlign: TextAlign.center,
@@ -598,6 +596,7 @@ class _CrasheslistState extends State<Crasheslist>
                                 String licensePlate =
                                     licensePlateMap[crash.cid] ?? "Unknown";
                                 String d = crash.getFormattedDate();
+
                                 return GestureDetector(
                                   onTap: () {
                                     Navigator.push(
@@ -622,9 +621,13 @@ class _CrasheslistState extends State<Crasheslist>
                                         width: 25,
                                         child: Container(
                                           decoration: BoxDecoration(
-                                            color: crash.status == 'Pending'
+                                            color: crash.status
+                                                        ?.toLowerCase() ==
+                                                    'pending'
                                                 ? Colors.orange
-                                                : (crash.status == 'Confirmed'
+                                                : (crash.status
+                                                            ?.toLowerCase() ==
+                                                        'confirmed'
                                                     ? Colors.green
                                                     : Colors.red),
                                             shape: BoxShape.circle,
