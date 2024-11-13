@@ -7,14 +7,9 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:googleapis_auth/auth_io.dart' as auth;
 
 class NotificationService {
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  final FirebaseMessaging messaging = FirebaseMessaging.instance;
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-  Future<Map<String, dynamic>> loadServiceAccountJson() async {
-  final contents = await rootBundle.loadString('config/sair-7310d-1d891d1a328d.json');
-  final serviceAccountJson = jsonDecode(contents);
-  return serviceAccountJson;
-}
   Future<void> init(String driverId) async {
     // Initialize local notifications
     const AndroidInitializationSettings initializationSettingsAndroid =
@@ -35,23 +30,35 @@ class NotificationService {
           .set({'token': token});
     }
 
+    // Listen for token refresh using the instance member
+    messaging.onTokenRefresh.listen((newToken) async {
+      await FirebaseFirestore.instance
+          .collection('UserTokens')
+          .doc("Driver_$driverId")
+          .set({'token': newToken});
+    });
+
     // Configure background message handler
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     // Foreground message handling
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print('Message received: ${message.notification?.title}, ${message.notification?.body}');
-      // Show local notification
       if (message.notification != null) {
         _showNotification(message.notification!);
       }
     });
   }
 
-  // Background handler for messages when the app is in the background
+  // Load the service account JSON from assets
+  Future<Map<String, dynamic>> loadServiceAccountJson() async {
+    final contents = await rootBundle.loadString('config/sair-7310d-1d891d1a328d.json');
+    final serviceAccountJson = jsonDecode(contents);
+    return serviceAccountJson;
+  }
+
   static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     print('Background message received: ${message.notification?.title}, ${message.notification?.body}');
-    // Additional handling if needed
   }
 
   Future<String> getAccessToken() async {
@@ -61,28 +68,24 @@ class NotificationService {
       "https://www.googleapis.com/auth/firebase.messaging",
     ];
 
-    // Obtain authenticated client
     final client = await auth.clientViaServiceAccount(
       auth.ServiceAccountCredentials.fromJson(serviceAccountJson),
       scopes,
     );
 
-    // Get the access token from client
     final token = client.credentials.accessToken.data;
     client.close();
 
     return token;
   }
 
-  Future<void> sendNotificationToSelectedDriver(
-      String token, String messageTitle, String messageBody) async {
+  Future<void> sendNotificationToSelectedDriver(String token, String messageTitle, String messageBody) async {
     final String serverAccessToken = await getAccessToken();
-    String endpointFirebaseCloudMessaging =
-        'https://fcm.googleapis.com/v1/projects/sair-7310d/messages:send';
+    String endpointFirebaseCloudMessaging = 'https://fcm.googleapis.com/v1/projects/sair-7310d/messages:send';
 
     final Map<String, dynamic> message = {
       'message': {
-        'token': token, // Which user
+        'token': token,
         'notification': {
           'title': messageTitle,
           'body': messageBody,
@@ -94,7 +97,7 @@ class NotificationService {
       Uri.parse(endpointFirebaseCloudMessaging),
       headers: <String, String>{
         'Content-Type': 'application/json',
-        'authorization': 'Bearer $serverAccessToken'
+        'authorization': 'Bearer $serverAccessToken',
       },
       body: jsonEncode(message),
     );
@@ -107,14 +110,15 @@ class NotificationService {
   }
 
   Future<void> _showNotification(RemoteNotification notification) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
+    const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'your_channel_id', 'your_channel_name', channelDescription: 'your_channel_description',
-      importance: Importance.max, priority: Priority.high, showWhen: false);
+      importance: Importance.max, priority: Priority.high, showWhen: false,
+    );
     const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
-    
+   
     await flutterLocalNotificationsPlugin.show(
       0, notification.title, notification.body, platformChannelSpecifics,
-      payload: 'item x');
+      payload: 'item x',
+    );
   }
 }
