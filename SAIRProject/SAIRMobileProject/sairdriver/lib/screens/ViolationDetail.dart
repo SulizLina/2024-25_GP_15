@@ -30,7 +30,7 @@ class _ViolationdetailState extends State<Violationdetail> {
   Violation? violation;
   Motorcycle? motorcycle;
   static const LatLng defaultLoc = LatLng(0.0, 0.0);
-  int? sum; 
+  int? sum;
   @override
   void initState() {
     super.initState();
@@ -47,7 +47,7 @@ class _ViolationdetailState extends State<Violationdetail> {
   Future<void> fetchViolation() async {
     ViolationsDatabase db = ViolationsDatabase();
     violation = await db.getViolationById(widget.violationId);
-    sum= (violation!.count30! + violation!.count50!) ; 
+    sum = (violation!.count30! + violation!.count50!);
     if (violation != null && violation!.gspNumber != null) {
       await fetchMotor();
     }
@@ -143,7 +143,9 @@ class _ViolationdetailState extends State<Violationdetail> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'You can raise a complaint within 30 days',
+                    hasComplaint
+                        ? 'You can raise one complaint within 30 days'
+                        : 'A complaint has already been raised for this violation',
                     style: GoogleFonts.poppins(
                       fontSize: 14,
                       color: Colors.grey[400],
@@ -242,32 +244,37 @@ class _ViolationdetailState extends State<Violationdetail> {
 
                       return ElevatedButton(
                         onPressed: (violation != null &&
-                                !hasComplaint &&
                                 DateTime.parse(violation!.getFormattedDate())
-                                    .isAfter(
-                                  DateTime.now().subtract(Duration(days: 30)),
-                                ))
+                                    .isAfter(DateTime.now()
+                                        .subtract(Duration(days: 30))))
                             ? () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Raisecomplaint(
-                                      violation: violation!,
-                                      driverid: widget.driverid,
+                                // If the violation is within the last 30 days
+                                if (hasComplaint) {
+                                  // Navigate to the Complaint detail page if complaint exists
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Complaintdetail(
+                                        ComplaintID: compID ?? '',
+                                        driverid: widget.driverid,
+                                      ),
                                     ),
-                                  ),
-                                );
+                                  );
+                                } else {
+                                  // Navigate to the Raise complaint page if no complaint exists
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Raisecomplaint(
+                                        violation: violation!,
+                                        driverid: widget.driverid,
+                                      ),
+                                    ),
+                                  );
+                                }
                               }
                             : () {
-                                String message;
-                                if (hasComplaint) {
-                                  message =
-                                      'A complaint has already been raised for this violation!';
-                                } else {
-                                  message =
-                                      'You can\'t raise a complaint after 30 days of the violation!';
-                                }
-
+                                // If violation is older than 30 days, show warning dialog
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
@@ -316,50 +323,12 @@ class _ViolationdetailState extends State<Violationdetail> {
                                             ),
                                             SizedBox(height: 20),
                                             Text(
-                                              message, // Show dynamic warning message
+                                              'You can\'t raise a complaint after 30 days of the violation!',
                                               style: GoogleFonts.poppins(
                                                   fontSize: 16),
                                               textAlign: TextAlign.center,
                                             ),
                                             SizedBox(height: 20),
-                                            if (hasComplaint)
-                                              ElevatedButton(
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          Complaintdetail(
-                                                        ComplaintID:
-                                                            compID ?? '',
-                                                        driverid:
-                                                            widget.driverid,
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor:
-                                                      Color.fromARGB(
-                                                          202, 3, 152, 85),
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      vertical: 10,
-                                                      horizontal: 20),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                  ),
-                                                ),
-                                                child: Text(
-                                                  'View Complaint Details',
-                                                  style: GoogleFonts.poppins(
-                                                    color: Colors.white,
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                              ),
                                           ],
                                         ),
                                       ),
@@ -369,14 +338,16 @@ class _ViolationdetailState extends State<Violationdetail> {
                               },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: (violation != null &&
-                                  !hasComplaint &&
                                   DateTime.parse(violation!.getFormattedDate())
-                                      .isAfter(
-                                    DateTime.now().subtract(Duration(days: 30)),
-                                  ))
-                              ? Color.fromARGB(202, 3, 152, 85) // Active color
-                              : const Color.fromARGB(
-                                  255, 199, 199, 199), // Disabled color
+                                      .isAfter(DateTime.now()
+                                          .subtract(Duration(days: 30))))
+                              ? (hasComplaint
+                                  ? Color.fromARGB(202, 3, 152,
+                                      85) // Green if complaint exists
+                                  : Color.fromARGB(202, 3, 152,
+                                      85)) // Green if no complaint and violation within 30 days
+                              : const Color.fromARGB(255, 199, 199,
+                                  199), // Disabled (gray) if violation > 30 days
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -384,9 +355,11 @@ class _ViolationdetailState extends State<Violationdetail> {
                           textStyle: GoogleFonts.poppins(fontSize: 18),
                         ),
                         child: Text(
-                          'Raise a Complaint',
+                          hasComplaint ? 'View Complaint' : 'Raise a Complaint',
                           style: GoogleFonts.poppins(
-                              color: Colors.white, fontSize: 16),
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
                         ),
                       );
                     },
@@ -469,7 +442,7 @@ class _ViolationdetailState extends State<Violationdetail> {
             content ?? '',
             style: GoogleFonts.poppins(
               fontSize: 14,
-              color:((violation?.count30 ?? 0) > 0 ||
+              color: ((violation?.count30 ?? 0) > 0 ||
                       (violation?.count50 ?? 0) > 0)
                   ? const ui.Color.fromARGB(255, 216, 6, 6)
                   : Color(0xFF211D1D),
@@ -517,36 +490,36 @@ class _ViolationdetailState extends State<Violationdetail> {
     );
   }
 
-String getOrdinal(int sum) {
-  // Special cases for 11, 12, 13
-  if (sum % 100 >= 11 && sum % 100 <= 13) {
-    return '$sum th'; 
-  }
+  String getOrdinal(int sum) {
+    // Special cases for 11, 12, 13
+    if (sum % 100 >= 11 && sum % 100 <= 13) {
+      return '$sum th';
+    }
 
-  // General case
-  switch (sum) {
-    case 1:
-      return 'first';
-    case 2:
-      return 'second';
-    case 3:
-      return 'third';
-    case 4:
-      return 'fourth';
-    case 5:
-      return 'fifth';
-    case 6:
-      return 'sixth';
-    case 7:
-      return 'seventh';
-    case 8:
-      return 'eighth';
-    case 9:
-      return 'ninth';
-    default:
-      return '${sum}th';
+    // General case
+    switch (sum) {
+      case 1:
+        return 'first';
+      case 2:
+        return 'second';
+      case 3:
+        return 'third';
+      case 4:
+        return 'fourth';
+      case 5:
+        return 'fifth';
+      case 6:
+        return 'sixth';
+      case 7:
+        return 'seventh';
+      case 8:
+        return 'eighth';
+      case 9:
+        return 'ninth';
+      default:
+        return '${sum}th';
+    }
   }
-}
 
   void submitComplaint() {
     Navigator.of(context).pop();
