@@ -66,7 +66,7 @@ class Violation {
       time: parsedJSON['time'] as int?,
       count30: parsedJSON['count30'] as int?,
       count50: parsedJSON['count50'] as int?,
-      newV: parsedJSON['new'] as bool?,
+      newV: parsedJSON['newV'] as bool?,
     );
   }
 }
