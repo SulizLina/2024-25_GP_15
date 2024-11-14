@@ -2,28 +2,57 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:sairdriver/screens/home.dart';
 import 'package:sairdriver/screens/welcomepage.dart';
 import 'package:sairdriver/screens/login_email.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:sairdriver/services/NotificationService.dart';
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('handling a background message ${message.messageId}');
+  print('Handling a background message ${message.messageId}');
 }
 
 void main() async {
-  // Ensure that Firebase is initialized before running the app
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await FirebaseMessaging.instance.getInitialMessage();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  runApp(const MainApp());
+  runApp(const InitialApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class InitialApp extends StatelessWidget {
+  const InitialApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: SplashPage(),
+    );
+  }
+}
+
+class MainApp extends StatefulWidget {
+  final String driverId;
+  const MainApp({super.key, required this.driverId});
+
+  @override
+  _MainAppState createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  final NotificationService notificationService = NotificationService();
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeNotificationService();
+  }
+
+  Future<void> _initializeNotificationService() async {
+    await notificationService.init(widget.driverId);
+  }
 
   @override
   Widget build(BuildContext context) {

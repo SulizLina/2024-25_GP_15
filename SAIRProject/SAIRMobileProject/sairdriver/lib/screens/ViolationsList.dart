@@ -31,7 +31,7 @@ class _ViolationslistState extends State<Violationslist> {
   List<DocumentSnapshot> filteredViolations =
       []; // List for filtered violations based on date
   List<bool> isHoveredList = [];
-  NotificationService _notificationService = NotificationService();
+  late NotificationService _notificationService;
 
   List<String> plateN = [];
   String? selectedPlate;
@@ -45,6 +45,7 @@ class _ViolationslistState extends State<Violationslist> {
   @override
   void initState() {
     super.initState();
+    _notificationService = NotificationService();
     _notificationService.init(widget.driverId);
     fetchDriverData();
   }

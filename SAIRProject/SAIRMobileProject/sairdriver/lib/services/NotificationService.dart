@@ -7,10 +7,14 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:googleapis_auth/auth_io.dart' as auth;
 
 class NotificationService {
+  String? driverId;
   final FirebaseMessaging messaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   Future<void> init(String driverId) async {
+    // Store driver ID for reference
+    this.driverId = driverId;
+
     // Initialize local notifications
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -57,7 +61,8 @@ class NotificationService {
     return serviceAccountJson;
   }
 
-  static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+     _showNotification(message.notification!);
     print('Background message received: ${message.notification?.title}, ${message.notification?.body}');
   }
 

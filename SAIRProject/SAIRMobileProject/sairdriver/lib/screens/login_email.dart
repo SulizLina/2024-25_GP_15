@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/screens/bottom_nav_bar.dart';
 import 'package:sairdriver/screens/changepassword.dart';
 import 'package:sairdriver/screens/emailforgotpass.dart';
+import 'package:sairdriver/main.dart';
+import 'package:sairdriver/services/NotificationService.dart';
 
 class LoginEmail extends StatefulWidget {
   const LoginEmail({super.key});
@@ -22,6 +24,7 @@ class _LoginEmailState extends State<LoginEmail> {
   final db = FirebaseFirestore.instance;
   final _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
+  NotificationService _notificationService = NotificationService();
 
   @override
   void dispose() {
@@ -88,6 +91,14 @@ class _LoginEmailState extends State<LoginEmail> {
               driverDoc.docs.first.data()['isDefaultPassword'] ?? false;
 
           if (!mounted) return; // Avoid state changes if widget is disposed
+
+                    // Fetch the driver ID to use for notifications or other purposes
+          final String? driverID = driverDoc.docs.first.data()['driverId'];
+          if (driverID != null) {
+
+            // Call the notification initialization or pass it as needed
+            await _notificationService.init(driverID); // Replace with actual initialization
+          }
 
           if (!isDefaultPassword) {
             Navigator.pushReplacement(
