@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,14 +16,27 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   String driverName = "";
-
+  final FirebaseMessaging messaging = FirebaseMessaging.instance;
   @override
   void initState() {
     super.initState();
+    request(widget.driverId);
     // Fetch driver details when the page initializes
     fetchDriverName();
   }
+Future<void>request(String driverId)async {
+     // Get the device token
+    String? token = await messaging.getToken();
+    print("Device token: $token");
 
+    // Save the token to Firestore
+    if (token != null) {
+      await FirebaseFirestore.instance
+          .collection('Driver')
+          .doc(driverId)
+          .update({'token': token});
+    }
+}
   Future<void> fetchDriverName() async {
     try {
       // Query the Firestore database for the driver's details

@@ -29,17 +29,17 @@ class NotificationService {
     // Save the token to Firestore
     if (token != null) {
       await FirebaseFirestore.instance
-          .collection('UserTokens')
-          .doc("Driver_$driverId")
-          .set({'token': token});
+      .collection('Driver')
+          .doc(driverId)
+          .update({'token': token});
     }
 
     // Listen for token refresh using the instance member
     messaging.onTokenRefresh.listen((newToken) async {
       await FirebaseFirestore.instance
-          .collection('UserTokens')
-          .doc("Driver_$driverId")
-          .set({'token': newToken});
+         .collection('Driver')
+          .doc(driverId)
+          .update({'token': newToken});
     });
 
     // Configure background message handler
