@@ -8,7 +8,6 @@ import 'package:sairdriver/models/crash.dart';
 import 'package:sairdriver/models/driver.dart';
 import 'package:sairdriver/models/motorcycle.dart';
 import 'package:sairdriver/screens/CrashDetail.dart';
-import 'package:sairdriver/services/NotificationService.dart';
 import 'package:sairdriver/services/driver_database.dart';
 import 'package:collection/collection.dart';
 
@@ -40,12 +39,10 @@ class _CrasheslistState extends State<Crasheslist>
   Map<String, String?> licensePlateMap = {};
   Timer? _timer; // Timer for auto-confirmation
   List<String> _previousPendingCrashIds = []; 
-  NotificationService _notificationService = NotificationService();
 
 @override
   void initState() {
     super.initState();
-    _notificationService.init(widget.driverId);
     fetchDriverData();
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() {
@@ -58,43 +55,6 @@ class _CrasheslistState extends State<Crasheslist>
       }
     });
   }
-
-  Future<void> checkAndNotifyNewCrash() async {
-  print('++++++++++++++++++hi= checkAndNotifyNewCrash+++++++++++++++++++++++++');
-  for (var doc in crashes) {
-    Crash crash = Crash.fromJson(doc);
-    
-        print("==================after loop");
-    
-    // If the violation is new, send a notification and update Firestore
-    if (crash.status == 'Pending') {
-      DocumentSnapshot tokenDoc = await FirebaseFirestore.instance
-          .collection('UserTokens')
-          .doc("Driver_${widget.driverId}")
-          .get();
-
-        print("==================before if");
-      if (tokenDoc.exists) {
-        String? token = tokenDoc['token'];
-        
-        print("==================after 1st if");
-        if (token != null) {
-          
-        print("==================token not null");
-          await _notificationService.sendNotificationToSelectedDriver(token, 'Crash deteted!', 'Please open the app and verify it');
-          
-          print("==================before update");
-          // Update the crash to mark it as not new
-          //
-          
-          print("================after update");
-        }
-      print("token not null");
-      }
-      print("end if");
-    }
-  }
-}
 
   Future<void> fetchDriverData() async {
     try {
@@ -312,11 +272,6 @@ Future<void> updateCrashStatus(String newStatus) async {
         crashes = snapshot.docs;
         _isLoading = false;
       });
-print('before calling checkAndNotifyNewCrash ');
-      // Check for new crash and send notifications 
-      await checkAndNotifyNewCrash();
-print('after calling checkAndNotifyNewCrash ');
-
     } catch (e) {
       print("Error fetching crashes: $e");
       setState(() {
