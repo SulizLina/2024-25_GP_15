@@ -358,15 +358,15 @@ class _ChangepasswordState extends State<Changepassword> {
                       ),
                       SizedBox(height: 8),
                       _buildRequirementText(
-                          'Contain at least 8 characters', hasMinLength),
+                          'Contain at least 8 characters', hasMinLength, '•'),
                       _buildRequirementText(
                           'Contain both uppercase and lowercase letters',
-                          hasUpperLowerCase),
+                          hasUpperLowerCase, '•'),
                       _buildRequirementText(
-                          'Contain at least one number', hasNumber),
+                          'Contain at least one number', hasNumber, '•'),
                       _buildRequirementText(
                           'Contain at least one special character (!@#\$%^&*)',
-                          hasSpecialChar),
+                          hasSpecialChar, '•'),
                     ],
                   ),
                   SizedBox(height: 32),
@@ -412,29 +412,41 @@ class _ChangepasswordState extends State<Changepassword> {
     );
   }
 
-  // Helper method to build password requirement text with dynamic color and GoogleFonts.poppins
-  Widget _buildRequirementText(String text, bool isValid) {
+  // Helper method to build password requirement text with dynamic color
+  Widget _buildRequirementText(String text, bool isValid, String bullet) {
     Color textColor;
 
-    // Change the text color based on validation
     if (!hasUserTyped) {
-      textColor = Colors.grey; // Grey if the user hasn't typed
+      textColor = Colors.grey;
     } else if (isValid) {
-      textColor = Colors.green; // Green if the condition is met
+      textColor = Colors.green;
     } else {
-      textColor = Colors.red; // Red if the condition is not met
+      textColor = Colors.red;
     }
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Text(
-        text,
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        bullet,
         style: GoogleFonts.poppins(
-          // Use GoogleFonts.poppins here
           fontSize: 14,
-          color: textColor,
+          color: Color(0xFF211D1D),
+          height: 1.5,
         ),
       ),
-    );
+      const SizedBox(width: 8), // Space between bullet and text
+      Expanded(
+        child: Text(
+          text,
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            color: textColor,
+            height: 1.5,
+          ),
+        ),
+      ),
+    ],
+  );
   }
 }
