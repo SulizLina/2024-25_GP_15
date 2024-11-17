@@ -1,10 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sairdriver/messages/confirm.dart';
 import 'package:sairdriver/messages/success.dart';
-import 'package:sairdriver/screens/profilepage.dart';
 
 class Editpasswordpage extends StatefulWidget {
   final String driverId; // DriverID passed from previous page

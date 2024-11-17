@@ -6,8 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sairdriver/screens/bottom_nav_bar.dart';
 import 'package:sairdriver/screens/changepassword.dart';
-import 'package:sairdriver/screens/home.dart';
-import 'package:sairdriver/screens/Forgotpass.dart';
 import 'package:sairdriver/screens/login.dart';
 
 class LoginOtp extends StatefulWidget {

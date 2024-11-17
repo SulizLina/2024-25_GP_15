@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:sairdriver/models/driver.dart';
 import 'package:sairdriver/models/motorcycle.dart';
 import 'package:sairdriver/screens/login_email.dart';
-import 'package:sairdriver/screens/welcomepage.dart';
 import 'package:sairdriver/services/driver_database.dart';
 import 'package:sairdriver/services/motorcycle_database.dart';
 import 'editpasswordpage.dart';
 import 'edit_phone_page.dart'; // Page for editing phone number
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'EditEmail.dart';
 
 class Profilepage extends StatefulWidget {
   final String driverId; // DriverID passed from previous page

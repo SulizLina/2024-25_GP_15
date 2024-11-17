@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:developer';
-import 'package:sairdriver/screens/login.dart';
 import 'package:sairdriver/screens/login_email.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

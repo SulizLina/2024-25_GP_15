@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/screens/bottom_nav_bar.dart';
 import 'package:sairdriver/screens/changepassword.dart';
 import 'package:sairdriver/screens/emailforgotpass.dart';
-import 'package:sairdriver/main.dart';
 import 'package:sairdriver/services/NotificationService.dart';
 
 class LoginEmail extends StatefulWidget {

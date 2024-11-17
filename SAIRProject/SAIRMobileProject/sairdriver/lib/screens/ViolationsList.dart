@@ -1,11 +1,6 @@
-import 'dart:convert';
-import 'dart:io';
-import 'package:googleapis_auth/auth_io.dart';
 import 'package:board_datetime_picker/board_datetime_picker.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sairdriver/main.dart';
 import 'package:sairdriver/models/violation.dart';
 import 'package:sairdriver/models/driver.dart';
 import 'package:sairdriver/services/driver_database.dart';
@@ -13,7 +8,6 @@ import 'package:sairdriver/models/motorcycle.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/screens/ViolationDetail.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:http/http.dart' as http;
 
 // ignore: must_be_immutable
 class Violationslist extends StatefulWidget {
