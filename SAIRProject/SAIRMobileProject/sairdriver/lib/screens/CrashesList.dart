@@ -633,23 +633,31 @@ Future<void> updateCrashStatus(String newStatus) async {
                               return crashB.time!.compareTo(
                                   crashA.time!); // Sort by time, descending
                             });
-                            if (filteredList.isEmpty) {
-                              return Center(
-                                child: Text(
-                                  isDateFiltered
-                                      ? "You don't have any crashes\nfor the selected date."
-                                      : _tabController.index == 0
-                                          ? "You don't have any crash,\nride safe :)"
-                                          : "You don't have any ${[
-                                              "confirmed",
-                                              "rejected"
-                                            ][_tabController.index - 1]} crash",
-                                  style: GoogleFonts.poppins(
-                                      fontSize: 20, color: Colors.grey),
-                                  textAlign: TextAlign.center,
-                                ),
-                              );
-                            }
+
+    // If the filtered list is empty, show appropriate message
+    if (filteredList.isEmpty) {
+      if (selectedPlate != null) {
+        return Center(
+          child: Text(
+            "You don't have any crash for the selected plate number.",
+            style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
+            textAlign: TextAlign.center,
+          ),
+        );
+      }
+
+      return Center(
+        child: Text(
+          isDateFiltered
+              ? "You don't have any crashes\nfor the selected date."
+              : selectedStatus == "All"
+                  ? "You don't have any crash,\nride safe :)"
+                  : "You don't have any\n${selectedStatus.toLowerCase()} crash",
+          style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
 
                             return ListView.builder(
                               itemCount: filteredList.length + 1,
