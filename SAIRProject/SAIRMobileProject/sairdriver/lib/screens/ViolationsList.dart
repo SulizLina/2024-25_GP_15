@@ -219,7 +219,9 @@ class _ViolationslistState extends State<Violationslist> {
                     colorFilter: ColorFilter.mode(
                       plateN.isEmpty
                           ? const Color.fromARGB(255, 199, 199, 199)
-                          : Colors.white,
+                          : (selectedPlate == null
+                              ? const Color(0xFFF3F3F3) // no plate selected
+                              : Color(0xFFFF9E00)), //  plate is selected (traffic yellow)
                       BlendMode.srcIn,
                     ),
                     child: Image.asset(
@@ -269,7 +271,11 @@ class _ViolationslistState extends State<Violationslist> {
                 size: 24,
                 color: violations.isEmpty
                     ? const Color.fromARGB(255, 199, 199, 199)
-                    : Color(0xFFF3F3F3),
+                    : isDateFiltered
+                        ? const Color(
+                            0xFFFF9E00) // No date selected 
+                        : Color(
+                            0xFFF3F3F3), // Date is selected (traffic yellow)
               ),
             ),
           ],

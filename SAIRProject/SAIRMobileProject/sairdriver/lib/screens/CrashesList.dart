@@ -388,9 +388,11 @@ class _CrasheslistState extends State<Crasheslist>
                   padding: const EdgeInsets.only(top: 5.0),
                   child: ColorFiltered(
                     colorFilter: ColorFilter.mode(
-                      plateN.isEmpty
-                          ? const Color.fromARGB(255, 199, 199, 199)
-                          : Colors.white,
+                      crashes.isEmpty
+                          ? const Color(0xFFB3B3B3) // list is empty
+                          : (selectedPlate == null
+                              ? const Color(0xFFF3F3F3) // no plate selected
+                              : Color(0xFFFF9E00)), //  plate is selected (traffic yellow)
                       BlendMode.srcIn,
                     ),
                     child: Image.asset(
@@ -429,8 +431,12 @@ class _CrasheslistState extends State<Crasheslist>
                     : HugeIcons.strokeRoundedCalendar03,
                 size: 24,
                 color: crashes.isEmpty
-                    ? const Color.fromARGB(255, 199, 199, 199)
-                    : Color(0xFFF3F3F3),
+                    ? const Color(0xFFB3B3B3) // List is empty 
+                    : isDateFiltered
+                        ? const Color(
+                            0xFFFF9E00) // No date selected 
+                        : Color(
+                            0xFFF3F3F3), // Date is selected (traffic yellow)
               ),
             ),
           ],
@@ -648,7 +654,7 @@ class _CrasheslistState extends State<Crasheslist>
 
                               return Center(
                                 child: Text(
-                                  isDateFiltered 
+                                  isDateFiltered
                                       ? "You don't have any crashes\nfor the selected date."
                                       : selectedStatus == "All"
                                           ? "You don't have any crash,\nride safe :)"

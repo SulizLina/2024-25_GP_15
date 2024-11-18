@@ -248,8 +248,10 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                   child: ColorFiltered(
                     colorFilter: ColorFilter.mode(
                       plateN.isEmpty
-                          ? const Color.fromARGB(255, 199, 199, 199)
-                          : Colors.white,
+                          ? const Color.fromARGB(255, 199, 199, 199) //list is empty
+                          : (selectedPlate == null
+                              ? const Color(0xFFF3F3F3) // no plate selected
+                              : Color(0xFFFF9E00)), //  plate is selected (traffic yellow)
                       BlendMode.srcIn,
                     ),
                     child: Image.asset(
@@ -298,8 +300,12 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                     : HugeIcons.strokeRoundedCalendar03,
                 size: 24,
                 color: complaints.isEmpty
-                    ? const Color.fromARGB(255, 199, 199, 199)
-                    : Color(0xFFF3F3F3),
+                    ? const Color.fromARGB(255, 199, 199, 199) // complaint list is empty 
+                    : isDateFiltered
+                        ? const Color(
+                            0xFFFF9E00) // No date selected 
+                        : Color(
+                            0xFFF3F3F3), // Date is selected (traffic yellow)
               ),
             ),
           ],
