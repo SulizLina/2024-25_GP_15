@@ -10,6 +10,7 @@ import 'package:sairdriver/models/motorcycle.dart';
 import 'package:sairdriver/screens/CrashDetail.dart';
 import 'package:sairdriver/services/driver_database.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
+import 'package:sairdriver/messages/success.dart';
 
 class Crasheslist extends StatefulWidget {
   final String driverId;
@@ -680,8 +681,7 @@ class _CrasheslistState extends State<Crasheslist>
                   ),
                   SizedBox(height: 20),
                   CountdownTimer(
-                    endTime: endTime *
-                        1000, // Multiply by 1000 to convert to milliseconds
+                    endTime: endTime * 1000, // convert to milliseconds
                     onEnd: () async {
                       if (Navigator.of(context).canPop()) {
                         Navigator.of(context).pop();
@@ -695,10 +695,9 @@ class _CrasheslistState extends State<Crasheslist>
                           .update({'Status': 'Confirmed'});
 
                       // Message when auto confirmed
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content: Text(
-                                "Crash confirmed automatically due to no action taken within 5 minutes")),
+                      SuccessMessageDialog.show(
+                        context,
+                        'Crash confirmed automatically due to no action taken within 5 minutes',
                       );
                     },
                     widgetBuilder: (_, time) {
@@ -728,9 +727,11 @@ class _CrasheslistState extends State<Crasheslist>
                         Navigator.of(context).pop();
                         _isDialogShown = false;
                         _updateCrashStatus(crashDoc.id, "Rejected");
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Crash rejected.")),
-                        );
+
+                      SuccessMessageDialog.show(
+                        context,
+                        'The crash with ID: ${crash.cid!} has been rejected successfully!',
+                      );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
@@ -745,16 +746,18 @@ class _CrasheslistState extends State<Crasheslist>
                         ),
                       ),
                     ),
-                    SizedBox(width: 10), // Add spacing between the buttons
+                    SizedBox(width: 10),
                     ElevatedButton(
                       onPressed: () async {
                         // Confirm the crash by driver
+                        _updateCrashStatus(crashDoc.id, "Confirmed");
                         Navigator.of(context).pop();
                         _isDialogShown = false;
-                        _updateCrashStatus(crashDoc.id, "Confirmed");
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Crash confirmed.")),
-                        );
+
+                        SuccessMessageDialog.show(
+                        context,
+                        'The crash with ID: ${crash.cid!} has been confirmed successfully!',
+                      );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color.fromARGB(255, 3, 152, 85),
