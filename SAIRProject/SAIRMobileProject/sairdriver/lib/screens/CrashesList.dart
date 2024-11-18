@@ -434,7 +434,7 @@ class _CrasheslistState extends State<Crasheslist>
                     ? const Color(0xFFB3B3B3) // List is empty 
                     : isDateFiltered
                         ? const Color(
-                            0xFFFF9E00) // No date selected 
+                            0xFFFFC800) // No date selected 
                         : Color(
                             0xFFF3F3F3), // Date is selected (traffic yellow)
               ),
@@ -709,7 +709,7 @@ class _CrasheslistState extends State<Crasheslist>
                                             color: crash.status
                                                         ?.toLowerCase() ==
                                                     'pending'
-                                                ? Colors.orange
+                                                ? Color(0xFFFFC800) // traffic yellow
                                                 : (crash.status
                                                             ?.toLowerCase() ==
                                                         'confirmed'

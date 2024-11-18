@@ -554,7 +554,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
 
     switch (status) {
       case 'Pending':
-        circleColor = Colors.orange;
+        circleColor = const Color(0xFFFFC800); //traffic yellow color
         break;
       case 'Accepted':
         circleColor = Colors.green;

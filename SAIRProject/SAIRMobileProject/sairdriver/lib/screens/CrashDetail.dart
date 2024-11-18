@@ -270,7 +270,7 @@ class _CrashdetailState extends State<Crashdetail> {
 
     switch (status) {
       case 'Pending':
-        circleColor = Colors.orange;
+        circleColor = Color(0xFFFFC800);// traffic yellow
         break;
       case 'Confirmed':
         circleColor = Colors.green;

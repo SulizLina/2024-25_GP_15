@@ -251,7 +251,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                           ? const Color.fromARGB(255, 199, 199, 199) //list is empty
                           : (selectedPlate == null
                               ? const Color(0xFFF3F3F3) // no plate selected
-                              : Color(0xFFFF9E00)), //  plate is selected (traffic yellow)
+                              : Color(0xFFFFC800)), //  plate is selected (traffic yellow)
                       BlendMode.srcIn,
                     ),
                     child: Image.asset(
@@ -303,9 +303,9 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                     ? const Color.fromARGB(255, 199, 199, 199) // complaint list is empty 
                     : isDateFiltered
                         ? const Color(
-                            0xFFFF9E00) // No date selected 
+                            0xFFFFC800)  // Date is selected (traffic yellow)
                         : Color(
-                            0xFFF3F3F3), // Date is selected (traffic yellow)
+                            0xFFF3F3F3), // No date selected
               ),
             ),
           ],
@@ -587,7 +587,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
 
                                 Color statusColor;
                                 if (complaint.Status == 'Pending') {
-                                  statusColor = Colors.orange;
+                                  statusColor = const Color(0xFFFFC800); //traffic yellow color
                                 } else if (complaint.Status == 'Accepted') {
                                   statusColor = Colors.green;
                                 } else {
