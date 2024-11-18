@@ -9,7 +9,7 @@ import 'package:sairdriver/models/driver.dart';
 import 'package:sairdriver/models/motorcycle.dart';
 import 'package:sairdriver/screens/CrashDetail.dart';
 import 'package:sairdriver/services/driver_database.dart';
-import 'package:collection/collection.dart';
+import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 
 class Crasheslist extends StatefulWidget {
   final String driverId;
@@ -27,7 +27,6 @@ class _CrasheslistState extends State<Crasheslist>
   List<bool> isHoveredList = [];
   driver? driverNat_Res;
   driver? driverA;
-  bool _pendingPopupShown = false;
   DateTime selectDate = DateTime.now();
   bool isDateFiltered = false;
   bool isPlateFiltered = false;
@@ -37,7 +36,8 @@ class _CrasheslistState extends State<Crasheslist>
   List<DocumentSnapshot> filteredCrashes = [];
   Map<String, String?> licensePlateMap = {};
   Timer? _timer; // Timer for auto-confirmation
-  List<String> _previousPendingCrashIds = [];
+  bool _isDialogShown =
+      false; // To avoid redundant pop-ups caused by the StreamBuilder
 
   @override
   void initState() {
@@ -72,163 +72,6 @@ class _CrasheslistState extends State<Crasheslist>
         _isLoading = false;
       });
     }
-  }
-
-  void checkForPendingCrashes(List<DocumentSnapshot> crashes) {
-    // Only show the popup once if there is a pending crash
-    bool hasPending = crashes.any((doc) {
-      Crash crash = Crash.fromJson(doc);
-      return crash.status == 'Pending';
-    });
-
-    if (hasPending && !_pendingPopupShown) {
-      _pendingPopupShown = true; // Set flag to prevent multiple popups
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        showPendingCrashDialog();
-      });
-    }
-  }
-
-  Future<void> updateCrashStatus(String newStatus) async {
-    print('inside update');
-
-    DriverDatabase db = DriverDatabase();
-    driverA = await db.getDriversnById(widget.driverId);
-
-    List<DocumentSnapshot> pendingCrashes = crashes.where((doc) {
-      Crash crash = Crash.fromJson(doc);
-      return crash.status == 'Pending' && crash.driverId == driverA?.id;
-    }).toList();
-
-    String crashId = pendingCrashes.first.id;
-    print("-------------------");
-    print("crash id:  ${crashId ?? 'hi ror'}");
-
-    if (pendingCrashes.isNotEmpty) {
-      String crashId = pendingCrashes.first.id;
-      print("crash id pending not empty:  $crashId");
-
-      try {
-        DocumentSnapshot crashDoc = await FirebaseFirestore.instance
-            .collection('Crash')
-            .doc(crashId)
-            .get();
-
-        if (crashDoc.exists) {
-          await FirebaseFirestore.instance
-              .collection('Crash')
-              .doc(crashId)
-              .update({'Status': newStatus});
-
-          // Optionally, refetch the crash list to update UI
-          await fetchCrash();
-        } else {
-          print("Document with crashId $crashId not found.");
-        }
-      } catch (e) {
-        print("Error updating crash status: $e");
-      }
-    } else {
-      print("No pending crashes found for driverId: ${driverA?.id}");
-    }
-  }
-
-  void showPendingCrashDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        _timer = Timer(Duration(minutes: 1), () {
-          print("======================================================");
-          print("Timer expired, updating crash status to 'Confirmed'");
-          updateCrashStatus('Confirmed');
-          Navigator.of(context).pop();
-          setState(() {
-            _pendingPopupShown = false;
-          });
-        });
-
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Container(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "You had a crash?",
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(202, 3, 152, 85),
-                  ),
-                ),
-                SizedBox(height: 20),
-                Text(
-                  'Please confirm or reject the crash. You have 10 minutes to respond before it will be automatically confirmed.',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        _timer?.cancel();
-                        updateCrashStatus('Rejected');
-                        Navigator.of(context).pop();
-                        setState(() {
-                          _pendingPopupShown = false;
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: Text(
-                        'reject',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        _timer?.cancel();
-                        updateCrashStatus('Confirmed');
-                        Navigator.of(context).pop();
-                        setState(() {
-                          _pendingPopupShown = false;
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromARGB(255, 3, 152, 85),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: Text(
-                        'confirm',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   Future<void> fetchCrash() async {
@@ -392,7 +235,8 @@ class _CrasheslistState extends State<Crasheslist>
                           ? const Color(0xFFB3B3B3) // list is empty
                           : (selectedPlate == null
                               ? const Color(0xFFF3F3F3) // no plate selected
-                              : Color(0xFFFF9E00)), //  plate is selected (traffic yellow)
+                              : Color(
+                                  0xFFFF9E00)), //  plate is selected (traffic yellow)
                       BlendMode.srcIn,
                     ),
                     child: Image.asset(
@@ -431,10 +275,9 @@ class _CrasheslistState extends State<Crasheslist>
                     : HugeIcons.strokeRoundedCalendar03,
                 size: 24,
                 color: crashes.isEmpty
-                    ? const Color(0xFFB3B3B3) // List is empty 
+                    ? const Color(0xFFB3B3B3) // List is empty
                     : isDateFiltered
-                        ? const Color(
-                            0xFFFFC800) // No date selected 
+                        ? const Color(0xFFFFC800) // No date selected
                         : Color(
                             0xFFF3F3F3), // Date is selected (traffic yellow)
               ),
@@ -572,8 +415,32 @@ class _CrasheslistState extends State<Crasheslist>
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 5),
                         child: StreamBuilder<QuerySnapshot>(
-                          stream: fetchVCrashStream(),
+                          stream: FirebaseFirestore.instance
+                              .collection('Crash')
+                              .where('driverID',
+                                  isEqualTo: driverNat_Res?.driverId)
+                              .snapshots(),
                           builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            }
+
+                            final allCrashes = snapshot.data!.docs;
+
+                            // Filter for only pending crashes
+                            final pendingCrashes = allCrashes.where((doc) {
+                              Crash crash = Crash.fromJson(doc);
+                              return crash.status?.toLowerCase() == 'pending';
+                            }).toList();
+
+                            // Show the popup for pending crashes
+                            if (pendingCrashes.isNotEmpty && !_isDialogShown) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                _showCrashDialog(pendingCrashes.first);
+                              });
+                            }
+
                             if (_isLoading ||
                                 snapshot.connectionState ==
                                     ConnectionState.waiting) {
@@ -615,22 +482,6 @@ class _CrasheslistState extends State<Crasheslist>
                               return statusMatch && dateMatch && plateMatch;
                             }).toList();
 
-                            // Check for pending crashes and call checkForPendingCrashes if new pending crashes found
-                            List<String> currentPendingCrashIds = filteredList
-                                .where((doc) =>
-                                    Crash.fromJson(doc).status == 'Pending')
-                                .map((doc) => doc.id)
-                                .toList();
-
-                            if (currentPendingCrashIds
-                                .toSet()
-                                .difference(_previousPendingCrashIds.toSet())
-                                .isNotEmpty) {
-                              _previousPendingCrashIds = currentPendingCrashIds;
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                checkForPendingCrashes(filteredList);
-                              });
-                            }
                             // Sort filtered list by date (descending)
                             filteredList.sort((a, b) {
                               Crash crashA = Crash.fromJson(a);
@@ -709,7 +560,8 @@ class _CrasheslistState extends State<Crasheslist>
                                             color: crash.status
                                                         ?.toLowerCase() ==
                                                     'pending'
-                                                ? Color(0xFFFFC800) // traffic yellow
+                                                ? Color(
+                                                    0xFFFFC800) // traffic yellow
                                                 : (crash.status
                                                             ?.toLowerCase() ==
                                                         'confirmed'
@@ -767,5 +619,79 @@ class _CrasheslistState extends State<Crasheslist>
         ],
       ),
     );
+  }
+
+void _showCrashDialog(DocumentSnapshot crashDoc) {
+  if (_isDialogShown) return; // Prevent multiple dialogs
+  _isDialogShown = true;
+
+  Crash crash = Crash.fromJson(crashDoc);
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: Text("Crash Alert"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("Crash ID: ${crash.cid}"),
+                Text("This crash will be confirmed automatically."),
+                CountdownTimer(
+                  endTime: DateTime.now()
+                          .millisecondsSinceEpoch +
+                      10000, // 10 seconds timer
+                  onEnd: () async {
+                    // Close the dialog
+                    Navigator.of(context).pop();
+                    _isDialogShown = false;
+
+                    // Update the crash status in Firestore
+                    await FirebaseFirestore.instance
+                        .collection('Crash')
+                        .doc(crashDoc.id)
+                        .update({'Status': 'Confirmed'});
+
+                    // Optional: Show a success message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Crash confirmed automatically.")),
+                    );
+                  },
+                  widgetBuilder: (_, time) {
+                    if (time == null) {
+                      return Text("Confirming...");
+                    }
+                    return Text("Time remaining: ${time.sec}s");
+                  },
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  // If user cancels, close dialog
+                  Navigator.of(context).pop();
+                  _isDialogShown = false;
+                },
+                child: Text("Cancel"),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+  void _updateCrashStatus(String crashId, String status) {
+    FirebaseFirestore.instance
+        .collection('Crash')
+        .doc(crashId)
+        .update({'Status': status}).catchError((error) {
+      print("Failed to update crash status: $error");
+    });
   }
 }
