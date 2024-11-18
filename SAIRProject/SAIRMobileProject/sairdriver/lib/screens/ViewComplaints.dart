@@ -531,13 +531,26 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                                 filteredList.length, (index) => false);
 
                             if (filteredList.isEmpty) {
+
+                              //Check the plate number
+                              if (selectedPlate != null) {
+                                return Center(
+                                  child: Text(
+                                    "You don't have any complaint for the selected plate number.",
+                                    style: GoogleFonts.poppins(
+                                        fontSize: 20, color: Colors.grey),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                );
+                              }
+
                               return Center(
                                 child: Text(
                                   isDateFiltered
                                       ? "You don't have any complaint\nfor the selected date."
                                       : selectedStatus == "All"
                                           ? "You don't have any complaint,\nride safe :)"
-                                          : "You don't have any ${selectedStatus} complaint",
+                                          : "You don't have\n any ${selectedStatus} complaint",
                                   style: GoogleFonts.poppins(
                                       fontSize: 18, color: Colors.grey),
                                   textAlign: TextAlign.center,
@@ -545,6 +558,19 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                               );
                             }
 
+                            // If Complaint list is empty after applying status and plate filters
+                            if (selectedStatus != "All" &&
+                                filteredList.isEmpty &&
+                                selectedPlate != null) {
+                              return Center(
+                                child: Text(
+                                  "You don't have any complaint for the selected plate number.",
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 20, color: Colors.grey),
+                                  textAlign: TextAlign.center,
+                                ),
+                              );
+                            }
                             return ListView.builder(
                               itemCount: filteredList.length,
                               itemBuilder: (BuildContext context, int index) {
