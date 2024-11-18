@@ -267,7 +267,9 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                       'GPS Serial Number',
                       complaint?.gspNumber ?? '',
                       HugeIcons.strokeRoundedShareLocation01),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 15),
+
+                  //View Violation details
                   ElevatedButton(
                     onPressed: complaint != null
                         ? () {
@@ -297,6 +299,8 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                     ),
                   ),
                   const SizedBox(height: 20),
+
+                  //edit button if the Status is Pending
                   ElevatedButton(
                     onPressed: (complaint != null &&
                             complaint!.Status == "Pending")
