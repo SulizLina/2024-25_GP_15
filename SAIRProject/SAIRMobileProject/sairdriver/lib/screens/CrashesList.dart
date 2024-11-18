@@ -11,7 +11,6 @@ import 'package:sairdriver/screens/CrashDetail.dart';
 import 'package:sairdriver/services/driver_database.dart';
 import 'package:collection/collection.dart';
 
-
 class Crasheslist extends StatefulWidget {
   final String driverId;
   const Crasheslist({super.key, required this.driverId});
@@ -38,9 +37,9 @@ class _CrasheslistState extends State<Crasheslist>
   List<DocumentSnapshot> filteredCrashes = [];
   Map<String, String?> licensePlateMap = {};
   Timer? _timer; // Timer for auto-confirmation
-  List<String> _previousPendingCrashIds = []; 
+  List<String> _previousPendingCrashIds = [];
 
-@override
+  @override
   void initState() {
     super.initState();
     fetchDriverData();
@@ -90,49 +89,49 @@ class _CrasheslistState extends State<Crasheslist>
     }
   }
 
-Future<void> updateCrashStatus(String newStatus) async {
-  print('inside update');
+  Future<void> updateCrashStatus(String newStatus) async {
+    print('inside update');
 
-  DriverDatabase db = DriverDatabase();
-  driverA = await db.getDriversnById(widget.driverId);
+    DriverDatabase db = DriverDatabase();
+    driverA = await db.getDriversnById(widget.driverId);
 
-  List<DocumentSnapshot> pendingCrashes = crashes.where((doc) {
-    Crash crash = Crash.fromJson(doc);
-    return crash.status == 'Pending' && crash.driverId == driverA?.id;
-  }).toList();
+    List<DocumentSnapshot> pendingCrashes = crashes.where((doc) {
+      Crash crash = Crash.fromJson(doc);
+      return crash.status == 'Pending' && crash.driverId == driverA?.id;
+    }).toList();
 
     String crashId = pendingCrashes.first.id;
     print("-------------------");
-    print("crash id:  ${crashId??'hi ror'}");
+    print("crash id:  ${crashId ?? 'hi ror'}");
 
-  if (pendingCrashes.isNotEmpty) {
-    String crashId = pendingCrashes.first.id;
-    print("crash id pending not empty:  $crashId");
+    if (pendingCrashes.isNotEmpty) {
+      String crashId = pendingCrashes.first.id;
+      print("crash id pending not empty:  $crashId");
 
-    try {
-      DocumentSnapshot crashDoc = await FirebaseFirestore.instance
-          .collection('Crash')
-          .doc(crashId)
-          .get();
-
-      if (crashDoc.exists) {
-        await FirebaseFirestore.instance
+      try {
+        DocumentSnapshot crashDoc = await FirebaseFirestore.instance
             .collection('Crash')
             .doc(crashId)
-            .update({'Status': newStatus});
+            .get();
 
-        // Optionally, refetch the crash list to update UI
-        await fetchCrash();
-      } else {
-        print("Document with crashId $crashId not found.");
+        if (crashDoc.exists) {
+          await FirebaseFirestore.instance
+              .collection('Crash')
+              .doc(crashId)
+              .update({'Status': newStatus});
+
+          // Optionally, refetch the crash list to update UI
+          await fetchCrash();
+        } else {
+          print("Document with crashId $crashId not found.");
+        }
+      } catch (e) {
+        print("Error updating crash status: $e");
       }
-    } catch (e) {
-      print("Error updating crash status: $e");
+    } else {
+      print("No pending crashes found for driverId: ${driverA?.id}");
     }
-  } else {
-    print("No pending crashes found for driverId: ${driverA?.id}");
   }
-}
 
   void showPendingCrashDialog() {
     showDialog(
@@ -610,22 +609,22 @@ Future<void> updateCrashStatus(String newStatus) async {
                               return statusMatch && dateMatch && plateMatch;
                             }).toList();
 
-                          // Check for pending crashes and call checkForPendingCrashes if new pending crashes found
-                          List<String> currentPendingCrashIds = filteredList
-                              .where((doc) => 
-                                  Crash.fromJson(doc).status == 'Pending')
-                              .map((doc) => doc.id)
-                              .toList();
+                            // Check for pending crashes and call checkForPendingCrashes if new pending crashes found
+                            List<String> currentPendingCrashIds = filteredList
+                                .where((doc) =>
+                                    Crash.fromJson(doc).status == 'Pending')
+                                .map((doc) => doc.id)
+                                .toList();
 
-                          if (currentPendingCrashIds
-                                  .toSet()
-                                  .difference(_previousPendingCrashIds.toSet())
-                                  .isNotEmpty) {
-                            _previousPendingCrashIds = currentPendingCrashIds;
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              checkForPendingCrashes(filteredList);
-                            });
-                          }
+                            if (currentPendingCrashIds
+                                .toSet()
+                                .difference(_previousPendingCrashIds.toSet())
+                                .isNotEmpty) {
+                              _previousPendingCrashIds = currentPendingCrashIds;
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                checkForPendingCrashes(filteredList);
+                              });
+                            }
                             // Sort filtered list by date (descending)
                             filteredList.sort((a, b) {
                               Crash crashA = Crash.fromJson(a);
@@ -634,30 +633,32 @@ Future<void> updateCrashStatus(String newStatus) async {
                                   crashA.time!); // Sort by time, descending
                             });
 
-    // If the filtered list is empty, show appropriate message
-    if (filteredList.isEmpty) {
-      if (selectedPlate != null) {
-        return Center(
-          child: Text(
-            "You don't have any crash for the selected plate number.",
-            style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
-            textAlign: TextAlign.center,
-          ),
-        );
-      }
+                            // If the crashes list is empty, and no plate number for this crash
+                            if (filteredList.isEmpty) {
+                              if (selectedPlate != null) {
+                                return Center(
+                                  child: Text(
+                                    "You don't have any crash for the selected plate number.",
+                                    style: GoogleFonts.poppins(
+                                        fontSize: 20, color: Colors.grey),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                );
+                              }
 
-      return Center(
-        child: Text(
-          isDateFiltered
-              ? "You don't have any crashes\nfor the selected date."
-              : selectedStatus == "All"
-                  ? "You don't have any crash,\nride safe :)"
-                  : "You don't have any\n${selectedStatus.toLowerCase()} crash",
-          style: GoogleFonts.poppins(fontSize: 20, color: Colors.grey),
-          textAlign: TextAlign.center,
-        ),
-      );
-    }
+                              return Center(
+                                child: Text(
+                                  isDateFiltered 
+                                      ? "You don't have any crashes\nfor the selected date."
+                                      : selectedStatus == "All"
+                                          ? "You don't have any crash,\nride safe :)"
+                                          : "You don't have any\n${selectedStatus.toLowerCase()} crash",
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 20, color: Colors.grey),
+                                  textAlign: TextAlign.center,
+                                ),
+                              );
+                            }
 
                             return ListView.builder(
                               itemCount: filteredList.length + 1,
