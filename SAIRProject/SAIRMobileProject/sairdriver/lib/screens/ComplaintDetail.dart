@@ -82,13 +82,6 @@ class _ComplaintdetailState extends State<Complaintdetail> {
         setState(() {
           vioDocid = doc.id;
         });
-
-        print('==============Hello=================');
-        print("Violation Document ID: $vioDocid");
-        print('===============================');
-      } else {
-        print('==============Sorry=================');
-        print("No matching violation found.");
       }
     } catch (e) {
       print("Error fetching violation: $e");
@@ -240,86 +233,11 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                     complaint?.Status,
                   ),
                   const SizedBox(height: 15),
-                  buildDetailSectionNoContent(
+                  buildDetailSection(
                     'Complaint',
+                    complaint?.Description!,
                     HugeIcons.strokeRoundedFileEdit,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 32),
-                    child: Stack(
-                      children: [
-                        TextFormField(
-                          controller: complainttext,
-                          decoration: InputDecoration(
-                            labelStyle: GoogleFonts.poppins(
-                                color: const Color(0xFF211D1D)),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: Color.fromARGB(202, 3, 152, 85),
-                                width: 1.5,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: Color.fromARGB(202, 3, 152, 85),
-                                width: 2.0,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            contentPadding: const EdgeInsets.only(
-                                left: 15, right: 40, top: 10),
-                          ),
-                          style: GoogleFonts.poppins(
-                              color: const Color(0xFF211D1D)),
-                          readOnly: true,
-                          maxLines: null,
-                          minLines: 1,
-                        ),
-                        Positioned(
-                          top: 0,
-                          right: 0,
-                          child: IconButton(
-                            icon: Icon(Icons.edit,
-                                color: (complaint != null &&
-                                        complaint!.Status == "Pending")
-                                    ? Color.fromARGB(202, 3, 152, 85)
-                                    : Colors.grey),
-                            onPressed: complaint != null &&
-                                    complaint!.Status == "Pending"
-                                ? () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => editcomplaint(
-                                          complaint: complaint!,
-                                          driverid: widget.driverid,
-                                          onComplaintUpdated: (newDesc) {
-                                            setState(() {
-                                              complainttext.text = newDesc;
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                : () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return const WarningDialog(
-                                          message:
-                                              "You can't edit the complaint unless the complaint status is pending",
-                                        );
-                                      },
-                                    );
-                                  },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 15),
                   Divider(color: Colors.grey[350]),
                   const SizedBox(height: 15),
                   buildDetailSection('Violation ID', complaint?.Vid ?? '',
