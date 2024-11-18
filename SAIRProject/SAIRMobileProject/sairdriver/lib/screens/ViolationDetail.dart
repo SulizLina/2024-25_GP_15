@@ -186,11 +186,18 @@ class _ViolationdetailState extends State<Violationdetail> {
                     violation != null
                         ? ((violation?.count30 ?? 0) > 0 ||
                                 (violation?.count50 ?? 0) > 0
-                            ? '${violation?.price ?? ''} SAR\nThis is a rickless violation, and it is your ${getOrdinal(sum!)} time committing this offense. As a result, the violation amount has been increased.'
+                            ? '${violation?.price ?? ''} SAR'
                             : '${violation?.price ?? ''} SAR')
                         : 'Amount unavailable',
-                    HugeIcons.strokeRoundedInvoice,
-                  ),
+                    HugeIcons.strokeRoundedInvoice),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 32,bottom: 20),
+                    child: Text(
+                      'According to General Department of Traffic regulations, this speed violation is considered reckless and marks your ${getOrdinal(sum!)} offense. As a result, the penalty amount has been increased.',
+                      style: GoogleFonts.poppins(
+                          fontSize: 14, color: const ui.Color.fromARGB(255, 216, 6, 6)),
+                    ),
+                  ),         
                   buildDetailSection(
                       'Time',
                       violation?.getFormattedTimeOnly() ?? '',
@@ -442,14 +449,11 @@ class _ViolationdetailState extends State<Violationdetail> {
             content ?? '',
             style: GoogleFonts.poppins(
               fontSize: 14,
-              color: ((violation?.count30 ?? 0) > 0 ||
-                      (violation?.count50 ?? 0) > 0)
-                  ? const ui.Color.fromARGB(255, 216, 6, 6)
-                  : Color(0xFF211D1D),
+              color: Color(0xFF211D1D),
             ),
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 2),
       ],
     );
   }
