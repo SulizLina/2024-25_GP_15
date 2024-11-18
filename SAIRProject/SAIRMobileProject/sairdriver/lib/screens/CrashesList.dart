@@ -620,106 +620,171 @@ class _CrasheslistState extends State<Crasheslist>
       ),
     );
   }
-void _showCrashDialog(DocumentSnapshot crashDoc) {
-  if (_isDialogShown) return; // Prevent multiple dialogs
-  _isDialogShown = true;
 
-  Crash crash = Crash.fromJson(crashDoc);
-  int endTime = DateTime.now().millisecondsSinceEpoch + 10000; // 10 seconds timer
+  void _showCrashDialog(DocumentSnapshot crashDoc) {
+    if (_isDialogShown) return; // Prevent multiple dialogs
+    _isDialogShown = true;
 
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            title: Text(
-              "Crash Alert",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text("Crash ID: ${crash.cid}"),
-                Text("Please confirm or reject this crash."),
-                SizedBox(height: 20),
-                CountdownTimer(
-                  endTime: endTime,
-                  onEnd: () async {
-                    if (Navigator.of(context).canPop()) {
-                      Navigator.of(context).pop(); // Close the dialog
-                    }
-                    _isDialogShown = false;
+    Crash crash = Crash.fromJson(crashDoc);
 
-                    // Automatically confirm the crash
-                    await FirebaseFirestore.instance
-                        .collection('Crash')
-                        .doc(crashDoc.id)
-                        .update({'Status': 'Confirmed'});
+    // Parse the time string (crash.getFormattedTimeOnly() is in "HH:MM:SS" format)
+    List<String> timeParts = crash.getFormattedTimeOnly().split(':');
+    int hours = int.parse(timeParts[0]);
+    int minutes = int.parse(timeParts[1]);
+    int seconds = int.parse(timeParts[2]);
 
-                    // Optional: Show a success message
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Crash confirmed automatically.")),
-                    );
-                  },
-                  widgetBuilder: (_, time) {
-                    if (time == null) {
-                      return Text(
-                        "Time's up! Automatically confirming...",
-                        style: TextStyle(color: Colors.red),
+    // Convert to seconds from the crash time
+    int crashTimeInSeconds = (hours * 3600) + (minutes * 60) + seconds;
+
+    // Get current time in seconds
+    int currentTimeInSeconds = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+    // Calculate the difference (time remaining for the timer to start)
+    int timeDifference = crashTimeInSeconds - currentTimeInSeconds;
+
+    // If the calculated time difference is negative (i.e., crash time is in the past), set it to 0
+    timeDifference = timeDifference < 0 ? 0 : timeDifference;
+
+    // Add 5 minutes (300 seconds) to the crash time to calculate the end time
+    int endTimeInSeconds = crashTimeInSeconds + 300; // 5 minutes added
+
+    // End time is the current time + time remaining + 5 minutes (to simulate the countdown duration)
+    int endTime =
+        (DateTime.now().millisecondsSinceEpoch ~/ 1000) + timeDifference + 300;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Center(
+                child: Text(
+                  "You had a crash?",
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(202, 3, 152, 85),
+                  ),
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Please confirm or reject the crash. You have 5 minutes to respond before it will be automatically confirmed.',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  CountdownTimer(
+                    endTime: endTime *
+                        1000, // Multiply by 1000 to convert to milliseconds
+                    onEnd: () async {
+                      if (Navigator.of(context).canPop()) {
+                        Navigator.of(context).pop();
+                      }
+                      _isDialogShown = false;
+
+                      // Auto confirm crash status
+                      await FirebaseFirestore.instance
+                          .collection('Crash')
+                          .doc(crashDoc.id)
+                          .update({'Status': 'Confirmed'});
+
+                      // Message when auto confirmed
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text(
+                                "Crash confirmed automatically due to no action taken within 5 minutes")),
                       );
-                    }
-                    return Text(
-                      "Time remaining: ${time.sec}s",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    );
-                  },
+                    },
+                    widgetBuilder: (_, time) {
+                      if (time == null) {
+                        return Center(
+                          child: Text(
+                            "Time's up! Crash status is automatically confirming...",
+                            style: GoogleFonts.poppins(color: Colors.red),
+                          ),
+                        );
+                      }
+                      return Text(
+                        "Time remaining: ${time.min ?? '0'}m:${time.sec}s",
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () async {
+                        // Reject the crash by driver
+                        Navigator.of(context).pop();
+                        _isDialogShown = false;
+                        _updateCrashStatus(crashDoc.id, "Rejected");
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Crash rejected.")),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        '  Reject  ',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 10), // Add spacing between the buttons
+                    ElevatedButton(
+                      onPressed: () async {
+                        // Confirm the crash by driver
+                        Navigator.of(context).pop();
+                        _isDialogShown = false;
+                        _updateCrashStatus(crashDoc.id, "Confirmed");
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Crash confirmed.")),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color.fromARGB(255, 3, 152, 85),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        'Confirm',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () async {
-                  // Reject the crash
-                  Navigator.of(context).pop(); // Close the dialog
-                  _isDialogShown = false;
-                  _updateCrashStatus(crashDoc.id, "Rejected");
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Crash rejected.")),
-                  );
-                },
-                child: Text(
-                  "Reject",
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  // Confirm the crash
-                  Navigator.of(context).pop(); // Close the dialog
-                  _isDialogShown = false;
-                  _updateCrashStatus(crashDoc.id, "Confirmed");
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Crash confirmed.")),
-                  );
-                },
-                child: Text("Confirm"),
-              ),
-            ],
-          );
-        },
-      );
-    },
-  );
-}
+            );
+          },
+        );
+      },
+    );
+  }
 
-void _updateCrashStatus(String crashId, String status) {
-  FirebaseFirestore.instance
-      .collection('Crash')
-      .doc(crashId)
-      .update({'Status': status}).catchError((error) {
-    print("Failed to update crash status: $error");
-  });
+  void _updateCrashStatus(String crashId, String status) {
+    FirebaseFirestore.instance
+        .collection('Crash')
+        .doc(crashId)
+        .update({'Status': status}).catchError((error) {
+      print("Failed to update crash status: $error");
+    });
+  }
 }
-    }
