@@ -189,15 +189,24 @@ class _ViolationdetailState extends State<Violationdetail> {
                             ? '${violation?.price ?? ''} SAR'
                             : '${violation?.price ?? ''} SAR')
                         : 'Amount unavailable',
-                    HugeIcons.strokeRoundedInvoice),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 32,bottom: 20),
-                    child: Text(
-                      'According to General Department of Traffic regulations, this speed violation is considered reckless and marks your ${getOrdinal(sum!)} offense. As a result, the penalty amount has been increased.',
-                      style: GoogleFonts.poppins(
-                          fontSize: 14, color: const ui.Color.fromARGB(255, 216, 6, 6)),
-                    ),
-                  ),         
+                    HugeIcons.strokeRoundedInvoice,
+                  ),
+              //Reckless violation mgs for the amount 
+              if ((violation?.count30 ?? 0) > 0 ||
+                (violation?.count50 ?? 0) > 0)
+              Padding(
+                padding: const EdgeInsets.only(left: 32, bottom: 20),
+                child: Text(
+                  'According to General Department of Traffic regulations, this speed violation is considered reckless and marks your ${getOrdinal(sum!)} offense. As a result, the penalty amount has been increased.',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: const ui.Color.fromARGB(255, 216, 6, 6),
+                  ),
+                ),
+              )
+            else
+              const SizedBox(height: 20),
+
                   buildDetailSection(
                       'Time',
                       violation?.getFormattedTimeOnly() ?? '',
@@ -419,7 +428,7 @@ class _ViolationdetailState extends State<Violationdetail> {
     );
   }
 
-  Widget buildDetailPriceSection(
+    Widget buildDetailPriceSection(
       String title, String? content, IconData? icon) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
