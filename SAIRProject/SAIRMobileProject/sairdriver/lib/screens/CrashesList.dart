@@ -620,12 +620,12 @@ class _CrasheslistState extends State<Crasheslist>
       ),
     );
   }
-
 void _showCrashDialog(DocumentSnapshot crashDoc) {
   if (_isDialogShown) return; // Prevent multiple dialogs
   _isDialogShown = true;
 
   Crash crash = Crash.fromJson(crashDoc);
+  int endTime = DateTime.now().millisecondsSinceEpoch + 10000; // 10 seconds timer
 
   showDialog(
     context: context,
@@ -634,22 +634,25 @@ void _showCrashDialog(DocumentSnapshot crashDoc) {
       return StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
-            title: Text("Crash Alert"),
+            title: Text(
+              "Crash Alert",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text("Crash ID: ${crash.cid}"),
-                Text("This crash will be confirmed automatically."),
+                Text("Please confirm or reject this crash."),
+                SizedBox(height: 20),
                 CountdownTimer(
-                  endTime: DateTime.now()
-                          .millisecondsSinceEpoch +
-                      10000, // 10 seconds timer
+                  endTime: endTime,
                   onEnd: () async {
-                    // Close the dialog
-                    Navigator.of(context).pop();
+                    if (Navigator.of(context).canPop()) {
+                      Navigator.of(context).pop(); // Close the dialog
+                    }
                     _isDialogShown = false;
 
-                    // Update the crash status in Firestore
+                    // Automatically confirm the crash
                     await FirebaseFirestore.instance
                         .collection('Crash')
                         .doc(crashDoc.id)
@@ -662,21 +665,46 @@ void _showCrashDialog(DocumentSnapshot crashDoc) {
                   },
                   widgetBuilder: (_, time) {
                     if (time == null) {
-                      return Text("Confirming...");
+                      return Text(
+                        "Time's up! Automatically confirming...",
+                        style: TextStyle(color: Colors.red),
+                      );
                     }
-                    return Text("Time remaining: ${time.sec}s");
+                    return Text(
+                      "Time remaining: ${time.sec}s",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    );
                   },
                 ),
               ],
             ),
             actions: [
               TextButton(
-                onPressed: () {
-                  // If user cancels, close dialog
-                  Navigator.of(context).pop();
+                onPressed: () async {
+                  // Reject the crash
+                  Navigator.of(context).pop(); // Close the dialog
                   _isDialogShown = false;
+                  _updateCrashStatus(crashDoc.id, "Rejected");
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Crash rejected.")),
+                  );
                 },
-                child: Text("Cancel"),
+                child: Text(
+                  "Reject",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  // Confirm the crash
+                  Navigator.of(context).pop(); // Close the dialog
+                  _isDialogShown = false;
+                  _updateCrashStatus(crashDoc.id, "Confirmed");
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Crash confirmed.")),
+                  );
+                },
+                child: Text("Confirm"),
               ),
             ],
           );
@@ -686,12 +714,12 @@ void _showCrashDialog(DocumentSnapshot crashDoc) {
   );
 }
 
-  void _updateCrashStatus(String crashId, String status) {
-    FirebaseFirestore.instance
-        .collection('Crash')
-        .doc(crashId)
-        .update({'Status': status}).catchError((error) {
-      print("Failed to update crash status: $error");
-    });
-  }
+void _updateCrashStatus(String crashId, String status) {
+  FirebaseFirestore.instance
+      .collection('Crash')
+      .doc(crashId)
+      .update({'Status': status}).catchError((error) {
+    print("Failed to update crash status: $error");
+  });
 }
+    }
