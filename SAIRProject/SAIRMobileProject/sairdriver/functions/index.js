@@ -31,6 +31,7 @@ exports.sendnotificationViolation= functions.firestore
 
             const driverDoc = driverQuerySnapshot.docs[0];
             const driverData = driverDoc.data();
+            const documentId = driverDoc.id; // Driver document ID
             const userToken = driverData.token; // Fetch the token directly from the Driver document
 
             if (!userToken) {
@@ -39,25 +40,27 @@ exports.sendnotificationViolation= functions.firestore
             }
 
             // Prepare notification payload
-            const payload = {
-                notification: {
-                    title: 'New Violation detected!',
-                    body: 'You have a new violation. Please check the details.',
-                },
-                data: {
-                    sound: 'beep', // Custom data
-                },
-                android: {
-                    priority: 'high', // Set priority for Android
-                },
-                apns: {
-                    payload: {
-                        aps: {
-                            sound: 'beep', // Custom sound for iOS
+                     const payload = {
+                        notification: {
+                            title: 'New Violation detected!',
+                            body: 'You have a new violation. Please check the details.',
                         },
-                    },
-                },
-            };
+                        data: {
+                            sound: 'beep',
+                            screen: 'ViolationsList',  // Screen key for navigation
+                            driverData: JSON.stringify(documentId),  // Driver data as JSON string
+                        },
+                        android: {
+                            priority: 'high',
+                        },
+                        apns: {
+                            payload: {
+                                aps: {
+                                    sound: 'beep',
+                                },
+                            },
+                        },
+                    };
 
             // Send the notification to the user token
             const response = await admin.messaging().send({
