@@ -627,6 +627,7 @@ class _CrasheslistState extends State<Crasheslist>
     _isDialogShown = true;
 
     Crash crash = Crash.fromJson(crashDoc);
+    int endTime2 = DateTime.now().millisecondsSinceEpoch + 10000; 
 
     // Parse the time string (crash.getFormattedTimeOnly() is in "HH:MM:SS" format)
     List<String> timeParts = crash.getFormattedTimeOnly().split(':');
@@ -650,8 +651,7 @@ class _CrasheslistState extends State<Crasheslist>
     int endTimeInSeconds = crashTimeInSeconds + 300; // 5 minutes added
 
     // End time is the current time + time remaining + 5 minutes (to simulate the countdown duration)
-    int endTime =
-        (DateTime.now().millisecondsSinceEpoch ~/ 1000) + timeDifference + 300;
+    int endTime = (DateTime.now().millisecondsSinceEpoch ~/ 1000) + timeDifference + 300;
 
     showDialog(
       context: context,
@@ -681,13 +681,13 @@ class _CrasheslistState extends State<Crasheslist>
                   ),
                   SizedBox(height: 20),
                   CountdownTimer(
-                    endTime: endTime * 1000, // convert to milliseconds
+                    endTime: endTime2, //endTime * 1000, // convert to milliseconds
                     onEnd: () async {
                       if (Navigator.of(context).canPop()) {
                         Navigator.of(context).pop();
                       }
+                      
                       _isDialogShown = false;
-
                       // Auto confirm crash status
                       await FirebaseFirestore.instance
                           .collection('Crash')
@@ -695,10 +695,12 @@ class _CrasheslistState extends State<Crasheslist>
                           .update({'Status': 'Confirmed'});
 
                       // Message when auto confirmed
-                      SuccessMessageDialog.show(
-                        context,
-                        'Crash confirmed automatically due to no action taken within 5 minutes',
-                      );
+                      if (context.mounted) {
+                        SuccessMessageDialog.show(
+                          context,
+                          'The crash with ID:${crash.cid} has been automatically confirmed due to no action being taken within the allotted 5-minute timeframe',
+                        );
+                      }
                     },
                     widgetBuilder: (_, time) {
                       if (time == null) {
@@ -728,10 +730,10 @@ class _CrasheslistState extends State<Crasheslist>
                         _isDialogShown = false;
                         _updateCrashStatus(crashDoc.id, "Rejected");
 
-                      SuccessMessageDialog.show(
-                        context,
-                        'The crash with ID: ${crash.cid!} has been rejected successfully!',
-                      );
+                        SuccessMessageDialog.show(
+                          context,
+                          'The crash with ID:${crash.cid!} has been rejected successfully!',
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
@@ -755,9 +757,9 @@ class _CrasheslistState extends State<Crasheslist>
                         _isDialogShown = false;
 
                         SuccessMessageDialog.show(
-                        context,
-                        'The crash with ID: ${crash.cid!} has been confirmed successfully!',
-                      );
+                          context,
+                          'The crash with ID:${crash.cid!} has been confirmed successfully!',
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color.fromARGB(255, 3, 152, 85),
