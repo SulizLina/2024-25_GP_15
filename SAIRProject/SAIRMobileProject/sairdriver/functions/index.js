@@ -41,7 +41,7 @@ exports.sendnotificationViolation= functions.firestore
             // Prepare notification payload
             const payload = {
                 notification: {
-                    title: 'New Violation deteted!',
+                    title: 'New Violation detected!',
                     body: 'You have a new violation. Please check the details.',
                 },
                 data: {
@@ -115,7 +115,7 @@ exports.sendnotificationViolation= functions.firestore
                 // Prepare notification payload
                 const payload = {
                     notification: {
-                        title: 'New Crash deteted!',
+                        title: 'New Crash detected!',
                         body: 'Please open the app and verify it.',
                     },
                     data: {
