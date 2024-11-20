@@ -31,28 +31,22 @@ void _setupFirebaseMessaging() {
     print('+++++++++++ Notification clicked! ++++++');
     print('Message data: ${message.data}');
 
-    if (message.data['screen'] == 'ViolationsList') {
-      final driverData = message.data['documentId'];
-      print('Driver Data: $driverData');
+    // Access driverData
+    final driverData = message.data['driverData'] ?? '';
+    print('Driver Data: $driverData');
 
-      try {
-        // Decode the driver data into a Map
-        final driverMap = jsonDecode(driverData);
-        print('Navigating to ViolationsList with driver data: $driverMap');
-        // Pass the full driverMap to the Violationslist screen
-        navigatorKey.currentState?.push(
-          MaterialPageRoute(
-            builder: (context) => Violationslist(driverId: driverMap),
-          ),
-        );
-      } catch (e) {
-        print('Error decoding driver data: $e');
-      }
+    if (driverData.isNotEmpty) {
+      // Navigate to the Violationslist screen
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (context) => Violationslist(driverId: driverData),
+        ),
+      );
+    } else {
+      print('Error: driverData is null or empty.');
     }
   });
 }
-
-
 class InitialApp extends StatelessWidget {
   const InitialApp({super.key});
 
