@@ -2,13 +2,18 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:sairdriver/models/driver.dart';
 import 'package:sairdriver/screens/home.dart';
 import 'package:sairdriver/screens/welcomepage.dart';
 import 'package:sairdriver/screens/login_email.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:sairdriver/services/NotificationService.dart';
+import 'dart:convert';
+import 'package:sairdriver/screens/ViolationsList.dart';
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Handling a background message ${message.messageId}');
@@ -18,8 +23,35 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  _setupFirebaseMessaging();
   runApp(const InitialApp());
 }
+void _setupFirebaseMessaging() {
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    print('+++++++++++ Notification clicked! ++++++');
+    print('Message data: ${message.data}');
+
+    if (message.data['screen'] == 'ViolationsList') {
+      final driverData = message.data['documentId'];
+      print('Driver Data: $driverData');
+
+      try {
+        // Decode the driver data into a Map
+        final driverMap = jsonDecode(driverData);
+        print('Navigating to ViolationsList with driver data: $driverMap');
+        // Pass the full driverMap to the Violationslist screen
+        navigatorKey.currentState?.push(
+          MaterialPageRoute(
+            builder: (context) => Violationslist(driverId: driverMap),
+          ),
+        );
+      } catch (e) {
+        print('Error decoding driver data: $e');
+      }
+    }
+  });
+}
+
 
 class InitialApp extends StatelessWidget {
   const InitialApp({super.key});
@@ -28,6 +60,7 @@ class InitialApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey,
       home: SplashPage(),
     );
   }
@@ -48,6 +81,7 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     super.initState();
     _initializeNotificationService();
+    _setupFirebaseMessaging();
   }
 
   Future<void> _initializeNotificationService() async {
@@ -58,6 +92,7 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey,
       home: SplashPage(),
     );
   }
