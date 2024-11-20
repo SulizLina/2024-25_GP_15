@@ -630,38 +630,38 @@ class _CrasheslistState extends State<Crasheslist>
 
     Crash crash = Crash.fromJson(crashDoc);
 
-  // Parse the time string (crash.getFormattedTimeOnly() is in "HH:MM:SS" format)
-  List<String> timeParts = crash.getFormattedTimeOnly().split(':');
-  int hours = int.parse(timeParts[0]);
-  int minutes = int.parse(timeParts[1]);
-  int seconds = int.parse(timeParts[2]);
+    // Parse the time string (crash.getFormattedTimeOnly() is in "HH:MM:SS" format)
+    List<String> timeParts = crash.getFormattedTimeOnly().split(':');
+    int hours = int.parse(timeParts[0]);
+    int minutes = int.parse(timeParts[1]);
+    int seconds = int.parse(timeParts[2]);
 
-  // Get the crash date (formatted as yyyy-MM-dd) from the method
-  DateTime crashDate = DateTime.parse(crash.getFormattedDate());
+    // Get the crash date (formatted as yyyy-MM-dd) from the method
+    DateTime crashDate = DateTime.parse(crash.getFormattedDate());
 
-  // Create a DateTime object for the crash time on the same day
-  DateTime crashDateTime = DateTime(
-    crashDate.year,
-    crashDate.month,
-    crashDate.day,
-    hours,
-    minutes,
-    seconds,
-  );
+    // Create a DateTime object for the crash time on the same day
+    DateTime crashDateTime = DateTime(
+      crashDate.year,
+      crashDate.month,
+      crashDate.day,
+      hours,
+      minutes,
+      seconds,
+    );
 
-  // Calculate the end time (5 minutes after the crash time)
-  DateTime endDateTime = crashDateTime.add(Duration(minutes: 5));
+    // Calculate the end time (5 minutes after the crash time)
+    DateTime endDateTime = crashDateTime.add(Duration(minutes: 5));
 
-  // Calculate remaining time in seconds
-  int remainingTime = endDateTime.difference(DateTime.now()).inSeconds;
+    // Calculate remaining time in seconds
+    int remainingTime = endDateTime.difference(DateTime.now()).inSeconds;
 
-  // Debug print remaining time
-  if (remainingTime <= 0) {
-    print("Remaining time is zero or negative. Auto-confirming.");
-    remainingTime = 0; // Prevent negative values
-  } else {
-    print("Remaining time: $remainingTime seconds");
-  }
+    // Debug print remaining time
+    if (remainingTime <= 0) {
+      print("Remaining time is zero or negative. Auto-confirming.");
+      remainingTime = 0; // Prevent negative values
+    } else {
+      print("Remaining time: $remainingTime seconds");
+    }
 
     int endTest = (DateTime.now().millisecondsSinceEpoch ~/ 1000) + 20;
 
@@ -694,7 +694,8 @@ class _CrasheslistState extends State<Crasheslist>
                   SizedBox(height: 20),
                   CountdownTimer(
                     endTime: DateTime.now().millisecondsSinceEpoch +
-                      remainingTime * 1000, //endTest * 1000, // convert to milliseconds
+                        remainingTime *
+                            1000, //endTest * 1000, // convert to milliseconds
                     onEnd: () async {
                       if (Navigator.of(context).canPop()) {
                         Navigator.of(context).pop();
@@ -712,9 +713,12 @@ class _CrasheslistState extends State<Crasheslist>
 
                       // Message when auto confirmed
                       if (context.mounted) {
-                        SuccessMessageDialog.show(
+                        await SuccessMessageDialog.show(
                           context,
-                          'The crash with ID:${crash.cid} has been automatically confirmed due to no action being taken within the allotted 5-minute timeframe',
+                          "The crash with ID:${crash.cid} has been automatically confirmed due to no action being taken within the allotted 5-minute timeframe.\n\nPlease wait, you will receive a call from your delivery company or the competent authorities.",
+                          () {
+                            _isDialogShown = false;
+                          },
                         );
                       }
                     },
@@ -746,7 +750,7 @@ class _CrasheslistState extends State<Crasheslist>
                         _isDialogShown = false;
                         _updateCrashStatus(crashDoc.id, "Rejected");
 
-                        SuccessMessageDialog.show(
+                        await SuccessMessageDialog.show(
                           context,
                           'The crash with ID:${crash.cid!} has been rejected successfully!',
                         );
@@ -772,9 +776,9 @@ class _CrasheslistState extends State<Crasheslist>
                         Navigator.of(context).pop();
                         _isDialogShown = false;
 
-                        SuccessMessageDialog.show(
+                        await SuccessMessageDialog.show(
                           context,
-                          'The crash with ID:${crash.cid!} has been confirmed successfully!',
+                          "The crash with ID:${crash.cid} has been confirmed.",
                         );
                       },
                       style: ElevatedButton.styleFrom(

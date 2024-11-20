@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SuccessMessageDialog {
-  static void show(BuildContext context, String successMessage) {
-    showDialog(
+  static Future<void> show(BuildContext context, String successMessage,
+      [VoidCallback? onClose]) async {
+    await showDialog(
       context: context,
       builder: (context) {
         return Dialog(
@@ -38,6 +39,7 @@ class SuccessMessageDialog {
                         icon: const Icon(Icons.close, color: Color(0xFF211D1D)),
                         onPressed: () {
                           Navigator.of(context).pop();
+                          onClose?.call();
                         },
                       ),
                     ),

@@ -41,20 +41,7 @@ class _CrashdetailState extends State<Crashdetail> {
 
       // Show warning dialog if the crash was auto-confirmed
       if (_isAutoconf == true) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return const WarningDialog(
-                message:
-                    "This crash has been automatically confirmed due to no action being taken within the allotted 5-minute timeframe.\n\nPlease wait, you will receive a call from your delivery company or the competent authorities.",
-              );
-            },
-          ).then((_) {
-            // Delete the 'isAuto' field after the dialog is dismissed
-            deleteIsAutoField();
-          });
-        });
+        deleteIsAutoField();
       }
     });
     fetchCrash();
