@@ -551,7 +551,7 @@ class _CrasheslistState extends State<Crasheslist>
                                     ),
                                     margin: const EdgeInsets.symmetric(
                                         horizontal: 10, vertical: 5),
-                                    color: Colors.white,
+                                    color: crash.isAuto == true ? Colors.lightGreen[100] : Colors.white,
                                     elevation: 2,
                                     child: ListTile(
                                       leading: SizedBox(
@@ -698,7 +698,7 @@ class _CrasheslistState extends State<Crasheslist>
                           .doc(crashDoc.id)
                           .update({
                         'Status': 'Confirmed',
-                        'isAuto': true, // Add the new field
+                        'isAuto': true, 
                       });
 
                       // Message when auto confirmed
