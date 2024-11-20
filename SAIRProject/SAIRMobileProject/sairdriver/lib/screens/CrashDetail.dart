@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:sairdriver/messages/Warning.dart';
 import 'package:sairdriver/models/crash.dart';
 import 'package:sairdriver/models/motorcycle.dart';
 import 'package:sairdriver/services/crash_database.dart';
@@ -18,14 +20,43 @@ class Crashdetail extends StatefulWidget {
   State<Crashdetail> createState() => _CrashdetailState();
 }
 
+//    print('-----------------------${widget.isAutoconf?? '++++++++++HIII++++++++++'}');
+//  message: "This crash has been automatically confirmed due to no action being taken within the allotted 5-minute timeframe \n\n Please wait you will recive a call from your delivery company or the competent Authorities",
+           
 class _CrashdetailState extends State<Crashdetail> {
   BitmapDescriptor? customMapIcon;
   Crash? crash;
   Motorcycle? motorcycle;
+  late bool _isAutoconf;
 
   @override
   void initState() {
     super.initState();
+    // Show warning dialog if the crash was auto confirmed
+    // Check if the crash has the 'isAuto' field and set _isAutoconf
+    checkIfAutoConfirmed().then((isAuto) {
+      setState(() {
+        _isAutoconf = isAuto!;
+      });
+
+      // Show warning dialog if the crash was auto-confirmed
+      if (_isAutoconf == true) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return const WarningDialog(
+                message:
+                    "This crash has been automatically confirmed due to no action being taken within the allotted 5-minute timeframe.\n\nPlease wait, you will receive a call from your delivery company or the competent authorities.",
+              );
+            },
+          ).then((_) {
+            // Delete the 'isAuto' field after the dialog is dismissed
+            deleteIsAutoField();
+          });
+        });
+      }
+    });
     fetchCrash();
     loadCustomMapIcon();
   }
@@ -42,6 +73,40 @@ class _CrashdetailState extends State<Crashdetail> {
       fetchMotor();
     }
     setState(() {});
+  }
+
+  
+  Future<bool?> checkIfAutoConfirmed() async {
+    try {
+      DocumentSnapshot crashDoc = await FirebaseFirestore.instance
+          .collection('Crash')
+          .doc(widget.crashId)
+          .get();
+
+      // Check if 'isAuto' exists and return its value
+      if (crashDoc.exists && crashDoc.data() != null) {
+        final data = crashDoc.data() as Map<String, dynamic>;
+        return data['isAuto'] ?? false;
+      }
+      return false;
+    } catch (e) {
+      print('Error checking auto confirmation: $e');
+      return false;
+    }
+  }
+
+  Future<void> deleteIsAutoField() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('Crash')
+          .doc(widget.crashId)
+          .update({
+        'isAuto': FieldValue.delete(),
+      });
+      print("isAuto field deleted successfully");
+    } catch (e) {
+      print('Error deleting isAuto field: $e');
+    }
   }
 
   Future<void> fetchMotor() async {

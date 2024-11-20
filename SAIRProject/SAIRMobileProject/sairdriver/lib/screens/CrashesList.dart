@@ -551,7 +551,7 @@ class _CrasheslistState extends State<Crasheslist>
                                     ),
                                     margin: const EdgeInsets.symmetric(
                                         horizontal: 10, vertical: 5),
-                                    color: Colors.white,
+                                    color: crash.isAuto == true ? Colors.lightGreen[100] : Colors.white,
                                     elevation: 2,
                                     child: ListTile(
                                       leading: SizedBox(
@@ -627,7 +627,7 @@ class _CrasheslistState extends State<Crasheslist>
     _isDialogShown = true;
 
     Crash crash = Crash.fromJson(crashDoc);
-    int endTime2 = DateTime.now().millisecondsSinceEpoch + 10000; 
+    int endTime2 = DateTime.now().millisecondsSinceEpoch + 10000;
 
     // Parse the time string (crash.getFormattedTimeOnly() is in "HH:MM:SS" format)
     List<String> timeParts = crash.getFormattedTimeOnly().split(':');
@@ -651,7 +651,10 @@ class _CrasheslistState extends State<Crasheslist>
     int endTimeInSeconds = crashTimeInSeconds + 300; // 5 minutes added
 
     // End time is the current time + time remaining + 5 minutes (to simulate the countdown duration)
-    int endTime = (DateTime.now().millisecondsSinceEpoch ~/ 1000) + timeDifference + 300;
+    int endTime =
+        (DateTime.now().millisecondsSinceEpoch ~/ 1000) + timeDifference + 300;
+
+    int endTest = (DateTime.now().millisecondsSinceEpoch ~/ 1000) + 20;
 
     showDialog(
       context: context,
@@ -681,18 +684,22 @@ class _CrasheslistState extends State<Crasheslist>
                   ),
                   SizedBox(height: 20),
                   CountdownTimer(
-                    endTime: endTime2, //endTime * 1000, // convert to milliseconds
+                    endTime: endTest *
+                        1000, //endTime * 1000, // convert to milliseconds
                     onEnd: () async {
                       if (Navigator.of(context).canPop()) {
                         Navigator.of(context).pop();
                       }
-                      
+
                       _isDialogShown = false;
                       // Auto confirm crash status
                       await FirebaseFirestore.instance
                           .collection('Crash')
                           .doc(crashDoc.id)
-                          .update({'Status': 'Confirmed'});
+                          .update({
+                        'Status': 'Confirmed',
+                        'isAuto': true, 
+                      });
 
                       // Message when auto confirmed
                       if (context.mounted) {
