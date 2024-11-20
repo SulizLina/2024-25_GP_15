@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:sairdriver/models/driver.dart';
+import 'package:sairdriver/screens/CrashesList.dart';
 import 'package:sairdriver/screens/home.dart';
 import 'package:sairdriver/screens/welcomepage.dart';
 import 'package:sairdriver/screens/login_email.dart';
@@ -31,28 +32,33 @@ void _setupFirebaseMessaging() {
     print('+++++++++++ Notification clicked! ++++++');
     print('Message data: ${message.data}');
 
-    if (message.data['screen'] == 'ViolationsList') {
-      final driverData = message.data['documentId'];
-      print('Driver Data: $driverData');
+    // Access driverData
+    final driverData = message.data['driverData'] ?? '';
+    print('Driver Data: $driverData');
 
-      try {
-        // Decode the driver data into a Map
-        final driverMap = jsonDecode(driverData);
-        print('Navigating to ViolationsList with driver data: $driverMap');
-        // Pass the full driverMap to the Violationslist screen
-        navigatorKey.currentState?.push(
-          MaterialPageRoute(
-            builder: (context) => Violationslist(driverId: driverMap),
-          ),
-        );
-      } catch (e) {
-        print('Error decoding driver data: $e');
+    if (driverData.isNotEmpty) {
+      if(message.data['screen']=='ViolationsList'){
+        // Navigate to the Violationslist screen
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (context) => Violationslist(driverId: driverData),
+        ),
+      );
       }
+     if(message.data['screen']=='CrashList'){
+        // Navigate to the Violationslist screen
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (context) => Crasheslist(driverId: driverData),
+        ),
+      );
+      } 
+      
+    } else {
+      print('Error: driverData is null or empty.');
     }
   });
 }
-
-
 class InitialApp extends StatelessWidget {
   const InitialApp({super.key});
 
