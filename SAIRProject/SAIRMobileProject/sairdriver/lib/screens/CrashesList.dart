@@ -39,7 +39,6 @@ class _CrasheslistState extends State<Crasheslist>
   Timer? _timer; // Timer for auto-confirmation
   bool _isDialogShown =
       false; // To avoid redundant pop-ups caused by the StreamBuilder
-  bool isAutoconf = false;
 
   @override
   void initState() {
@@ -542,15 +541,9 @@ class _CrasheslistState extends State<Crasheslist>
                                         builder: (context) => Crashdetail(
                                           crashId: filteredList[index - 1].id,
                                           driverid: widget.driverId,
-                                          isAutoconf: isAutoconf, 
                                         ),
                                       ),
-                                    ).then((_) {
-                                      // Reset `isAutoconf` to false after navigating
-                                      setState(() {
-                                        isAutoconf = false;
-                                      });
-                                    });
+                                    );
                                   },
                                   child: Card(
                                     shape: RoundedRectangleBorder(
@@ -703,9 +696,10 @@ class _CrasheslistState extends State<Crasheslist>
                       await FirebaseFirestore.instance
                           .collection('Crash')
                           .doc(crashDoc.id)
-                          .update({'Status': 'Confirmed'});
-
-                      isAutoconf = true;
+                          .update({
+                        'Status': 'Confirmed',
+                        'isAuto': true, // Add the new field
+                      });
 
                       // Message when auto confirmed
                       if (context.mounted) {

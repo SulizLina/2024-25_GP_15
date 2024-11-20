@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -12,9 +13,8 @@ import 'package:google_fonts/google_fonts.dart';
 class Crashdetail extends StatefulWidget {
   final String crashId;
   final String driverid;
-  final bool isAutoconf;
 
-  const Crashdetail({Key? key, required this.crashId, required this.driverid, required this.isAutoconf}) : super(key: key);
+  const Crashdetail({Key? key, required this.crashId, required this.driverid}) : super(key: key);
 
   @override
   State<Crashdetail> createState() => _CrashdetailState();
@@ -27,33 +27,36 @@ class _CrashdetailState extends State<Crashdetail> {
   BitmapDescriptor? customMapIcon;
   Crash? crash;
   Motorcycle? motorcycle;
-  late bool _isAutoconf = widget.isAutoconf;
+  late bool _isAutoconf;
 
   @override
   void initState() {
     super.initState();
     // Show warning dialog if the crash was auto confirmed
-    _isAutoconf = widget.isAutoconf;
-    print('-----------------------${widget.isAutoconf?? '++++++++++HIII from widget var++++++++++'}');
-    print('-----------------------${_isAutoconf} local var');
-    // Show warning dialog if the crash was auto confirmed
-    if (_isAutoconf == true) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return const WarningDialog(
-              message: "This crash has been automatically confirmed due to no action being taken within the allotted 5-minute timeframe.\n\nPlease wait, you will receive a call from your delivery company or the competent authorities.",
-            );
-          },
-        ).then((_) {
-          // Update _isAutoconf to false after the dialog is dismissed
-          setState(() {
-            _isAutoconf = false;
+    // Check if the crash has the 'isAuto' field and set _isAutoconf
+    checkIfAutoConfirmed().then((isAuto) {
+      setState(() {
+        _isAutoconf = isAuto!;
+      });
+
+      // Show warning dialog if the crash was auto-confirmed
+      if (_isAutoconf == true) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return const WarningDialog(
+                message:
+                    "This crash has been automatically confirmed due to no action being taken within the allotted 5-minute timeframe.\n\nPlease wait, you will receive a call from your delivery company or the competent authorities.",
+              );
+            },
+          ).then((_) {
+            // Delete the 'isAuto' field after the dialog is dismissed
+            deleteIsAutoField();
           });
         });
-      });
-    }
+      }
+    });
     fetchCrash();
     loadCustomMapIcon();
   }
@@ -70,6 +73,40 @@ class _CrashdetailState extends State<Crashdetail> {
       fetchMotor();
     }
     setState(() {});
+  }
+
+  
+  Future<bool?> checkIfAutoConfirmed() async {
+    try {
+      DocumentSnapshot crashDoc = await FirebaseFirestore.instance
+          .collection('Crash')
+          .doc(widget.crashId)
+          .get();
+
+      // Check if 'isAuto' exists and return its value
+      if (crashDoc.exists && crashDoc.data() != null) {
+        final data = crashDoc.data() as Map<String, dynamic>;
+        return data['isAuto'] ?? false;
+      }
+      return false;
+    } catch (e) {
+      print('Error checking auto confirmation: $e');
+      return false;
+    }
+  }
+
+  Future<void> deleteIsAutoField() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('Crash')
+          .doc(widget.crashId)
+          .update({
+        'isAuto': FieldValue.delete(),
+      });
+      print("isAuto field deleted successfully");
+    } catch (e) {
+      print('Error deleting isAuto field: $e');
+    }
   }
 
   Future<void> fetchMotor() async {
