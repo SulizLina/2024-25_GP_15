@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:sairdriver/models/driver.dart';
+import 'package:sairdriver/screens/CrashesList.dart';
 import 'package:sairdriver/screens/home.dart';
 import 'package:sairdriver/screens/welcomepage.dart';
 import 'package:sairdriver/screens/login_email.dart';
@@ -36,12 +37,23 @@ void _setupFirebaseMessaging() {
     print('Driver Data: $driverData');
 
     if (driverData.isNotEmpty) {
-      // Navigate to the Violationslist screen
+      if(message.data['screen']=='ViolationsList'){
+        // Navigate to the Violationslist screen
       navigatorKey.currentState?.push(
         MaterialPageRoute(
           builder: (context) => Violationslist(driverId: driverData),
         ),
       );
+      }
+     if(message.data['screen']=='CrashList'){
+        // Navigate to the Violationslist screen
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (context) => Crasheslist(driverId: driverData),
+        ),
+      );
+      } 
+      
     } else {
       print('Error: driverData is null or empty.');
     }

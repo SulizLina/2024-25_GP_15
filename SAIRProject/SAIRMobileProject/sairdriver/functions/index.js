@@ -43,7 +43,7 @@ exports.sendnotificationViolation = functions.firestore
             data: {
                 sound: 'beep',
                 screen: 'ViolationsList',
-                driverData: documentId || '', // Ensure it's always set, even if empty
+                driverData: documentId || '',
             },
             android: {
                 priority: 'high',
@@ -101,6 +101,7 @@ exports.sendnotificationViolation = functions.firestore
 
                 const driverDoc = driverQuerySnapshot.docs[0];
                 const driverData = driverDoc.data();
+                const documentId = driverDoc.id; 
                 const userToken = driverData.token; // Fetch the token directly from the Driver document
 
                 if (!userToken) {
@@ -116,6 +117,8 @@ exports.sendnotificationViolation = functions.firestore
                     },
                     data: {
                         sound: 'beep', // Custom data
+                        screen: 'CrashList',
+                        driverData: documentId || '',
                     },
                     android: {
                         priority: 'high', // Set priority for Android
