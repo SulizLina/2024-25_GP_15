@@ -57,9 +57,11 @@ class Crash {
             )
           : null,
 
-      time: parsedJSON['time'] as int?,
+     time: parsedJSON['time'] != null
+        ? int.tryParse(parsedJSON['time'].toString())
+        : null,
       timestamp: parsedJSON['timestamp']
-          as Timestamp?, // Ensure the field name matches Firestore
+          as Timestamp?, 
     );
   }
 }
