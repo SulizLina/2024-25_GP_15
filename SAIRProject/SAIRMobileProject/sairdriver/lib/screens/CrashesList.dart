@@ -551,7 +551,9 @@ class _CrasheslistState extends State<Crasheslist>
                                     ),
                                     margin: const EdgeInsets.symmetric(
                                         horizontal: 10, vertical: 5),
-                                    color: crash.isAuto == true ? Colors.lightGreen[100] : Colors.white,
+                                    color: crash.isAuto == true
+                                        ? Colors.lightGreen[100]
+                                        : Colors.white,
                                     elevation: 2,
                                     child: ListTile(
                                       leading: SizedBox(
@@ -627,32 +629,39 @@ class _CrasheslistState extends State<Crasheslist>
     _isDialogShown = true;
 
     Crash crash = Crash.fromJson(crashDoc);
-    int endTime2 = DateTime.now().millisecondsSinceEpoch + 10000;
 
-    // Parse the time string (crash.getFormattedTimeOnly() is in "HH:MM:SS" format)
-    List<String> timeParts = crash.getFormattedTimeOnly().split(':');
-    int hours = int.parse(timeParts[0]);
-    int minutes = int.parse(timeParts[1]);
-    int seconds = int.parse(timeParts[2]);
+  // Parse the time string (crash.getFormattedTimeOnly() is in "HH:MM:SS" format)
+  List<String> timeParts = crash.getFormattedTimeOnly().split(':');
+  int hours = int.parse(timeParts[0]);
+  int minutes = int.parse(timeParts[1]);
+  int seconds = int.parse(timeParts[2]);
 
-    // Convert to seconds from the crash time
-    int crashTimeInSeconds = (hours * 3600) + (minutes * 60) + seconds;
+  // Get the crash date (formatted as yyyy-MM-dd) from the method
+  DateTime crashDate = DateTime.parse(crash.getFormattedDate());
 
-    // Get current time in seconds
-    int currentTimeInSeconds = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+  // Create a DateTime object for the crash time on the same day
+  DateTime crashDateTime = DateTime(
+    crashDate.year,
+    crashDate.month,
+    crashDate.day,
+    hours,
+    minutes,
+    seconds,
+  );
 
-    // Calculate the difference (time remaining for the timer to start)
-    int timeDifference = crashTimeInSeconds - currentTimeInSeconds;
+  // Calculate the end time (5 minutes after the crash time)
+  DateTime endDateTime = crashDateTime.add(Duration(minutes: 5));
 
-    // If the calculated time difference is negative (i.e., crash time is in the past), set it to 0
-    timeDifference = timeDifference < 0 ? 0 : timeDifference;
+  // Calculate remaining time in seconds
+  int remainingTime = endDateTime.difference(DateTime.now()).inSeconds;
 
-    // Add 5 minutes (300 seconds) to the crash time to calculate the end time
-    int endTimeInSeconds = crashTimeInSeconds + 300; // 5 minutes added
-
-    // End time is the current time + time remaining + 5 minutes (to simulate the countdown duration)
-    int endTime =
-        (DateTime.now().millisecondsSinceEpoch ~/ 1000) + timeDifference + 300;
+  // Debug print remaining time
+  if (remainingTime <= 0) {
+    print("Remaining time is zero or negative. Auto-confirming.");
+    remainingTime = 0; // Prevent negative values
+  } else {
+    print("Remaining time: $remainingTime seconds");
+  }
 
     int endTest = (DateTime.now().millisecondsSinceEpoch ~/ 1000) + 20;
 
@@ -684,8 +693,8 @@ class _CrasheslistState extends State<Crasheslist>
                   ),
                   SizedBox(height: 20),
                   CountdownTimer(
-                    endTime: endTest *
-                        1000, //endTime * 1000, // convert to milliseconds
+                    endTime: DateTime.now().millisecondsSinceEpoch +
+                      remainingTime * 1000, //endTest * 1000, // convert to milliseconds
                     onEnd: () async {
                       if (Navigator.of(context).canPop()) {
                         Navigator.of(context).pop();
@@ -698,7 +707,7 @@ class _CrasheslistState extends State<Crasheslist>
                           .doc(crashDoc.id)
                           .update({
                         'Status': 'Confirmed',
-                        'isAuto': true, 
+                        'isAuto': true,
                       });
 
                       // Message when auto confirmed
