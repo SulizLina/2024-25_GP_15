@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:sairdriver/messages/Warning.dart';
 import 'package:sairdriver/models/crash.dart';
 import 'package:sairdriver/models/motorcycle.dart';
 import 'package:sairdriver/services/crash_database.dart';
@@ -11,21 +12,48 @@ import 'package:google_fonts/google_fonts.dart';
 class Crashdetail extends StatefulWidget {
   final String crashId;
   final String driverid;
+  final bool isAutoconf;
 
-  const Crashdetail({Key? key, required this.crashId, required this.driverid}) : super(key: key);
+  const Crashdetail({Key? key, required this.crashId, required this.driverid, required this.isAutoconf}) : super(key: key);
 
   @override
   State<Crashdetail> createState() => _CrashdetailState();
 }
 
+//    print('-----------------------${widget.isAutoconf?? '++++++++++HIII++++++++++'}');
+//  message: "This crash has been automatically confirmed due to no action being taken within the allotted 5-minute timeframe \n\n Please wait you will recive a call from your delivery company or the competent Authorities",
+           
 class _CrashdetailState extends State<Crashdetail> {
   BitmapDescriptor? customMapIcon;
   Crash? crash;
   Motorcycle? motorcycle;
+  late bool _isAutoconf = widget.isAutoconf;
 
   @override
   void initState() {
     super.initState();
+    // Show warning dialog if the crash was auto confirmed
+    _isAutoconf = widget.isAutoconf;
+    print('-----------------------${widget.isAutoconf?? '++++++++++HIII from widget var++++++++++'}');
+    print('-----------------------${_isAutoconf} local var');
+    // Show warning dialog if the crash was auto confirmed
+    if (_isAutoconf == true) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const WarningDialog(
+              message: "This crash has been automatically confirmed due to no action being taken within the allotted 5-minute timeframe.\n\nPlease wait, you will receive a call from your delivery company or the competent authorities.",
+            );
+          },
+        ).then((_) {
+          // Update _isAutoconf to false after the dialog is dismissed
+          setState(() {
+            _isAutoconf = false;
+          });
+        });
+      });
+    }
     fetchCrash();
     loadCustomMapIcon();
   }
