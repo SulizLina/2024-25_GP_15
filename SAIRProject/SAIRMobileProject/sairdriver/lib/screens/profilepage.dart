@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:sairdriver/models/Employer.dart';
 import 'package:sairdriver/models/driver.dart';
 import 'package:sairdriver/models/motorcycle.dart';
 import 'package:sairdriver/screens/login_email.dart';
@@ -63,19 +65,19 @@ class _ProfilepageState extends State<Profilepage> {
     setState(() {}); // Update the UI after fetching data
     // Update text fields with fetched data after both driver data and plate number are retrieved
     if (mounted) {
-      setState(() {
+      setState(() async {
         fname.text = driverInf?.fname ?? '';
         lname.text = driverInf?.lname ?? '';
         phone.text = driverInf?.phoneNumber ?? '';
         id.text = driverInf?.driverId ?? '';
-
+        String? shortname = await fetchShortCompanyName(driverInf?.companyname);
         email.text = currentUser?.email ?? '';
         gps.text =
             ((motorcycle?.gspNumber != null && motorcycle?.gspNumber != 'null')
                 ? motorcycle!.gspNumber
                 : 'No assigned GPS yet')!;
         PlateN.text = motorcycle?.licensePlate ?? 'No assigned motorcycle yet';
-        CompanyName.text = driverInf?.companyname ?? '';
+        CompanyName.text = shortname!;
         type.text = motorcycle?.type ?? 'No assigned motorcycle yet';
         model.text = motorcycle?.model ?? 'No assigned motorcycle yet';
         brand.text = motorcycle?.brand ?? "No assigned motorcycle yet";
@@ -86,6 +88,19 @@ class _ProfilepageState extends State<Profilepage> {
     print('License Plate fetched: $plateNumber');
     print('brand fetched: $brand');
     print('driver id fetched: $id');
+  }
+
+  Future<String?> fetchShortCompanyName(String? longname) async {
+    if (longname == null) return null;
+    QuerySnapshot companySnapshot = await FirebaseFirestore.instance
+        .collection('Employer')
+        .where('CompanyName', isEqualTo: longname)
+        .get();
+    if (companySnapshot.docs.isNotEmpty) {
+      Employer employer = Employer.fromJson(companySnapshot.docs.first);
+      return employer.ShortCompanyName;
+    }
+    return null;
   }
 
   @override
@@ -556,7 +571,7 @@ class _ProfilepageState extends State<Profilepage> {
                 readOnly: true,
               ),
               const SizedBox(height: 16),
-              //Licence Plate 
+              //Licence Plate
 
               TextFormField(
                 controller: PlateN,
@@ -651,7 +666,7 @@ class _ProfilepageState extends State<Profilepage> {
       }
     }
   }*/
-  /*
+/*
    Future<void> fetchDriver() async {
     String driverID = "1111111111"; // Static driverID for now
 
