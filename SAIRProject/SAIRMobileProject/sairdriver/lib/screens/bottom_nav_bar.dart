@@ -6,6 +6,7 @@ import 'package:sairdriver/screens/ViolationsList.dart';
 import 'package:sairdriver/screens/home.dart';
 import 'package:sairdriver/screens/profilepage.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class BottomNavBar extends StatefulWidget {
   final String driverId;
@@ -17,7 +18,8 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _MyBottomNavState extends State<BottomNavBar> {
-  final PersistentTabController _controller = PersistentTabController(initialIndex: 2);
+  final PersistentTabController _controller =
+      PersistentTabController(initialIndex: 2);
 
   @override
   void dispose() {
@@ -77,13 +79,29 @@ class _MyBottomNavState extends State<BottomNavBar> {
 
   PersistentBottomNavBarItem _crashesNavBarItem() {
     return PersistentBottomNavBarItem(
-      icon: Image.asset(
-        'assets/icons/CRASHiconCrash.png',
-        color: _controller.index == 0
-            ? const Color.fromARGB(202, 3, 152, 85)
-            : Colors.grey[500],
-        width: 53,
-        height: 53,
+      icon: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(
+            'assets/icons/accident.png',
+            color: _controller.index == 0
+                ? const Color.fromARGB(202, 3, 152, 85)
+                : Colors.grey[500],
+            width: 47,
+            height: 35,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Crash',
+            style: GoogleFonts.poppins(
+              fontSize: 10,
+              decoration: TextDecoration.none,
+              color: _controller.index == 0
+                  ? const Color.fromARGB(202, 3, 152, 85)
+                  : Colors.grey,
+            ),
+          ),
+        ],
       ),
       activeColorPrimary: const Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey[600],
@@ -118,39 +136,39 @@ class _MyBottomNavState extends State<BottomNavBar> {
   }
 
   Widget _customNavBarItemIcon(IconData icon, String title, int index) {
-  return Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Container(
-        height: 2.0,
-        width: 40.0,
-        color: _controller.index == index
-            ? const Color.fromARGB(202, 3, 152, 85)
-            : Colors.transparent, // Use transparent color when not active
-      ),
-      const SizedBox(height: 2), // Adjusted spacing to keep consistent height
-      Icon(
-        icon,
-        color: _controller.index == index
-            ? const Color.fromARGB(202, 3, 152, 85)
-            : Colors.grey,
-        size: 30,
-      ),
-      const SizedBox(height: 4),
-      Text(
-        title,
-        style: TextStyle(
-          fontSize: 10,
-          decoration: TextDecoration.none,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          height: 2.0,
+          width: 40.0,
+          color: _controller.index == index
+              ? const Color.fromARGB(202, 3, 152, 85)
+              : Colors.transparent, // Use transparent color when not active
+        ),
+        const SizedBox(height: 2), // Adjusted spacing to keep consistent height
+        Icon(
+          icon,
           color: _controller.index == index
               ? const Color.fromARGB(202, 3, 152, 85)
               : Colors.grey,
+          size: 30,
         ),
-        textAlign: TextAlign.center,
-      ),
-    ],
-  );
-}
+        const SizedBox(height: 4),
+        Text(
+          title,
+          style: GoogleFonts.poppins(
+            fontSize: 10,
+            decoration: TextDecoration.none,
+            color: _controller.index == index
+                ? const Color.fromARGB(202, 3, 152, 85)
+                : Colors.grey,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
 
   NavBarDecoration _navbarDecoration() {
     return NavBarDecoration(
