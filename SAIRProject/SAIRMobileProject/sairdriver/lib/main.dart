@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:sairdriver/models/driver.dart';
 import 'package:sairdriver/screens/CrashesList.dart';
+import 'package:sairdriver/screens/bottom_nav_bar.dart';
 import 'package:sairdriver/screens/home.dart';
 import 'package:sairdriver/screens/welcomepage.dart';
 import 'package:sairdriver/screens/login_email.dart';
@@ -29,35 +30,33 @@ void main() async {
 }
 void _setupFirebaseMessaging() {
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    print('+++++++++++ Notification clicked! ++++++');
-    print('Message data: ${message.data}');
+  final driverData = message.data['driverData'] ?? '';
+  final screen = message.data['screen'] ?? '';
 
-    // Access driverData
-    final driverData = message.data['driverData'] ?? '';
-    print('Driver Data: $driverData');
-
-    if (driverData.isNotEmpty) {
-      if(message.data['screen']=='ViolationsList'){
-        // Navigate to the Violationslist screen
-      navigatorKey.currentState?.push(
+  if (driverData.isNotEmpty) {
+    if (screen == 'ViolationsList') {
+      // Update the index for Violations tab
+      navigatorKey.currentState?.pushReplacement(
         MaterialPageRoute(
-          builder: (context) => Violationslist(driverId: driverData),
+          builder: (context) => BottomNavBar(
+            driverId: driverData,
+            initialIndex: 1, // Set index for Violations tab
+          ),
         ),
       );
-      }
-     if(message.data['screen']=='CrashList'){
-        // Navigate to the Violationslist screen
-      navigatorKey.currentState?.push(
+    } else if (screen == 'CrashList') {
+      navigatorKey.currentState?.pushReplacement(
         MaterialPageRoute(
-          builder: (context) => Crasheslist(driverId: driverData),
+          builder: (context) => BottomNavBar(
+            driverId: driverData,
+            initialIndex: 0, // Set index for Crashes tab
+          ),
         ),
       );
-      } 
-      
-    } else {
-      print('Error: driverData is null or empty.');
     }
-  });
+  }
+});
+
 }
 class InitialApp extends StatelessWidget {
   const InitialApp({super.key});

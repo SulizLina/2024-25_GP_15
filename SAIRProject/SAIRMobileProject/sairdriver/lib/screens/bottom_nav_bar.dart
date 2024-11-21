@@ -10,32 +10,38 @@ import 'package:google_fonts/google_fonts.dart';
 
 class BottomNavBar extends StatefulWidget {
   final String driverId;
+  final int initialIndex;
 
-  BottomNavBar({required this.driverId});
+  BottomNavBar({required this.driverId, this.initialIndex = 2});
 
   @override
-  State<BottomNavBar> createState() => _MyBottomNavState();
+  State<BottomNavBar> createState() => _BottomNavBarState();
 }
 
-class _MyBottomNavState extends State<BottomNavBar> {
-  final PersistentTabController _controller =
-      PersistentTabController(initialIndex: 2);
+class _BottomNavBarState extends State<BottomNavBar> {
+  late PersistentTabController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = PersistentTabController(initialIndex: widget.initialIndex);
+  }
 
   @override
   void dispose() {
-    super.dispose();
     _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return PersistentTabView(
-      controller: _controller,
       context,
+      controller: _controller,
       screens: _buildScreens(widget.driverId),
       items: _navbarItems(),
       navBarStyle: NavBarStyle.style15,
-      backgroundColor: Color(0xFFF3F3F3),
+      backgroundColor: const Color(0xFFF3F3F3),
       navBarHeight: 55,
       onItemSelected: (int index) {
         setState(() {});
@@ -87,7 +93,7 @@ class _MyBottomNavState extends State<BottomNavBar> {
             width: 40.0,
             color: _controller.index == 0
                 ? const Color.fromARGB(202, 3, 152, 85)
-                : Colors.transparent, // Use green line when active
+                : Colors.transparent,
           ),
           const SizedBox(height: 4),
           Image.asset(
@@ -137,9 +143,7 @@ class _MyBottomNavState extends State<BottomNavBar> {
       icon: _customNavBarItemIcon(icon, title, index),
       activeColorPrimary: const Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
-      textStyle: const TextStyle(
-        fontSize: 10,
-      ),
+      textStyle: const TextStyle(fontSize: 10),
     );
   }
 
@@ -152,9 +156,9 @@ class _MyBottomNavState extends State<BottomNavBar> {
           width: 40.0,
           color: _controller.index == index
               ? const Color.fromARGB(202, 3, 152, 85)
-              : Colors.transparent, // Use transparent color when not active
+              : Colors.transparent,
         ),
-        const SizedBox(height: 2), // Adjusted spacing to keep consistent height
+        const SizedBox(height: 2),
         Icon(
           icon,
           color: _controller.index == index
