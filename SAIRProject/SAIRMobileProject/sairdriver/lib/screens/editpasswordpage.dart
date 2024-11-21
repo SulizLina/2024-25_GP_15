@@ -184,12 +184,13 @@ class _EditpasswordpageState extends State<Editpasswordpage> {
         final newPassword = _passwordController.text;
         User? user = FirebaseAuth.instance.currentUser;
         await user!.updatePassword(newPassword);
-
+ Navigator.of(context).pop(); // 
         // Show success dialog once password is updated
         SuccessMessageDialog.show(
           context,
           'Your password has been updated successfully!',
         );
+
       } catch (e) {
         if (e is FirebaseAuthException && e.code == 'requires-recent-login') {
           // If the error is due to requiring recent login, reauthenticate the user
