@@ -17,8 +17,7 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _MyBottomNavState extends State<BottomNavBar> {
-  final PersistentTabController _controller =
-      PersistentTabController(initialIndex: 2);
+  final PersistentTabController _controller = PersistentTabController(initialIndex: 2);
 
   @override
   void dispose() {
@@ -31,23 +30,15 @@ class _MyBottomNavState extends State<BottomNavBar> {
     return PersistentTabView(
       controller: _controller,
       context,
-      screens: _buildScreen(widget.driverId),
-      items: _navbarItem(),
+      screens: _buildScreens(widget.driverId),
+      items: _navbarItems(),
       navBarStyle: NavBarStyle.style15,
       backgroundColor: Color(0xFFF3F3F3),
       navBarHeight: 55,
       onItemSelected: (int index) {
-        setState(() {}); // Rebuilds the widget on item selection to apply the line dynamically
+        setState(() {});
       },
-      decoration: NavBarDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, -3),
-          ),
-        ],
-      ),
+      decoration: _navbarDecoration(),
       animationSettings: const NavBarAnimationSettings(
         navBarItemAnimation: ItemAnimationSettings(
           duration: Duration(milliseconds: 400),
@@ -63,7 +54,7 @@ class _MyBottomNavState extends State<BottomNavBar> {
   }
 
   // List of Screens for Bottom NavBar
-  List<Widget> _buildScreen(String driverId) {
+  List<Widget> _buildScreens(String driverId) {
     return [
       Crasheslist(driverId: driverId),
       Violationslist(driverId: driverId),
@@ -73,92 +64,104 @@ class _MyBottomNavState extends State<BottomNavBar> {
     ];
   }
 
-  // Bottom NavBar Items with dynamic line
-  List<PersistentBottomNavBarItem> _navbarItem() {
+  // Bottom NavBar Items
+  List<PersistentBottomNavBarItem> _navbarItems() {
     return [
-    PersistentBottomNavBarItem(
-      icon: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Conditionally add the top border when the icon is active
-          if (_controller.index == 0)
-            Positioned(
-              top: 0,
-              child: Container(
-                height: 2.0,
-                width: 40.0,
-                color: Color.fromARGB(202, 3, 152, 85),
-              ),
-            ),
-          // The custom motorcycle image for the first tab
-          Image.asset(
-            'assets/icons/CRASHiconCrash.png', 
-            color: _controller.index == 0
-                ? Color.fromARGB(202, 3, 152, 85)
-                :  Colors.grey[500],
-            width: 53,
-            height: 53,
-          ),
-        ],
-      ),
-      activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
-      inactiveColorPrimary: Colors.grey[600],
-    ),
-      _customNavBarItem(
-        HugeIcons.strokeRoundedDoNotTouch02,
-        'Violations',
-        1,
-      ),
-      PersistentBottomNavBarItem(
-        icon: const Icon(
-          Icons.home,
-          color: Colors.white,
-          size: 32,
-        ),
-        activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
-        inactiveColorPrimary: Colors.grey,
-      ),
-      _customNavBarItem(
-        HugeIcons.strokeRoundedFileEdit,
-        'Complaints',
-        3,
-      ),
-      _customNavBarItem(
-        HugeIcons.strokeRoundedUser,
-        'Profile',
-        4,
-      ),
+      _crashesNavBarItem(),
+      _customNavBarItem(HugeIcons.strokeRoundedDoNotTouch02, 'Violations', 1),
+      _homeNavBarItem(),
+      _customNavBarItem(HugeIcons.strokeRoundedFileEdit, 'Complaints', 3),
+      _customNavBarItem(HugeIcons.strokeRoundedUser, 'Profile', 4),
     ];
   }
 
-  PersistentBottomNavBarItem _customNavBarItem(
-      IconData icon, String title, int index) {
+  PersistentBottomNavBarItem _crashesNavBarItem() {
     return PersistentBottomNavBarItem(
-      icon: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Conditionally add the top border when the icon is active
-          if (_controller.index == index)
-            Positioned(
-              top: 0,
-              child: Container(
-                height: 2.0,
-                width: 40.0,
-                color: Color.fromARGB(202, 3, 152, 85),
-              ),
-            ),
-          // The actual icon, always centered
-          Icon(
-            icon,
-            color: _controller.index == index
-                ? Color.fromARGB(202, 3, 152, 85)
-                : Colors.grey,
-            size: 30,
-          ),
-        ],
+      icon: Image.asset(
+        'assets/icons/CRASHiconCrash.png',
+        color: _controller.index == 0
+            ? const Color.fromARGB(202, 3, 152, 85)
+            : Colors.grey[500],
+        width: 53,
+        height: 53,
       ),
-      activeColorPrimary: Color.fromARGB(202, 3, 152, 85),
+      activeColorPrimary: const Color.fromARGB(202, 3, 152, 85),
+      inactiveColorPrimary: Colors.grey[600],
+    );
+  }
+
+  PersistentBottomNavBarItem _homeNavBarItem() {
+    return PersistentBottomNavBarItem(
+      icon: const Icon(
+        Icons.home,
+        color: Colors.white,
+        size: 32,
+      ),
+      activeColorPrimary: const Color.fromARGB(202, 3, 152, 85),
       inactiveColorPrimary: Colors.grey,
+    );
+  }
+
+  PersistentBottomNavBarItem _customNavBarItem(
+    IconData icon,
+    String title,
+    int index,
+  ) {
+    return PersistentBottomNavBarItem(
+      icon: _customNavBarItemIcon(icon, title, index),
+      activeColorPrimary: const Color.fromARGB(202, 3, 152, 85),
+      inactiveColorPrimary: Colors.grey,
+      textStyle: const TextStyle(
+        fontSize: 10,
+      ),
+    );
+  }
+
+  Widget _customNavBarItemIcon(IconData icon, String title, int index) {
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Container(
+        height: 2.0,
+        width: 40.0,
+        color: _controller.index == index
+            ? const Color.fromARGB(202, 3, 152, 85)
+            : Colors.transparent, // Use transparent color when not active
+      ),
+      const SizedBox(height: 2), // Adjusted spacing to keep consistent height
+      Icon(
+        icon,
+        color: _controller.index == index
+            ? const Color.fromARGB(202, 3, 152, 85)
+            : Colors.grey,
+        size: 30,
+      ),
+      const SizedBox(height: 4),
+      Text(
+        title,
+        style: TextStyle(
+          fontSize: 10,
+          decoration: TextDecoration.none,
+          color: _controller.index == index
+              ? const Color.fromARGB(202, 3, 152, 85)
+              : Colors.grey,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    ],
+  );
+}
+
+  NavBarDecoration _navbarDecoration() {
+    return NavBarDecoration(
+      borderRadius: BorderRadius.circular(0),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 10,
+          offset: const Offset(0, -3),
+        ),
+      ],
     );
   }
 }
