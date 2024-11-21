@@ -82,19 +82,27 @@ class _MyBottomNavState extends State<BottomNavBar> {
       icon: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          Container(
+            height: 2.0,
+            width: 40.0,
+            color: _controller.index == 0
+                ? const Color.fromARGB(202, 3, 152, 85)
+                : Colors.transparent, // Use green line when active
+          ),
+          const SizedBox(height: 4),
           Image.asset(
             'assets/icons/accident.png',
             color: _controller.index == 0
                 ? const Color.fromARGB(202, 3, 152, 85)
                 : Colors.grey[500],
-            width: 47,
-            height: 35,
+            width: 52,
+            height: 29,
           ),
           const SizedBox(height: 4),
           Text(
             'Crash',
             style: GoogleFonts.poppins(
-              fontSize: 10,
+              fontSize: 9,
               decoration: TextDecoration.none,
               color: _controller.index == 0
                   ? const Color.fromARGB(202, 3, 152, 85)
