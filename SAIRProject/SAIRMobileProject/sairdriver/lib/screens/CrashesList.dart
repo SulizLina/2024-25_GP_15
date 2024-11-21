@@ -730,6 +730,9 @@ void _showCrashDialog(DocumentSnapshot crashDoc) {
                       await SuccessMessageDialog.show(
                         context,
                         'The crash with ID:${crash.cid!} has been rejected successfully!',
+                            () {
+                              _isDialogShown = false; // Ensure the flag is reset here as well
+                            },
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -755,6 +758,9 @@ void _showCrashDialog(DocumentSnapshot crashDoc) {
                       await SuccessMessageDialog.show(
                         context,
                         "The crash with ID:${crash.cid} has been confirmed.",
+                            () {
+                              _isDialogShown = false; // Ensure the flag is reset here as well
+                            },
                       );
                     },
                     style: ElevatedButton.styleFrom(
