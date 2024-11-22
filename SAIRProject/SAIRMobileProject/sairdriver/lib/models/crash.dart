@@ -8,6 +8,7 @@ class Crash {
   String? gspNumber;
   String? location;
   bool? isAuto;
+  bool? isAutoshown;
   GeoPoint? position;
   int? time;
   String? status;
@@ -20,6 +21,7 @@ class Crash {
     required this.gspNumber,
     required this.location,
     required this.isAuto,
+    required this.isAutoshown,
     required this.position,
     required this.time,
     required this.status,
@@ -48,6 +50,7 @@ class Crash {
       driverId: parsedJSON['driverID'].toString(),
       gspNumber: parsedJSON['GPSnumber'].toString(),
       isAuto: parsedJSON['isAuto'] as bool?,
+      isAutoshown: parsedJSON['isAutoshown'] as bool?,
       status: parsedJSON['Status'] as String?,
       location: parsedJSON['location'] as String?,
       position: parsedJSON['position'] != null

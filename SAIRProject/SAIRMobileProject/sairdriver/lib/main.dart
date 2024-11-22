@@ -2,16 +2,12 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:sairdriver/models/driver.dart';
-import 'package:sairdriver/screens/CrashesList.dart';
 import 'package:sairdriver/screens/bottom_nav_bar.dart';
-import 'package:sairdriver/screens/home.dart';
-import 'package:sairdriver/screens/welcomepage.dart';
 import 'package:sairdriver/screens/login_email.dart';
+import 'package:sairdriver/globals.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:sairdriver/services/NotificationService.dart';
 import 'dart:convert';
-import 'package:sairdriver/screens/ViolationsList.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -45,6 +41,9 @@ void _setupFirebaseMessaging() {
         ),
       );
     } else if (screen == 'CrashList') {
+    final crashId = message.data['crashId'];
+    if (crashId != null && !processedCrashes.contains(crashId)) {
+      processedCrashes.add(crashId);
       navigatorKey.currentState?.pushReplacement(
         MaterialPageRoute(
           builder: (context) => BottomNavBar(
@@ -53,6 +52,7 @@ void _setupFirebaseMessaging() {
           ),
         ),
       );
+    }
     }
   }
 });
