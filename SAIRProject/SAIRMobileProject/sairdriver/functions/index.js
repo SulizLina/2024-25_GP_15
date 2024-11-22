@@ -81,7 +81,7 @@ exports.sendnotificationViolation = functions.firestore
             try {
                 // Get the driverId from the Crash document
                 const driverId = newData.driverID;
-
+                const crashId = newData.crashID;
                 // Check if driverId is defined
                 if (!driverId) {
                     console.error('driverId is undefined or null.');
@@ -101,8 +101,21 @@ exports.sendnotificationViolation = functions.firestore
 
                 const driverDoc = driverQuerySnapshot.docs[0];
                 const driverData = driverDoc.data();
-                const documentId = driverDoc.id; 
-                const userToken = driverData.token; // Fetch the token directly from the Driver document
+                const documentId = driverDoc.id;
+                console.log(`Fetching crash with crash: ${crashId}`);
+                // Fetch the crash document from the Crash collection where CrashID matches
+                const crashQuery = admin.firestore().collection('Crash').where('crashID', '==', crashId);
+                const crashQuerySnapshot = await crashQuery.get();
+
+                if (crashQuerySnapshot.empty) {
+                    console.log(`crash document with crashId ${crashId} does not exist.`);
+                    return;
+                }
+
+                const crashDoc = crashQuerySnapshot.docs[0];
+                const crashData = crashDoc.data();
+                const crashdocumentId = crashData.id; 
+                const userToken = driverData.token; 
 
                 if (!userToken) {
                     console.error('No token found for the driver.');
@@ -119,6 +132,7 @@ exports.sendnotificationViolation = functions.firestore
                         sound: 'beep', // Custom data
                         screen: 'CrashList',
                         driverData: documentId || '',
+                        crashData: crashdocumentId || '',
                     },
                     android: {
                         priority: 'high', // Set priority for Android

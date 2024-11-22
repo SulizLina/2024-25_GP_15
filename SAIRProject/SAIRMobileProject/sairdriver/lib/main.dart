@@ -24,40 +24,50 @@ void main() async {
   _setupFirebaseMessaging();
   runApp(const InitialApp());
 }
+
 void _setupFirebaseMessaging() {
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-  final driverData = message.data['driverData'] ?? '';
-  final screen = message.data['screen'] ?? '';
+    final driverData = message.data['driverData'] ?? '';
+    final screen = message.data['screen'] ?? '';
 
-  if (driverData.isNotEmpty) {
-    if (screen == 'ViolationsList') {
-      // Update the index for Violations tab
-      navigatorKey.currentState?.pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => BottomNavBar(
-            driverId: driverData,
-            initialIndex: 1, // Set index for Violations tab
+    if (driverData.isNotEmpty) {
+      if (screen == 'ViolationsList') {
+        // Update the index for Violations tab
+        navigatorKey.currentState?.pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => BottomNavBar(
+              driverId: driverData,
+              initialIndex: 1, // Set index for Violations tab
+            ),
           ),
-        ),
-      );
-    } else if (screen == 'CrashList') {
-    final crashId = message.data['crashId'];
-    if (crashId != null && !processedCrashes.contains(crashId)) {
-      processedCrashes.add(crashId);
-      navigatorKey.currentState?.pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => BottomNavBar(
-            driverId: driverData,
-            initialIndex: 0, // Set index for Crashes tab
-          ),
-        ),
-      );
+        );
+      } else if (screen == 'CrashList') {
+        final CrashDoc = message.data['crashData'] ?? null;
+        print('----------current crashDoc:-------------------------$CrashDoc');
+        print(
+            '-----------------before adding------------------$processedCrashes');
+        if (CrashDoc != null && !processedCrashes.contains(CrashDoc)) {
+          print(
+              'CrashDoc is not null and the crash is not in processedCrashes');
+          processedCrashes.add(CrashDoc);
+          print(
+              '--------processedCrashes-----after adding----------------------$processedCrashes');
+          navigatorKey.currentState?.pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => BottomNavBar(
+                driverId: driverData,
+                initialIndex: 0, // Set index for Crashes tab
+              ),
+            ),
+          );
+        } else {
+          print('CrashDoc is null or the crash is in processedCrashes');
+        }
+      }
     }
-    }
-  }
-});
-
+  });
 }
+
 class InitialApp extends StatelessWidget {
   const InitialApp({super.key});
 
