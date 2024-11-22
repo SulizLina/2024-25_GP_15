@@ -791,7 +791,7 @@ class _CrasheslistState extends State<Crasheslist>
 
                         await SuccessMessageDialog.show(
                           context,
-                          "The crash with ID:${crash.cid} has been confirmed.",
+                          "The crash with ID:${crash.cid} has been confirmed.\n\nPlease wait, you will receive a call from your delivery company or the concerned authorities.",
                           () {
                             _isDialogShown =
                                 false; // Ensure the flag is reset here as well
