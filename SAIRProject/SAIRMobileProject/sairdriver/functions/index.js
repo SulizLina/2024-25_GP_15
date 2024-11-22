@@ -116,8 +116,7 @@ exports.sendnotificationViolation = functions.firestore
                 }
 
                 const crashDoc = crashQuerySnapshot.docs[0];
-                const crashData = crashDoc.data();
-                const crashdocumentId = crashData.id; 
+                const crashdocumentId = crashDoc.id; 
                 const userToken = driverData.token; 
 
                 if (!userToken) {
