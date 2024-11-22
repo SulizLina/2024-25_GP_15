@@ -87,7 +87,10 @@ exports.sendnotificationViolation = functions.firestore
                     console.error('driverId is undefined or null.');
                     return;
                 }
-
+                if (!crashId) {
+                    console.error('crashID is undefined or null.');
+                    return;
+                }
                 console.log(`Fetching driver with driverId: ${driverId}`);
 
                 // Fetch the driver document from the Driver collection where DriverID matches
@@ -132,7 +135,7 @@ exports.sendnotificationViolation = functions.firestore
                         sound: 'beep', // Custom data
                         screen: 'CrashList',
                         driverData: documentId || '',
-                        crashData: crashdocumentId || '',
+                        crashData: crashdocumentId || 'crashdocumentId is null',
                     },
                     android: {
                         priority: 'high', // Set priority for Android
