@@ -184,7 +184,7 @@ exports.sendnotificationViolation = functions.firestore
                         // Check if the status is still 'Pending'
                         if (docData && docData.Status === 'Pending') {
                             console.log(`Auto-confirming crash with ID: ${context.params.crashID}`);
-                            await crashRef.update({ Status: 'Confirmed', isAuto: true });
+                            await crashRef.update({ Status: 'Confirmed', isAuto: true, isAutoshown: true  });
                             console.log('Crash status successfully updated to "auto confirmed".');
                         } else {
                             console.log(`Crash ID ${context.params.crashID} status is no longer "Pending". Status: ${docData.Status}`);
