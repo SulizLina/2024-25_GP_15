@@ -9,6 +9,8 @@ import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:sairdriver/services/NotificationService.dart';
 import 'dart:convert';
 
+import 'package:sairdriver/services/crashstreambuilder.dart';
+
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -44,6 +46,7 @@ void _setupFirebaseMessaging() {
       } 
       
       else if (screen == 'CrashList') {
+         CrashStreamBuilder( driverId: driverData);
         final CrashDoc = message.data['crashData'] ?? null;
         print('----------current crashDoc:-------------------------$CrashDoc');
         print(
