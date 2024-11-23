@@ -14,6 +14,7 @@ class Violation {
   int? speed; // Motorcycle speed
   int? time; // Time and date
   bool? newV;
+  bool? isAuto;
   int? count30;
   int? count50;
   Violation(
@@ -22,6 +23,7 @@ class Violation {
       required this.gspNumber,
       required this.location,
       required this.position,
+    required this.isAuto,
       required this.Maxspeed,
       required this.speed,
       required this.price,
@@ -67,6 +69,7 @@ class Violation {
       count30: parsedJSON['count30'] as int?,
       count50: parsedJSON['count50'] as int?,
       newV: parsedJSON['newV'] as bool?,
+      isAuto: parsedJSON['isAuto'] as bool?,
     );
   }
 }

@@ -534,7 +534,7 @@ class _CrasheslistState extends State<Crasheslist>
                                       ? "You don't have any crashes\nfor the selected date."
                                       : selectedStatus == "All"
                                           ? "You don't have any crash,\nride safe :)"
-                                          : "You don't have any\n${selectedStatus.toLowerCase()} crash",
+                                          : "You don't have any\n${selectedStatus.toLowerCase()} crash,\nride safe :)",
                                   style: GoogleFonts.poppins(
                                       fontSize: 20, color: Colors.grey),
                                   textAlign: TextAlign.center,

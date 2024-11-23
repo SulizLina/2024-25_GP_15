@@ -391,7 +391,9 @@ class _ViolationslistState extends State<Violationslist> {
                             ),
                             margin: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 5),
-                            color: Colors.white,
+                            color: violation.isAuto == true
+                                ? Colors.lightGreen[100]
+                                : Colors.white,
                             elevation: 2,
                             child: ListTile(
                               title: Text(
@@ -442,13 +444,12 @@ class _ViolationslistState extends State<Violationslist> {
                   },
                 ),
               ),
-              //show crash dialog if needed 
+              //show crash dialog if needed
               CrashStreamBuilder(driverId: widget.driverId),
             ],
           ),
         ),
       ),
     );
-
   }
 }

@@ -34,6 +34,7 @@ class _ViolationdetailState extends State<Violationdetail> {
   @override
   void initState() {
     super.initState();
+    deleteIsAutoField();
     fetchViolation();
     loadCustomMapIcon();
     fetchMotor();
@@ -59,6 +60,20 @@ class _ViolationdetailState extends State<Violationdetail> {
       MotorcycleDatabase mdb = MotorcycleDatabase();
       motorcycle = await mdb.getMotorcycleByIDhis(violation!.Vid!);
       setState(() {});
+    }
+  }
+
+    Future<void> deleteIsAutoField() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('Violation')
+          .doc(widget.violationId)
+          .update({
+        'isAuto': FieldValue.delete(),
+      });
+      print("isAuto field deleted successfully");
+    } catch (e) {
+      print('Error deleting isAuto field: $e');
     }
   }
 
