@@ -70,7 +70,10 @@ class _CrashStreamBuilderState extends State<CrashStreamBuilder> {
               Crash crash = Crash.fromJson(doc);
               if (crash.isAutoshown == true) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  CrashDialog.showAutoConfirmationMessage(context, crash);
+                  isAutoshown=true;
+                  if(!isAutoshown){
+                    CrashDialog.showAutoConfirmationMessage(context, crash);
+                  }
                 });
               }
             }

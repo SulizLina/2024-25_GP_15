@@ -46,7 +46,6 @@ void _setupFirebaseMessaging() {
       } 
       
       else if (screen == 'CrashList') {
-         CrashStreamBuilder( driverId: driverData);
         final CrashDoc = message.data['crashData'] ?? null;
         print('----------current crashDoc:-------------------------$CrashDoc');
         print(

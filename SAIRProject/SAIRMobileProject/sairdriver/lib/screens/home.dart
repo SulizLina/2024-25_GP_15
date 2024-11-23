@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:sairdriver/screens/login_email.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sairdriver/services/crashstreambuilder.dart';
 
 class Home extends StatefulWidget {
   final String driverId; // DriverID passed from previous page
@@ -24,8 +25,9 @@ class _HomeState extends State<Home> {
     // Fetch driver details when the page initializes
     fetchDriverName();
   }
-Future<void>request(String driverId)async {
-     // Get the device token
+
+  Future<void> request(String driverId) async {
+    // Get the device token
     String? token = await messaging.getToken();
     print("Device token: $token");
 
@@ -36,7 +38,8 @@ Future<void>request(String driverId)async {
           .doc(driverId)
           .update({'token': token});
     }
-}
+  }
+
   Future<void> fetchDriverName() async {
     try {
       // Query the Firestore database for the driver's details
@@ -278,6 +281,8 @@ Future<void>request(String driverId)async {
                   title: "Check Your Motorcycle",
                   subtitle:
                       "Inspect Your Motorcycle: Tires, Lights, and More Before Each Ride"),
+              //show crash dialog if needed
+              CrashStreamBuilder(driverId: widget.driverId),
             ],
           ),
         ),

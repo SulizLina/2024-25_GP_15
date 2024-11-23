@@ -106,7 +106,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
           ),
           const SizedBox(height: 4),
           Text(
-            'Crash',
+            'Crashes',
             style: GoogleFonts.poppins(
               fontSize: 9,
               decoration: TextDecoration.none,

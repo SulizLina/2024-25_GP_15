@@ -70,6 +70,7 @@ class CrashDialog {
                       Navigator.of(context).pop();
                       isDialogShown = false;
 
+
                       await FirebaseFirestore.instance
                           .collection('Crash')
                           .doc(crashDoc.id)
@@ -151,7 +152,7 @@ class CrashDialog {
   }
 
 static Future<void> showAutoConfirmationMessage(
-    BuildContext context, Crash crash) async {
+  BuildContext context, Crash crash) async {
   await showDialog(
     context: context,
     barrierDismissible: false, 
