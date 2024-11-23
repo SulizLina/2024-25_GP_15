@@ -4,6 +4,7 @@ import 'package:sairdriver/models/Employer.dart';
 import 'package:sairdriver/models/driver.dart';
 import 'package:sairdriver/models/motorcycle.dart';
 import 'package:sairdriver/screens/login_email.dart';
+import 'package:sairdriver/services/crashstreambuilder.dart';
 import 'package:sairdriver/services/driver_database.dart';
 import 'package:sairdriver/services/motorcycle_database.dart';
 import 'editpasswordpage.dart';
@@ -624,6 +625,8 @@ class _ProfilepageState extends State<Profilepage> {
                 readOnly: true,
               ),
               const SizedBox(height: 16),
+              //show crash dialog if needed
+              CrashStreamBuilder(driverId: widget.driverId),
             ],
           ),
         ),
@@ -631,50 +634,3 @@ class _ProfilepageState extends State<Profilepage> {
     );
   }
 }
-
-/*
-  @override
-  void initState() {
-    super.initState();
-    if (currentUser != null) {
-      userId = currentUser!.uid; // Assign the user's UID from FirebaseAuth
-      fetchUserData(); // Fetch user data using this UID
-    } else {
-      print("No user is currently signed in.");
-    }
-  }*/
-/*
-  Future<void> fetchUserData() async {
-    if (userId != null) {
-      // Fetch data from Firestore using the user UID
-      final userDoc = await FirebaseFirestore.instance
-          .collection('Driver')
-          .doc(userId) // Use the UID to fetch the corresponding document
-          .get();
-
-      if (userDoc.exists) {
-        setState(() {
-          firstName = userDoc['Fname'];
-          lastName = userDoc['Lname'];
-          idNumber = userDoc['DriverID'];
-          phoneNumber = userDoc['PhoneNumber'];
-          // Handle null GPSSerialNumber case by showing a default message
-          gpsSerialNumber =
-              userDoc['GPSNumber'] ?? 'There is no assigned GPS yet';
-
-        });
-      }
-    }
-  }*/
-/*
-   Future<void> fetchDriver() async {
-    String driverID = "1111111111"; // Static driverID for now
-
-    // Fetch driver from the data layer
-    List<driver> fetchedDriver =
-        await DriverDatabase().getDrivers(driverID);
-
-    setState(() {
-      driverinfo = fetchedDriver; 
-    });
-  }*/

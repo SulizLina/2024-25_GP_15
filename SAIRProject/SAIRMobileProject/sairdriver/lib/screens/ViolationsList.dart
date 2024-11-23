@@ -443,7 +443,7 @@ class _ViolationslistState extends State<Violationslist> {
                 ),
               ),
               //show crash dialog if needed 
-              CrashStreamBuilder(),
+              CrashStreamBuilder(driverId: widget.driverId),
             ],
           ),
         ),

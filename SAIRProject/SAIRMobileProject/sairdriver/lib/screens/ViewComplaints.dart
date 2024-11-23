@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sairdriver/models/driver.dart';
+import 'package:sairdriver/services/crashstreambuilder.dart';
 import 'package:sairdriver/services/driver_database.dart';
 import 'package:sairdriver/models/motorcycle.dart';
 import 'package:sairdriver/models/complaint.dart';
@@ -248,10 +249,12 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                   child: ColorFiltered(
                     colorFilter: ColorFilter.mode(
                       plateN.isEmpty
-                          ? const Color.fromARGB(255, 199, 199, 199) //list is empty
+                          ? const Color.fromARGB(
+                              255, 199, 199, 199) //list is empty
                           : (selectedPlate == null
                               ? const Color(0xFFF3F3F3) // no plate selected
-                              : Color(0xFFFFC800)), //  plate is selected (traffic yellow)
+                              : Color(
+                                  0xFFFFC800)), //  plate is selected (traffic yellow)
                       BlendMode.srcIn,
                     ),
                     child: Image.asset(
@@ -300,12 +303,12 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                     : HugeIcons.strokeRoundedCalendar03,
                 size: 24,
                 color: complaints.isEmpty
-                    ? const Color.fromARGB(255, 199, 199, 199) // complaint list is empty 
+                    ? const Color.fromARGB(
+                        255, 199, 199, 199) // complaint list is empty
                     : isDateFiltered
                         ? const Color(
-                            0xFFFFC800)  // Date is selected (traffic yellow)
-                        : Color(
-                            0xFFF3F3F3), // No date selected
+                            0xFFFFC800) // Date is selected (traffic yellow)
+                        : Color(0xFFF3F3F3), // No date selected
               ),
             ),
           ],
@@ -537,7 +540,6 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                                 filteredList.length, (index) => false);
 
                             if (filteredList.isEmpty) {
-
                               //Check the plate number
                               if (selectedPlate != null) {
                                 return Center(
@@ -587,7 +589,8 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
 
                                 Color statusColor;
                                 if (complaint.Status == 'Pending') {
-                                  statusColor = const Color(0xFFFFC800); //traffic yellow color
+                                  statusColor = const Color(
+                                      0xFFFFC800); //traffic yellow color
                                 } else if (complaint.Status == 'Accepted') {
                                   statusColor = Colors.green;
                                 } else {
@@ -672,6 +675,8 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                       ),
                     ),
                   ),
+                  //show crash dialog if needed
+                  CrashStreamBuilder(driverId: widget.driverId),
                 ],
               ),
             ),
