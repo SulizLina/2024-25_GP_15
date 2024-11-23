@@ -41,7 +41,9 @@ void _setupFirebaseMessaging() {
             ),
           ),
         );
-      } else if (screen == 'CrashList') {
+      } 
+      
+      else if (screen == 'CrashList') {
         final CrashDoc = message.data['crashData'] ?? null;
         print('----------current crashDoc:-------------------------$CrashDoc');
         print(
@@ -49,9 +51,10 @@ void _setupFirebaseMessaging() {
         if (CrashDoc != null && !processedCrashes.contains(CrashDoc)) {
           print(
               'CrashDoc is not null and the crash is not in processedCrashes');
-          processedCrashes.add(CrashDoc);
+          //processedCrashes.add(CrashDoc);
           print(
-              '--------processedCrashes-----after adding----------------------$processedCrashes');
+              '--------processedCrashes-----after adding----------------------$processedCrashes');         
+          /*
           navigatorKey.currentState?.pushReplacement(
             MaterialPageRoute(
               builder: (context) => BottomNavBar(
@@ -60,10 +63,14 @@ void _setupFirebaseMessaging() {
               ),
             ),
           );
+          */
+          
         } else {
           print('CrashDoc is null or the crash is in processedCrashes');
         }
       }
+
+
     }
   });
 }

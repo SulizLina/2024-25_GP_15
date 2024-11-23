@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:sairdriver/messages/CrashDialog.dart';
 import 'package:sairdriver/models/crash.dart';
 import 'package:sairdriver/models/driver.dart';
 import 'package:sairdriver/models/motorcycle.dart';
@@ -39,8 +40,6 @@ class _CrasheslistState extends State<Crasheslist>
   List<DocumentSnapshot> filteredCrashes = [];
   Map<String, String?> licensePlateMap = {};
   Timer? _timer; // Timer for auto-confirmation
-  bool _isDialogShown =
-      false; // To avoid redundant pop-ups caused by the StreamBuilder
 
   @override
   void initState() {
@@ -438,44 +437,32 @@ class _CrasheslistState extends State<Crasheslist>
                               return crash.status?.toLowerCase() == 'pending';
                             }).toList();
 
-                            //Show the popup for auto confirmed crashes
-
+                            // Automatically show popup for auto-confirmed crashes
                             for (var doc in allCrashes) {
                               Crash crash = Crash.fromJson(doc);
                               if (crash.isAutoshown == true) {
                                 WidgetsBinding.instance
                                     .addPostFrameCallback((_) {
-                                  _showAutoConfirmationMessage(crash);
+                                  CrashDialog.showAutoConfirmationMessage(context, crash);
                                 });
                               }
                             }
 
-                            for (var crashDoc in crashDocs) {
-                              Crash crash = Crash.fromJson(crashDoc);
+                            for (var doc in pendingCrashes) {
+                              Crash crash = Crash.fromJson(doc);
 
-                              // Check if crash is already processed
-                              if (crash.cDocid != null &&
-                                  processedCrashes.contains(crash.cDocid)) {
-                                continue; // Skip already processed crashes
+                              // Skip already processed crashes
+                              if (processedCrashes.contains(crash.cDocid)) {
+                                continue;
                               }
 
-                              if (crash.cDocid != null) {
-                                // Mark crash as processed
-                                processedCrashes.add(crash.cDocid!);
-                              }
+                              processedCrashes.add(crash.cDocid!);
 
-                              // Perform other actions with the crash document
-                              if (crash.status == 'Pending') {
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
-                                  _showCrashDialog(crashDoc);
-                                });
-                              }
-                            }
-                            // Show the popup for pending crashes
-                            if (pendingCrashes.isNotEmpty && !_isDialogShown) {
                               WidgetsBinding.instance.addPostFrameCallback((_) {
-                                _showCrashDialog(pendingCrashes.first);
+                                CrashDialog.showCrashDialog(
+                                  context,
+                                  doc, 
+                                );
                               });
                             }
 
@@ -660,188 +647,5 @@ class _CrasheslistState extends State<Crasheslist>
       ),
     );
   }
-  
-  void _showCrashDialog(DocumentSnapshot crashDoc) {
-    if (_isDialogShown) return; // Prevent multiple dialogs
-    _isDialogShown = true;
 
-    Crash crash = Crash.fromJson(crashDoc);
-
-    // Parse the time string (crash.getFormattedTimeOnly() is in "HH:MM:SS" format)
-    List<String> timeParts = crash.getFormattedTimeOnly().split(':');
-    int hours = int.parse(timeParts[0]);
-    int minutes = int.parse(timeParts[1]);
-    int seconds = int.parse(timeParts[2]);
-
-    // Get the crash date (formatted as yyyy-MM-dd)
-    DateTime crashDate = DateTime.parse(crash.getFormattedDate());
-    DateTime crashDateTime = DateTime(
-      crashDate.year,
-      crashDate.month,
-      crashDate.day,
-      hours,
-      minutes,
-      seconds,
-    );
-
-    // Calculate the end time (5 minutes after the crash time)
-    DateTime endDateTime = crashDateTime.add(Duration(minutes: 5));
-    int remainingTime = endDateTime.difference(DateTime.now()).inSeconds;
-
-    if (remainingTime <= 0) {
-      print("Remaining time is zero or negative. Auto-confirming.");
-      remainingTime = 0; // Prevent negative values
-    } else {
-      print("Remaining time: $remainingTime seconds");
-    }
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Center(
-                child: Text(
-                  "You had a crash?",
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(202, 3, 152, 85),
-                  ),
-                ),
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Please confirm or reject the crash. You have 5 minutes to respond before it will be automatically confirmed.',
-                    style: GoogleFonts.poppins(fontSize: 16),
-                  ),
-                  SizedBox(height: 20),
-                  CountdownTimer(
-                    endTime: DateTime.now().millisecondsSinceEpoch +
-                        remainingTime * 1000,
-                    onEnd: () async {
-                      Navigator.of(context).pop();
-                      _isDialogShown = false;
-
-                      // Check crash status and update only if not confirmed
-                      await FirebaseFirestore.instance
-                          .collection('Crash')
-                          .doc(crashDoc.id)
-                          .update({
-                        'Status': 'Confirmed',
-                        'isAuto': true,
-                        'isAutoshown': true,
-                      });
-                    },
-                    widgetBuilder: (_, time) {
-                      if (time == null) {
-                        return Center(
-                          child: Text(
-                            "Time's up! Crash status is automatically confirming...",
-                            style: GoogleFonts.poppins(color: Colors.red),
-                          ),
-                        );
-                      }
-                      return Text(
-                        "Time remaining: ${time.min ?? '0'}m:${time.sec}s",
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-                      );
-                    },
-                  ),
-                ],
-              ),
-              actions: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      onPressed: () async {
-                        Navigator.of(context).pop(); // Dismiss the dialog
-                        _isDialogShown = false; // Reset the flag
-
-                        _updateCrashStatus(crashDoc.id, "Rejected");
-                        SuccessMessageDialog.show(
-                          context,
-                          'The crash with ID:${crash.cid!} has been rejected successfully!',
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: Text(
-                        '  Reject  ',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: () async {
-                        _updateCrashStatus(crashDoc.id, "Confirmed");
-                        Navigator.of(context).pop(); // Dismiss the dialog
-                        _isDialogShown = false; // Reset the flag
-
-                        await SuccessMessageDialog.show(
-                          context,
-                          "The crash with ID:${crash.cid} has been confirmed.\n\nPlease wait, you will receive a call from your delivery company or the concerned authorities.",
-                          () {
-                            _isDialogShown =
-                                false; // Ensure the flag is reset here as well
-                          },
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromARGB(255, 3, 152, 85),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: Text(
-                        'Confirm',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Future<void> _showAutoConfirmationMessage(Crash crash) async {
-    await SuccessMessageDialog.show(
-      context,
-      "The crash with ID:${crash.cid} has been automatically confirmed due to no action being taken within the allotted 5-minute timeframe.\n\nPlease wait, you will receive a call from your delivery company or the concerned authorities.",
-      () {
-        _isDialogShown = false;
-      },
-    ).then((_) {
-      // This runs after the dialog is closed
-      FirebaseFirestore.instance.collection('Crash').doc(crash.cDocid).update({
-        'isAutoshown': FieldValue.delete(),
-      });
-    });
-  }
-
-  void _updateCrashStatus(String crashId, String status) {
-    FirebaseFirestore.instance
-        .collection('Crash')
-        .doc(crashId)
-        .update({'Status': status}).catchError((error) {
-      print("Failed to update crash status: $error");
-    });
-  }
 }

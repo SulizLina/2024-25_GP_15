@@ -1,3 +1,4 @@
-library my_project.globals;
+library sairdriver.globals;
 
 Set<String> processedCrashes = {};
+bool isDialogShown =false; 
