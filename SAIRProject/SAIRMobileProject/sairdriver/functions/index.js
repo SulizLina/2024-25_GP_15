@@ -128,7 +128,7 @@ exports.sendnotificationViolation = functions.firestore
                 const payload = {
                     notification: {
                         title: 'New Crash detected!',
-                        body: 'Please open the app and verify it.',
+                        body: 'Please open the app to respond within 10 minutes before it is automatically confirmed.',
                     },
                     data: {
                         sound: 'beep', // Custom data
@@ -177,7 +177,7 @@ exports.sendnotificationViolation = functions.firestore
             try {
                 const createdTime = newData.time; // Timestamp in seconds
                 const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-                const fiveMinutesDelay = 300; // 5 minutes in seconds
+                const fiveMinutesDelay = 600; // 10 minutes in seconds
 
                 const delay = Math.max(0, (createdTime + fiveMinutesDelay - currentTime) * 1000);
 
@@ -216,3 +216,73 @@ exports.sendnotificationViolation = functions.firestore
             console.log('Crash status is not "Pending". No action required.');
         }
     });
+
+    exports.sendnotificationComplaints = functions.firestore
+    .document('Complaint/{Status}')
+    .onUpdate(async (change, context) => {
+        const newData = change.after.data();
+
+        try {
+            const driverId = newData.driverID;
+            const complaintId = newData.ComplaintID;
+           
+            // Check if driverId is defined
+            if (!driverId) {
+                console.error('driverId is undefined or null.');
+                return;
+            }
+
+            const driverQuery = admin.firestore().collection('Driver').where('DriverID', '==', driverId);
+            const driverQuerySnapshot = await driverQuery.get();
+
+            if (driverQuerySnapshot.empty) {
+                console.log(`Driver document with driverId ${driverId} does not exist.`);
+                return;
+            }
+
+            const driverDoc = driverQuerySnapshot.docs[0];
+            const driverData = driverDoc.data();
+            const documentId = driverDoc.id;
+            const userToken = driverData.token;
+
+            if (!userToken) {
+                console.error('No token found for the driver.');
+                return;
+            }
+
+            const payload = {
+                notification: {
+                    title: 'Complaint Status Updated!',
+                    body: `The status of your complaint (ID: ${complaintId}) has been updated. Open the app to view the latest details.`,
+                },
+                data: {
+                    sound: 'beep',
+                    screen: 'ComplaintList',
+                    driverData: documentId || '',
+                },
+                android: {
+                    priority: 'high',
+                },
+                apns: {
+                    payload: {
+                        aps: {
+                            sound: 'beep',
+                        },
+                    },
+                },
+            };
+
+            const response = await admin.messaging().send({
+                token: userToken,
+                notification: payload.notification,
+                data: payload.data,
+                android: payload.android,
+                apns: payload.apns,
+            });
+
+            console.log('Notification sent successfully:', response);
+
+        } catch (error) {
+            console.error('Error sending notification:', error);
+        }
+    }); 

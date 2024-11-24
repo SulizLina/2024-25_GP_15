@@ -97,7 +97,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
           ),
           const SizedBox(height: 4),
           Image.asset(
-            'assets/icons/accident.png',
+            'assets/icons/accident.png', //'assets/icons/Crash.png',
             color: _controller.index == 0
                 ? const Color.fromARGB(202, 3, 152, 85)
                 : Colors.grey[500],
@@ -108,7 +108,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
           Text(
             'Crashes',
             style: GoogleFonts.poppins(
-              fontSize: 9,
+              fontSize: 10,
               decoration: TextDecoration.none,
               color: _controller.index == 0
                   ? const Color.fromARGB(202, 3, 152, 85)

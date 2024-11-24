@@ -382,9 +382,9 @@ class _CrashdetailState extends State<Crashdetail> {
         Row(
           children: [
             Image.asset(
-              'assets/icons/CRASHiconCrash.png',
-              width: 30,
-              height: 30,
+              'assets/icons/accident.png',
+              width: 25,
+              height: 25,
               color: Color.fromARGB(255, 3, 152, 85),
             ),
             const SizedBox(width: 8),

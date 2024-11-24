@@ -33,7 +33,7 @@ class CrashDialog {
       seconds,
     );
 
-    DateTime endDateTime = crashDateTime.add(Duration(minutes: 5));
+    DateTime endDateTime = crashDateTime.add(Duration(minutes: 10));
     int remainingTime = endDateTime.difference(DateTime.now()).inSeconds;
 
     if (remainingTime <= 0) remainingTime = 0;
@@ -59,7 +59,7 @@ class CrashDialog {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Please confirm or reject the crash. You have 5 minutes to respond before it will be automatically confirmed.',
+                    'Please confirm or reject the crash. You have 10 minutes to respond before it will be automatically confirmed.',
                     style: GoogleFonts.poppins(fontSize: 16),
                   ),
                   SizedBox(height: 20),
