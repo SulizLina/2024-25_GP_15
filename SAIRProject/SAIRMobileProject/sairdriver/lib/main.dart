@@ -39,7 +39,17 @@ void _setupFirebaseMessaging() {
           MaterialPageRoute(
             builder: (context) => BottomNavBar(
               driverId: driverData,
-              initialIndex: 1, // Set index for Violations tab
+              initialIndex: 1, 
+            ),
+          ),
+        );
+      } else if (screen == 'ComplaintList') {
+        // Update the index for Violations tab
+        navigatorKey.currentState?.pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => BottomNavBar(
+              driverId: driverData,
+              initialIndex: 3, 
             ),
           ),
         );
