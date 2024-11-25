@@ -8,10 +8,7 @@ import 'package:sairdriver/models/motorcycle.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/screens/ViolationDetail.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:sairdriver/messages/CrashDialog.dart';
-import 'package:sairdriver/models/crash.dart';
 import 'package:sairdriver/services/crashstreambuilder.dart';
-import 'package:sairdriver/globals.dart';
 
 // ignore: must_be_immutable
 class Violationslist extends StatefulWidget {
@@ -360,6 +357,20 @@ class _ViolationslistState extends State<Violationslist> {
 
                     isHoveredList =
                         List.generate(filteredList.length, (index) => false);
+                    if (filteredList.isEmpty) {
+                      return Center(
+                        child: Text(
+                          isDateFiltered && selectedPlate != null
+                              ? "You don't have any violations for the selected date and license plate."
+                              : isDateFiltered || selectedPlate != null
+                                  ? "You don't have any violations\nfor the selected ${isDateFiltered ? 'date' : 'license plate'}."
+                                  : "You don't have any violations,\nride safe :)",
+                          style: GoogleFonts.poppins(
+                              fontSize: 20, color: Colors.grey),
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    }
 
                     if (filteredList.isEmpty) {
                       return Center(

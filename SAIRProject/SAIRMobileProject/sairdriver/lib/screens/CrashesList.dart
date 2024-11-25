@@ -1,4 +1,4 @@
-import 'dart:async'; // Import for Timer
+import 'dart:async';
 import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +10,6 @@ import 'package:sairdriver/models/driver.dart';
 import 'package:sairdriver/models/motorcycle.dart';
 import 'package:sairdriver/screens/CrashDetail.dart';
 import 'package:sairdriver/services/driver_database.dart';
-import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
-import 'package:sairdriver/messages/success.dart';
 import 'package:sairdriver/globals.dart';
 
 class Crasheslist extends StatefulWidget {
@@ -443,7 +441,8 @@ class _CrasheslistState extends State<Crasheslist>
                               if (crash.isAutoshown == true) {
                                 WidgetsBinding.instance
                                     .addPostFrameCallback((_) {
-                                  CrashDialog.showAutoConfirmationMessage(context, crash);
+                                  CrashDialog.showAutoConfirmationMessage(
+                                      context, crash);
                                 });
                               }
                             }
@@ -461,7 +460,7 @@ class _CrasheslistState extends State<Crasheslist>
                               WidgetsBinding.instance.addPostFrameCallback((_) {
                                 CrashDialog.showCrashDialog(
                                   context,
-                                  doc, 
+                                  doc,
                                 );
                               });
                             }
@@ -514,27 +513,19 @@ class _CrasheslistState extends State<Crasheslist>
                               return crashB.time!.compareTo(
                                   crashA.time!); // Sort by time, descending
                             });
-
-                            // If the crashes list is empty, and no plate number for this crash
+// If the crashes list is empty, display the appropriate message based on filters
                             if (filteredList.isEmpty) {
-                              if (selectedPlate != null) {
-                                return Center(
-                                  child: Text(
-                                    "You don't have any crash for the selected plate number.",
-                                    style: GoogleFonts.poppins(
-                                        fontSize: 20, color: Colors.grey),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                );
-                              }
-
                               return Center(
                                 child: Text(
-                                  isDateFiltered
-                                      ? "You don't have any crashes\nfor the selected date."
-                                      : selectedStatus == "All"
-                                          ? "You don't have any crash,\nride safe :)"
-                                          : "You don't have any\n${selectedStatus.toLowerCase()} crash,\nride safe :)",
+                                  selectedPlate != null && isDateFiltered
+                                      ? "You don't have any${selectedStatus != 'All' ? ' ' + selectedStatus.toLowerCase() : ''} crashes\n for the selected date and plate number."
+                                      : selectedPlate != null
+                                          ? "You don't have any${selectedStatus != 'All' ? ' ' + selectedStatus.toLowerCase() : ''} crashes\n for the selected plate number."
+                                          : isDateFiltered
+                                              ? "You don't have any${selectedStatus != 'All' ? ' ' + selectedStatus.toLowerCase() : ''} crashes\n for the selected date."
+                                              : selectedStatus == "All"
+                                                  ? "You don't have any crashes,\nride safe :)"
+                                                  : "You don't have any\n${selectedStatus.toLowerCase()} crashes",
                                   style: GoogleFonts.poppins(
                                       fontSize: 20, color: Colors.grey),
                                   textAlign: TextAlign.center,
@@ -647,5 +638,4 @@ class _CrasheslistState extends State<Crasheslist>
       ),
     );
   }
-
 }

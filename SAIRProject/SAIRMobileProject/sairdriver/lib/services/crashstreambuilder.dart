@@ -60,7 +60,7 @@ class _CrashStreamBuilderState extends State<CrashStreamBuilder> {
               return Center(child: Text("Error: ${crashSnapshot.error}"));
             } else if (!crashSnapshot.hasData ||
                 crashSnapshot.data!.docs.isEmpty) {
-              return const Center(child: Text("No crashes found"));
+              return const Center(child: Text(""));
             }
 
             final allCrashes = crashSnapshot.data!.docs;
