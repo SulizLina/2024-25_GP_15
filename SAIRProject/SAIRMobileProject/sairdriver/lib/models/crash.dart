@@ -12,7 +12,7 @@ class Crash {
   GeoPoint? position;
   int? time;
   String? status;
-  final Timestamp? timestamp; // Use Timestamp if it comes from Firestore
+  final Timestamp? timestamp; 
 
   Crash({
     required this.cDocid,

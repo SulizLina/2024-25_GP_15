@@ -4,16 +4,16 @@ import 'package:sairdriver/models/violation.dart';
 class ViolationsDatabase {
 
   // Fetching all violations by Driver ID
-  Future<List<Violation>> getViolations(String driverID) async { //////////////////////
+  Future<List<Violation>> getViolations(String driverID) async {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('Violation') //////////////////Update table name//////////////////////////
+          .collection('Violation')
           .where('driverID', isEqualTo: driverID)
           .get();
 
       // Mapping the documents to the Violation model using the document snapshot
       return snapshot.docs.map((doc) {
-        return Violation.fromJson(doc); // Pass the entire DocumentSnapshot
+        return Violation.fromJson(doc);
       }).toList();
     } catch (e) {
       print("Error fetching violations: $e");
@@ -25,16 +25,16 @@ class ViolationsDatabase {
     try {
       DocumentSnapshot snapshot = await FirebaseFirestore.instance
           .collection('Violation')
-          .doc(violationId) // Use the document ID directly
+          .doc(violationId)
           .get();
 
       if (snapshot.exists) {
-        return Violation.fromJson(snapshot); // Return the violation object
+        return Violation.fromJson(snapshot);
       }
-      return null; // Return null if no violation found
+      return null;
     } catch (e) {
       print("Error fetching violation: $e");
-      return null; // Return null on error
+      return null;
     }
   }
 
@@ -43,16 +43,16 @@ class ViolationsDatabase {
     try {
       DocumentSnapshot snapshot = await FirebaseFirestore.instance
           .collection('Violation')
-          .doc(violationId) // Use the document ID directly
+          .doc(violationId)
           .get();
 
       if (snapshot.exists) {
-        return Violation.fromJson(snapshot); // Return the violation object
+        return Violation.fromJson(snapshot);
       }
-      return null; // Return null if no violation found
+      return null;
     } catch (e) {
       print("Error fetching violation: $e");
-      return null; // Return null on error
+      return null;
     }
   }
 }

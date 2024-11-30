@@ -100,7 +100,7 @@ class _CrashStreamBuilderState extends State<CrashStreamBuilder> {
               });
             }
 
-            return const SizedBox(); // Empty space for crashes block, adjust as needed
+            return const SizedBox(); 
           },
         );
       },

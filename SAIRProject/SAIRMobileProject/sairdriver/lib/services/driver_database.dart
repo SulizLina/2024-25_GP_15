@@ -21,7 +21,7 @@ class DriverDatabase {
   Future<void> updatePhoneNumber(String driverId, String newPhoneNumber) async {
     try {
       await _firestore.collection('Driver').doc(driverId).update({
-        'phoneNumber': newPhoneNumber, // Update the phone number field
+        'phoneNumber': newPhoneNumber, 
       });
     } catch (e) {
       throw Exception('Failed to update phone number: $e');
@@ -33,36 +33,16 @@ class DriverDatabase {
     try {
       DocumentSnapshot snapshot = await FirebaseFirestore.instance
           .collection('Driver')
-          .doc(DriverId) // Use the document ID directly
+          .doc(DriverId) 
           .get();
 
       if (snapshot.exists) {
         return driver.fromJson(snapshot); 
       }
-      return null; // Return null if no driver found
+      return null; 
     } catch (e) {
       print("Error fetching driver: $e");
-      return null; // Return null on error
-    }
-  }
-  /*final CollectionReference motorcycleCollection =
-      FirebaseFirestore.instance.collection('Motorcycle');
-
-  // Fetch the plate number from the Motorcycle collection using DriverID
-  Future<String?> getPlateNumberByDriverId(String driverId) async {
-    try {
-      QuerySnapshot querySnapshot = await motorcycleCollection
-          .where('DriverID', isEqualTo: driverId)
-          .limit(1)
-          .get();
-      if (querySnapshot.docs.isNotEmpty) {
-        var plateNumber = querySnapshot.docs.first['LicensePlate'];
-        return plateNumber;
-      }
-    } catch (e) {
-      print('Error fetching plate number: $e');
       return null;
     }
-    return null;
-  }*/
+  }
 }

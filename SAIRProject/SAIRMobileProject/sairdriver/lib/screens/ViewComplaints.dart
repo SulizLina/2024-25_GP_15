@@ -147,7 +147,6 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
         _isLoading = false;
       });
     } catch (e) {
-      // ignore: avoid_print
       print("Error fetching complaint: $e");
       setState(() {
         _isLoading = false;
@@ -254,7 +253,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                           : (selectedPlate == null
                               ? const Color(0xFFF3F3F3) // no plate selected
                               : Color(
-                                  0xFFFFC800)), //  plate is selected (traffic yellow)
+                                  0xFFFFC800)), 
                       BlendMode.srcIn,
                     ),
                     child: Image.asset(
@@ -488,16 +487,16 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                                 snapshot.data!.docs.isEmpty) {
                               return Center(
                                 child: Text(
-                                  isDateFiltered // || isPlateFiltered
+                                  isDateFiltered 
                                       ? "You don't have any complaint\nfor the selected date."
                                       : _tabController.index ==
-                                              0 //&& !isDateFiltered
+                                              0 
                                           ? "You don't have any complaint,\nride safe :)"
                                           : "You don't have any ${[
                                               "Accepted",
                                               "Pending",
                                               "Rejected"
-                                            ][_tabController.index - 1]} complaint", // Updated message
+                                            ][_tabController.index - 1]} complaint", 
                                   style: GoogleFonts.poppins(
                                       fontSize: 20, color: Colors.grey),
                                   textAlign: TextAlign.center,

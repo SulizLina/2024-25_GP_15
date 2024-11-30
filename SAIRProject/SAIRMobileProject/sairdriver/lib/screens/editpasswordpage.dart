@@ -5,7 +5,7 @@ import 'package:sairdriver/messages/confirm.dart';
 import 'package:sairdriver/messages/success.dart';
 
 class Editpasswordpage extends StatefulWidget {
-  final String driverId; // DriverID passed from previous page
+  final String driverId;
   Editpasswordpage({required this.driverId});
 
   @override
@@ -25,7 +25,6 @@ class _EditpasswordpageState extends State<Editpasswordpage> {
   bool hasUpperLowerCase = false;
   bool hasNumber = false;
   bool hasSpecialChar = false;
-
   bool hasUserTyped = false;
 
   // Function to validate password dynamically
@@ -46,11 +45,9 @@ class _EditpasswordpageState extends State<Editpasswordpage> {
       'Confirm Password Change',
       'Are you sure you want to change your password?',
       () {
-        _changePassword(); // Proceed with password update
+        _changePassword();
       },
-      onCancel: () {
-        // Optionally handle the cancel action if needed
-      },
+      onCancel: () {},
     );
   }
 
@@ -114,7 +111,7 @@ class _EditpasswordpageState extends State<Editpasswordpage> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pop(); // Close the dialog
+                        Navigator.of(context).pop();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
@@ -140,7 +137,7 @@ class _EditpasswordpageState extends State<Editpasswordpage> {
                           );
 
                           await user?.reauthenticateWithCredential(credential);
-                          Navigator.of(context).pop(); // Close the dialog
+                          Navigator.of(context).pop();
                           _changePassword(); // Retry changing the password
                         } catch (e) {
                           // Show error if reauthentication fails
@@ -149,7 +146,7 @@ class _EditpasswordpageState extends State<Editpasswordpage> {
                             'Reauthentication Failed',
                             'Please check your credentials and try again.',
                             () {
-                              Navigator.of(context).pop(); // Close the dialog
+                              Navigator.of(context).pop();
                             },
                           );
                         }
@@ -184,13 +181,12 @@ class _EditpasswordpageState extends State<Editpasswordpage> {
         final newPassword = _passwordController.text;
         User? user = FirebaseAuth.instance.currentUser;
         await user!.updatePassword(newPassword);
- Navigator.of(context).pop(); // 
+        Navigator.of(context).pop(); //
         // Show success dialog once password is updated
         SuccessMessageDialog.show(
           context,
           'Your password has been updated successfully!',
         );
-
       } catch (e) {
         if (e is FirebaseAuthException && e.code == 'requires-recent-login') {
           // If the error is due to requiring recent login, reauthenticate the user
@@ -204,7 +200,7 @@ class _EditpasswordpageState extends State<Editpasswordpage> {
             'Error',
             'Failed to update password. Please try again.',
             () {
-              Navigator.of(context).pop(); // Close the dialog
+              Navigator.of(context).pop();
             },
           );
         }
@@ -338,7 +334,7 @@ class _EditpasswordpageState extends State<Editpasswordpage> {
                           !hasSpecialChar) {
                         return 'Your password is weak.';
                       }
-                      return null; // Password is valid
+                      return null;
                     },
                   ),
                   SizedBox(height: 16),
@@ -411,16 +407,18 @@ class _EditpasswordpageState extends State<Editpasswordpage> {
                         ),
                       ),
                       SizedBox(height: 8),
-                      _buildRequirementText( 
+                      _buildRequirementText(
                           'Contain at least 8 characters', hasMinLength, '•'),
                       _buildRequirementText(
                           'Contain both uppercase and lowercase letters',
-                          hasUpperLowerCase, '•'),
+                          hasUpperLowerCase,
+                          '•'),
                       _buildRequirementText(
                           'Contain at least one number', hasNumber, '•'),
                       _buildRequirementText(
                           'Contain at least one special character (!@#\$%^&*)',
-                          hasSpecialChar, '•'),
+                          hasSpecialChar,
+                          '•'),
                     ],
                   ),
                   SizedBox(height: 32),
@@ -472,29 +470,29 @@ class _EditpasswordpageState extends State<Editpasswordpage> {
       textColor = Colors.red;
     }
 
-  return Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        bullet,
-        style: GoogleFonts.poppins(
-          fontSize: 14,
-          color: Color(0xFF211D1D),
-          height: 1.5,
-        ),
-      ),
-      const SizedBox(width: 8), // Space between bullet and text
-      Expanded(
-        child: Text(
-          text,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          bullet,
           style: GoogleFonts.poppins(
             fontSize: 14,
-            color: textColor,
+            color: Color(0xFF211D1D),
             height: 1.5,
           ),
         ),
-      ),
-    ],
-  );
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              color: textColor,
+              height: 1.5,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

@@ -8,12 +8,12 @@ import 'package:sairdriver/services/crashstreambuilder.dart';
 import 'package:sairdriver/services/driver_database.dart';
 import 'package:sairdriver/services/motorcycle_database.dart';
 import 'editpasswordpage.dart';
-import 'edit_phone_page.dart'; // Page for editing phone number
+import 'edit_phone_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Profilepage extends StatefulWidget {
-  final String driverId; // DriverID passed from previous page
+  final String driverId;
 
   Profilepage({required this.driverId});
   @override
@@ -22,11 +22,11 @@ class Profilepage extends StatefulWidget {
 
 //
 class _ProfilepageState extends State<Profilepage> {
-  User? currentUser = FirebaseAuth.instance.currentUser; // Get current user
-  driver? driverInf; // Driver information
+  User? currentUser = FirebaseAuth.instance.currentUser; 
+  driver? driverInf;
   Motorcycle? motorcycle;
   String?
-      plateNumber; // To hold plate number fetched from Motorcycle collection
+      plateNumber; 
   String password = '*******';
   TextEditingController fname = TextEditingController();
   TextEditingController lname = TextEditingController();
@@ -43,9 +43,9 @@ class _ProfilepageState extends State<Profilepage> {
   void initState() {
     super.initState();
     setState(() {
-      fetchDriverData(); // Fetch both driver data and plate number when the page loads
+      fetchDriverData(); 
     });
-    fetchDriverData(); // Fetch both driver data and plate number when the page loads
+    fetchDriverData(); 
   }
 
   @override
@@ -85,10 +85,6 @@ class _ProfilepageState extends State<Profilepage> {
       });
     }
     setState(() {}); // Update the UI after fetching data
-    // Debugging print statement
-    print('License Plate fetched: $plateNumber');
-    print('brand fetched: $brand');
-    print('driver id fetched: $id');
   }
 
   Future<String?> fetchShortCompanyName(String? longname) async {
@@ -176,11 +172,11 @@ class _ProfilepageState extends State<Profilepage> {
                                 ElevatedButton(
                                   onPressed: () {
                                     Navigator.of(context)
-                                        .pop(); // Close the dialog without logging out
+                                        .pop(); 
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors
-                                        .grey, // Grey background for the Cancel button
+                                        .grey, 
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
                                     ),
@@ -400,7 +396,7 @@ class _ProfilepageState extends State<Profilepage> {
                             onPhoneUpdated: (newPhone) {
                               setState(() {
                                 phone.text =
-                                    newPhone; // Update the phone number on the profile page
+                                    newPhone;
                               });
                             },
                           ),

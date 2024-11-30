@@ -6,8 +6,8 @@ import 'package:sairdriver/messages/phone_validator.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class EditPhonePage extends StatefulWidget {
-  final String driverId; // DriverID passed from previous page
-  final Function(String)onPhoneUpdated; // Callback function to update the profile page
+  final String driverId;
+  final Function(String) onPhoneUpdated;
 
   const EditPhonePage({required this.driverId, required this.onPhoneUpdated});
 
@@ -23,7 +23,7 @@ class _EditPhonePageState extends State<EditPhonePage> {
   @override
   void initState() {
     super.initState();
-    _phoneController.text = "+966"; // Prefill the phone field with +966
+    _phoneController.text = "+966";
   }
 
   @override
@@ -143,7 +143,7 @@ class _EditPhonePageState extends State<EditPhonePage> {
 
       // Update the phone number in Firebase
       await updatePhoneNumberInFirebase(phoneNumber);
- Navigator.pop(context);
+      Navigator.pop(context);
       // Show confirmation dialog
       showSuccessDialog(context);
     }

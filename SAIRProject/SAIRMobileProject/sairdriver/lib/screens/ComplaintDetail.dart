@@ -55,8 +55,6 @@ class _ComplaintdetailState extends State<Complaintdetail> {
     }
 
     if (complaint != null && complaint!.Vid != null) {
-      print('__________________________--------------------');
-      print(complaint?.Vid);
       await fetchMotor();
     }
     setState(() {});
@@ -64,9 +62,6 @@ class _ComplaintdetailState extends State<Complaintdetail> {
 
   Future<void> fetchViolation() async {
     try {
-      print('==============test!=================');
-      print("Violation field ID: ${complaint?.Vid ?? 'hi'}");
-
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('Violation')
           .where('violationID', isEqualTo: complaint?.Vid ?? "")
@@ -409,7 +404,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                                             ElevatedButton(
                                               onPressed: () async {
                                                 Navigator.of(context)
-                                                    .pop(); // Close dialog first
+                                                    .pop(); 
                                                 await _DeleteComplaint(); // Execute delete action
                                               },
                                               style: ElevatedButton.styleFrom(

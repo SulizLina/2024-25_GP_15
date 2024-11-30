@@ -6,7 +6,7 @@ import 'package:sairdriver/screens/regulationOnboarding.dart';
 import 'package:sairdriver/messages/success.dart';
 
 class Changepassword extends StatefulWidget {
-  final String driverId; // DriverID passed from previous page
+  final String driverId; 
   const Changepassword({required this.driverId});
 
   @override
@@ -18,7 +18,7 @@ class _ChangepasswordState extends State<Changepassword> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
-  bool _isPasswordVisible = false; // For toggling password visibility
+  bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
 
   // Password requirement flags
@@ -26,8 +26,7 @@ class _ChangepasswordState extends State<Changepassword> {
   bool hasUpperLowerCase = false;
   bool hasNumber = false;
   bool hasSpecialChar = false;
-
-  bool hasUserTyped = false; // Flag to check if user has started typing
+  bool hasUserTyped = false;
 
   // Function to validate password dynamically
   void _validatePassword(String password) {
@@ -110,7 +109,7 @@ class _ChangepasswordState extends State<Changepassword> {
                     SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pop(); // Close the dialog
+                        Navigator.of(context).pop(); 
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
@@ -142,45 +141,43 @@ class _ChangepasswordState extends State<Changepassword> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
-        backgroundColor: Color.fromARGB(255, 3, 152, 85), // Background color
-        toolbarHeight: 100, // Adjusted toolbar height for the row layout
-        iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)), // Arrow color
+        backgroundColor: Color.fromARGB(255, 3, 152, 85), 
+        toolbarHeight: 100, 
+        iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)), 
         title: Row(
           children: [
             IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
-                Navigator.pop(context); // Navigate back
+                Navigator.pop(context);
               },
             ),
-            SizedBox(width: 10), // Space between arrow and text
+            SizedBox(width: 10),
             Expanded(
-              // Allows the text to take up remaining space
               child: Text(
-                "Set Your Password", // Adjust the text as needed
+                "Set Your Password",
                 style: GoogleFonts.poppins(
-                  fontSize: 23, // Font size to match the image
+                  fontSize: 23, 
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFFAFAFF), // Color for the text
+                  color: Color(0xFFFAFAFF), 
                 ),
-                textAlign: TextAlign.start, // Align text to the start
+                textAlign: TextAlign.start,
               ),
             ),
           ],
         ),
       ),
       resizeToAvoidBottomInset:
-          true, // Ensures content adjusts when keyboard is shown
+          true, 
       body: SingleChildScrollView(
-        // Makes content scrollable
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.only(top: 16),
           decoration: const BoxDecoration(
             color: Color(0xFFFAFAFF),
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(30), // Rounded top-left corner
-              topRight: Radius.circular(30), // Rounded top-right corner
+              topLeft: Radius.circular(30), 
+              topRight: Radius.circular(30),
             ),
           ),
           child: Padding(
@@ -190,7 +187,6 @@ class _ChangepasswordState extends State<Changepassword> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Bold Green Text (Heading)
                   Text(
                     'Set Your Password',
                     style: GoogleFonts.poppins(
@@ -199,17 +195,13 @@ class _ChangepasswordState extends State<Changepassword> {
                       color: Color.fromARGB(201, 3, 152, 85),
                     ),
                   ),
-                  SizedBox(height: 8), // Space between heading and input field
-
-                  // Subtitle text
+                  SizedBox(height: 8),
                   Text(
                     'Write Your New Password Below.',
                     style:
                         GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
                   ),
                   SizedBox(height: 20),
-
-                  // New Password Input Field with Green Border and Eye Icon
                   TextFormField(
                     controller: _passwordController,
                     obscureText: !_isPasswordVisible,
@@ -274,11 +266,10 @@ class _ChangepasswordState extends State<Changepassword> {
                   ),
                   SizedBox(height: 16),
 
-                  // Confirm Password Input Field with Green Border and Eye Icon
                   TextFormField(
                     controller: _confirmPasswordController,
                     obscureText:
-                        !_isConfirmPasswordVisible, // Toggle for hiding/revealing password
+                        !_isConfirmPasswordVisible, 
                     decoration: InputDecoration(
                       labelText: 'Re-enter your new password',
                       suffixIcon: IconButton(
@@ -298,37 +289,37 @@ class _ChangepasswordState extends State<Changepassword> {
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                           color: Color.fromARGB(
-                              201, 3, 152, 85), // Green border color
+                              201, 3, 152, 85), 
                           width: 1.5,
                         ),
                         borderRadius:
-                            BorderRadius.circular(10), // Rounded corners
+                            BorderRadius.circular(10), 
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                           color: Color.fromARGB(
-                              201, 3, 152, 85), // Green border when focused
+                              201, 3, 152, 85),
                           width: 2.0,
                         ),
                         borderRadius:
-                            BorderRadius.circular(10), // Rounded corners
+                            BorderRadius.circular(10), 
                       ),
                       errorBorder: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: Colors.red, // Red border color for error state
+                          color: Colors.red,
                           width: 1.5,
                         ),
                         borderRadius:
-                            BorderRadius.circular(10), // Rounded corners
+                            BorderRadius.circular(10), 
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                           color: Colors
-                              .red, // Red border color when focused and error
+                              .red,
                           width: 2.0,
                         ),
                         borderRadius:
-                            BorderRadius.circular(10), // Rounded corners
+                            BorderRadius.circular(10),
                       ),
                     ),
                     validator: (value) {
@@ -350,7 +341,7 @@ class _ChangepasswordState extends State<Changepassword> {
                         'Password must:',
                         style: GoogleFonts.poppins(
                           fontSize: 16,
-                          color: Color(0xFF211D1D), // Customize as needed
+                          color: Color(0xFF211D1D),
                         ),
                       ),
                       SizedBox(height: 8),
@@ -380,19 +371,19 @@ class _ChangepasswordState extends State<Changepassword> {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
-                            Color.fromARGB(201, 3, 152, 85), // Green background
+                            Color.fromARGB(201, 3, 152, 85), 
                         shape: RoundedRectangleBorder(
                           borderRadius:
-                              BorderRadius.circular(15.0), // Rounded corners
+                              BorderRadius.circular(15.0), 
                         ),
                         padding: EdgeInsets.symmetric(
-                            vertical: 16), // Add vertical padding
+                            vertical: 16), 
                       ),
                       child: Text(
                         'Update',
                         style: GoogleFonts.poppins(
                           fontSize: 18,
-                          color: Colors.white, // White text
+                          color: Colors.white, 
                         ),
                       ),
                     ),

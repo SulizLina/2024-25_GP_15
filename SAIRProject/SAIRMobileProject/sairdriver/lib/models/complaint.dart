@@ -16,8 +16,7 @@ class Complaint {
     required this.driverId,
     required this.timestamp,
     required this.Description,
-    required this.Response, //we dont need it!
-    required this.gspNumber,
+     required this.gspNumber,
     required this.Vid,
     required this.Status,
   });
@@ -31,7 +30,6 @@ class Complaint {
       driverId: parsedJSON['driverID'].toString(),
       timestamp: parsedJSON['DateTime'] as Timestamp,
       Description: parsedJSON['Description'] as String?,
-      Response: parsedJSON['Response'] as String?,
       gspNumber: parsedJSON['GPSnumber'].toString(),
       Vid: parsedJSON['ViolationID'].toString(),
       Status: parsedJSON['Status'] as String?,

@@ -2,27 +2,24 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:sairdriver/messages/Warning.dart';
 import 'package:sairdriver/models/crash.dart';
 import 'package:sairdriver/models/motorcycle.dart';
 import 'package:sairdriver/services/crash_database.dart';
 import 'package:sairdriver/services/motorcycle_database.dart';
-import 'dart:ui' as ui; // Avoid using dart:ui on Flutter Web if targeting it
+import 'dart:ui' as ui; 
 import 'package:google_fonts/google_fonts.dart';
 
 class Crashdetail extends StatefulWidget {
   final String crashId;
   final String driverid;
 
-  const Crashdetail({Key? key, required this.crashId, required this.driverid}) : super(key: key);
+  const Crashdetail({Key? key, required this.crashId, required this.driverid})
+      : super(key: key);
 
   @override
   State<Crashdetail> createState() => _CrashdetailState();
 }
 
-//    print('-----------------------${widget.isAutoconf?? '++++++++++HIII++++++++++'}');
-//  message: "This crash has been automatically confirmed due to no action being taken within the allotted 5-minute timeframe \n\n Please wait you will recive a call from your delivery company or the competent Authorities",
-           
 class _CrashdetailState extends State<Crashdetail> {
   BitmapDescriptor? customMapIcon;
   Crash? crash;
@@ -33,7 +30,6 @@ class _CrashdetailState extends State<Crashdetail> {
   void initState() {
     super.initState();
     // Show warning dialog if the crash was auto confirmed
-    // Check if the crash has the 'isAuto' field and set _isAutoconf
     checkIfAutoConfirmed().then((isAuto) {
       setState(() {
         _isAutoconf = isAuto!;
@@ -62,7 +58,6 @@ class _CrashdetailState extends State<Crashdetail> {
     setState(() {});
   }
 
-  
   Future<bool?> checkIfAutoConfirmed() async {
     try {
       DocumentSnapshot crashDoc = await FirebaseFirestore.instance
@@ -208,9 +203,11 @@ class _CrashdetailState extends State<Crashdetail> {
                   Divider(color: Colors.grey[350]),
                   const SizedBox(height: 15),
                   buildDetailSectionWithImage('Crash ID', crash?.cid ?? 'N/A'),
-                  buildDetailSectionIconStatus('Status',     crash?.status ?? '',
-                    crash?.status,),
-
+                  buildDetailSectionIconStatus(
+                    'Status',
+                    crash?.status ?? '',
+                    crash?.status,
+                  ),
                   buildDetailSection(
                       'Time',
                       crash?.getFormattedTimeOnly() ?? '',
@@ -317,12 +314,13 @@ class _CrashdetailState extends State<Crashdetail> {
     );
   }
 
-  Widget buildDetailSectionIconStatus(String title, String? content, String? status) {
+  Widget buildDetailSectionIconStatus(
+      String title, String? content, String? status) {
     Color circleColor;
 
     switch (status) {
       case 'Pending':
-        circleColor = Color(0xFFFFC800);// traffic yellow
+        circleColor = Color(0xFFFFC800);
         break;
       case 'Confirmed':
         circleColor = Colors.green;
@@ -375,6 +373,7 @@ class _CrashdetailState extends State<Crashdetail> {
       ],
     );
   }
+
   Widget buildDetailSectionWithImage(String title, String? content) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

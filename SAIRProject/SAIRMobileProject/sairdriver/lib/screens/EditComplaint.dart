@@ -49,7 +49,7 @@ class _editcomplaintState extends State<editcomplaint> {
     if (snapshot.docs.isNotEmpty) {
       var data = snapshot.docs.first.data() as Map<String, dynamic>?;
       complaintText.text = data?['Description'] ?? '';
-      initialdescription = complaintText.text; // Correct initialization
+      initialdescription = complaintText.text; 
     }
     setState(() {
       isInitialized = true;
@@ -275,10 +275,10 @@ class _editcomplaintState extends State<editcomplaint> {
                       child: ElevatedButton(
                         onPressed: () {
                           if (isTextChanged) {
-                            _updateComplaint(); // Only proceed if text has changed
+                            _updateComplaint();
                           } else {
                             _formKey.currentState!
-                                .validate(); // Trigger validation to show messages
+                                .validate(); 
                           }
                         },
                         style: ElevatedButton.styleFrom(
