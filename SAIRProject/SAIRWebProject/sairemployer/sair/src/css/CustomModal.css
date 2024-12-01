@@ -1,0 +1,20 @@
+/* Styling for the custom close icon */
+.custom-modal-close-icon {
+    font-size: 30px;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+ 
+
+    }
+  .custom-modal .ant-modal-close {
+    top: 3px; /* Adjust the 'X' icon higher above the modal */
+    right: 3px; /* Adjust horizontal alignment if needed */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+
+  
+  

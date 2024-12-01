@@ -1,0 +1,24 @@
+/* Custom styling for the notification close icon */
+.ant-notification .ant-notification-close-icon {
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Custom notification close button positioning (if necessary) */
+.custom-notification .ant-notification-close-icon {
+    top: 3px; /* Adjust the 'X' icon higher above the notification */
+    right: 3px; /* Adjust horizontal alignment if needed */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Custom styling for notification pop-up */
+.custom-notification .ant-notification {
+    background-color: rgba(255, 77, 79, 0.6); /* Red with 80% opacity */
+    color: #ffffff;
+    border-radius: 10px;
+    width: 450px; /* Adjust width */
+}

@@ -1,0 +1,16 @@
+/* BadgeStyles.module.css */
+.customBadge {
+    
+    width: 16px;
+    height: 15px;
+    position: relative;
+    top: -5px;
+    right: -5px;
+  }
+  .bellIcon {
+    font-size: 24px;
+    margin-left: 15px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  

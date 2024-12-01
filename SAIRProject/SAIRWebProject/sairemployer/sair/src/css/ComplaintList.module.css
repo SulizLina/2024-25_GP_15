@@ -1,0 +1,155 @@
+.title {
+    color: #059855;
+    font-size: 32px;
+    margin-right: auto;
+  }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .searchHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+  }
+  
+  .searchInputs {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .searchContainer {
+    padding: 10px 12px;
+    border-radius: 999999px;
+    margin: 0 3px;
+    border: 2px solid #059855;
+    font-family: 'Open Sans';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .searchContainer svg {
+    height: 1.5rem;
+    width: 1.5rem;
+    margin-right: 10px;
+  }
+  
+  .searchContainer:focus-within {
+    border: 2px solid #1c7a50;
+    border-radius: 20px;
+  }
+  
+  input[type='date']::-webkit-calendar-picker-indicator {
+    filter: invert(0.5) sepia(1) saturate(5) hue-rotate(90deg);
+  }
+  
+  .searchContainer input {   
+    transition: border-color 0.3s ease-in-out;
+    font-family: 'Open Sans';
+    outline: none; 
+    border: none;
+  }
+  
+  .searchContainer input:focus {
+    outline: none; 
+  
+  }
+  
+  .searchContainer input[type='date'] {
+    outline: none;
+    border: none;
+  }
+  
+  .searchContainer input[type='text'] {
+    padding: 0;
+    margin: 0;
+  }
+  .customSelect {
+    width: 200px;
+    margin-right: 16px;
+    border: none;
+    background-color: transparent;
+    padding: 8px;
+    font-size: 16px;
+    /* Optional: Add more styling here as needed */
+    appearance: none; /* Removes default dropdown arrow in some browsers */
+  }
+  
+  /* Add focus style if needed */
+  .customSelect:focus {
+    outline: none; /* Removes the default focus outline */
+    box-shadow: none;
+  }
+  
+  .selectWrapper {
+    position: relative;
+    width: 200px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+  }
+  
+  .filterIcon {
+    color: #1c7a50; /* Green color */
+    margin-right: 8px; /* Space between icon and select */
+  }
+  
+  .customSelect {
+    flex-grow: 1; /* Takes up remaining space */
+    border: none;
+    background-color: transparent;
+    font-size: 16px;
+    appearance: none; /* Removes default dropdown arrow */
+    padding: 8px;
+    outline: none;
+  }
+  
+  /* Custom arrow icon for dropdown */
+  .selectWrapper::after {
+    content: '▼'; /* Unicode arrow or use a custom icon */
+    position: absolute;
+    right: 10px;
+    font-size: 12px;
+    color: #1c7a50;
+    pointer-events: none; /* Prevents arrow from blocking clicks */
+  }
+
+
+  .dateInputWrapper {
+    position: relative;
+    width: 100px;
+  }
+  
+  .customDateInput {
+    width: 100%;
+    background-color: transparent;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .datePlaceholder {
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    transform: translateY(-50%);
+    color: #999;
+    font-size: 16px;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 0;
+  }
+  
+  /* Hide placeholder when date is selected */
+  .customDateInput:not(:placeholder-shown) + .datePlaceholder,
+  .customDateInput:focus + .datePlaceholder {
+    opacity: 0;
+  }
+  
+  

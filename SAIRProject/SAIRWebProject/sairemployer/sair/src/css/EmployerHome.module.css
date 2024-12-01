@@ -1,0 +1,45 @@
+.textBox {
+  color: #fafaff;
+  text-align: left;
+  font-family: 'Open Sans';
+  margin: 0 10px;
+  /* Add some margin for spacing */
+  flex: 1;
+  /* Allow the boxes to grow and fill available space */
+}
+
+.textBox h1 {
+  font-size: 62px;
+  color: #059855;
+  font-family: 'Open Sans';
+}
+
+.textBox p {
+  margin: 10px 0 40px;
+  text-align: left;
+  font-size: 14px;
+  color: #f1f1ff;
+  font-family: 'Open Sans';
+}
+
+.homeContainer{
+    display: flex;
+    /* Use flexbox for layout */
+    flex-direction: column;
+    /* Stack items vertically */
+    justify-content: space-between;
+    /* Space items apart */
+    width: 50%;
+    /* Set container width */
+    height: 200px;
+    /* Set a height for the container */
+    position: absolute;
+    /* Maintain positioning */
+    top: 30%;
+    /* Center vertically */
+    left: 27%;
+    /* Center horizontally */
+    transform: translate(-50%, -50%);
+    /* Adjust for centering */
+
+  }

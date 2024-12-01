@@ -1,0 +1,16 @@
+ 
+.detail h3 {
+color: #333;
+margin-bottom: 10px;
+}
+
+.detail p {
+  margin-bottom: 16px;
+  color: #444;
+}
+
+svg {
+  height: 1.5rem;
+  width: 1.5rem;
+  margin-right: 10px;
+}

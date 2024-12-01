@@ -1,0 +1,178 @@
+.loginContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  /* Full viewport width */
+  /* padding-left: 20px; */
+  position: relative;
+  /* Makes the container a reference point for absolute positioning */
+  font-family: 'Open Sans';
+  padding: 40px 90px;
+}
+
+.loginContainer h1,
+.loginContainer h2 {
+  color: #059855;
+  font-size: 40px;
+  font-family: 'Open Sans';
+  margin-bottom: 32px;
+}
+
+.loginContainer p {
+  color: #211d1d;
+  font-family: 'Open Sans';
+}
+
+.rightImage {
+  position: absolute;
+  top: -3px;
+  right: 0;
+  width: auto;
+  /* Adjust width as per your needs */
+  height: 1100px;
+  /* Maintain aspect ratio */
+}
+
+.loginContainer .error-message.visible {
+  display: block;
+  /* margin-left: 30px;
+  margin-top: -5px; */
+  font-size: 14px;
+  font-family: 'Open Sans';
+
+}
+.yes{
+  border-radius: 18px;
+  background-color: #059855;
+  border: none;
+  padding: 10px 20px;
+  font-size: 10px;
+  cursor: pointer;
+  color: white;
+  text-align: center; 
+  margin-top: 10px;
+  width: 50px;
+  height: 50px;
+  transition: background-color 0.3s ease;
+  margin-bottom: 10px;
+  font-weight: bold;
+  font-family: 'Open Sans';
+  margin-left: -100px;
+}
+
+
+
+.loginContainer input:hover {
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.loginContainer input:focus {
+  outline: none;
+  box-shadow: 0px 4px 8px rgba(60, 197, 133, 0.3);
+}
+
+.loginContainer input {
+  border: 0.5px solid #3CC585;
+  border-radius: 9px;
+  padding: 5px;
+  font-size: 13px;
+  /* margin: 20px; */
+  /* margin-bottom: 5px; */
+  background-color: #F7F7F7;
+  width: 320px;
+  height: 43px;
+  transition: box-shadow 0.3s ease-in-out;
+  font-family: 'Open Sans';
+}
+
+.loginContainer select {
+  border: 0.5px solid #3CC585;
+  border-radius: 9px;
+  padding: 10px;
+  font-size: 16px;
+  background-color: white;
+  margin-left: 20px;
+  /* margin-left: 119px;
+  margin-bottom: 5px; */
+  font-family: 'Open Sans';
+}
+
+.errorMessage {
+  color: red;
+  display: none;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  transition: opacity 0.2s ease;
+  font-family: 'Open Sans';
+  font-size: 14px;
+}
+
+.formContainer {
+  max-height: 400px;
+  font-family: 'Open Sans';
+
+}
+
+.passwordContainer {
+  position: relative;
+  width: fit-content;
+}
+
+.passwordVisibilityToggle {
+  position: relative;
+  top: 50%;
+  right: 12px;
+  /* transform: translateY(-50%); */
+  cursor: pointer;
+  font-size: 18px;
+  color: gray;
+  position: 'absolute';
+  font-family: 'Open Sans';
+  margin-left: -18px;
+}
+
+.submitButton {
+  border-radius: 18px;
+  background-color: #059855;
+  border: none;
+  padding: 10px 20px;
+  font-size: 20px;
+  cursor: pointer;
+  color: white;
+  text-align: center; 
+  margin-top: 20px;
+  width: 195px;
+  height: 50px;
+  transition: background-color 0.3s ease;
+  margin-bottom: 20px;
+  font-weight: bold;
+  font-family: 'Open Sans';
+  margin-left: -136px;
+}
+
+.submitButton:hover {
+  background-color: #1c7a50;
+}
+
+.loginLink {
+  color: #059855;
+  margin-left: 7px;
+  text-decoration: underline;
+  margin-top: 10px;
+  font-family: 'Open Sans';
+}
+
+
+
+.profileField  label {
+  margin-bottom: 6px;
+  display: block;
+  font-family: 'Open Sans'; 
+}
+
+.profileField {
+  margin-bottom: 12px;
+}
