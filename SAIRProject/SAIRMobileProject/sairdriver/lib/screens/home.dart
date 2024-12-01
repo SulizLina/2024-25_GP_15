@@ -8,7 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sairdriver/services/crashstreambuilder.dart';
 
 class Home extends StatefulWidget {
-  final String driverId; // DriverID passed from previous page
+  final String driverId; 
   const Home({required this.driverId});
 
   @override
@@ -52,7 +52,7 @@ class _HomeState extends State<Home> {
       if (driverData.exists) {
         setState(() {
           driverName =
-              driverData.data()?['Fname'] ?? ''; // Safely access 'fname' field
+              driverData.data()?['Fname'] ?? ''; 
         });
       }
     } catch (e) {
@@ -112,7 +112,7 @@ class _HomeState extends State<Home> {
         title: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Logo on the far left
+            // Logo 
             Image.asset(
               'assets/image/WhiteMotorcycle.png',
               width: 60,
@@ -126,10 +126,10 @@ class _HomeState extends State<Home> {
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
-                textAlign: TextAlign.left, // Ensure text is aligned to the left
+                textAlign: TextAlign.left,
               ),
             ),
-            // Logout button on the far right
+            // Logout button
             IconButton(
               icon: const Icon(
                 Icons.exit_to_app,
@@ -174,11 +174,11 @@ class _HomeState extends State<Home> {
                                 ElevatedButton(
                                   onPressed: () {
                                     Navigator.of(context)
-                                        .pop(); // Close the dialog without logging out
+                                        .pop(); 
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors
-                                        .grey, // Grey background for the Cancel button
+                                        .grey, 
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
                                     ),
@@ -194,19 +194,19 @@ class _HomeState extends State<Home> {
                                 ElevatedButton(
                                   onPressed: () {
                                     Navigator.of(context)
-                                        .pop(); // Close the dialog
+                                        .pop(); 
                                     FirebaseAuth.instance
-                                        .signOut(); // Firebase sign-out
+                                        .signOut();
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              const LoginEmail()), // Navigate to the welcome page
+                                              const LoginEmail()), 
                                     );
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors
-                                        .red, // Red background for the Logout button
+                                        .red, 
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
                                     ),
@@ -237,13 +237,13 @@ class _HomeState extends State<Home> {
         decoration: const BoxDecoration(
           color: Color(0xFFF3F3F3),
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30), // Rounded top-left corner
-            topRight: Radius.circular(30), // Rounded top-right corner
+            topLeft: Radius.circular(30), 
+            topRight: Radius.circular(30),
           ),
         ),
         child: Padding(
           padding: const EdgeInsets.only(
-              left: 16.0, right: 16), // Add left padding here
+              left: 16.0, right: 16), 
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -258,7 +258,7 @@ class _HomeState extends State<Home> {
               ),
               const SizedBox(height: 35),
               buildReminderItem(
-                imagePath: 'assets/icons/helmet2.png', // Path to your PNG image
+                imagePath: 'assets/icons/helmet2.png', 
                 title: "Protect Your Head",
                 subtitle: "Don't forget your helmet!",
               ),
@@ -290,7 +290,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  // Helper method to create each reminder item with icon/image and text
+  // Helper method to create each reminder item with image and text
   Widget buildReminderItem({
     IconData? icon,
     String? imagePath,
@@ -305,7 +305,7 @@ class _HomeState extends State<Home> {
           child: imagePath != null
               ? ColorFiltered(
                   colorFilter: ColorFilter.mode(
-                    Color.fromARGB(255, 3, 152, 85), // Desired color
+                    Color.fromARGB(255, 3, 152, 85), 
                     BlendMode.srcIn,
                   ),
                   child: Image.asset(
@@ -315,7 +315,7 @@ class _HomeState extends State<Home> {
                   ),
                 )
               : Icon(
-                  icon!, // Use the passed icon
+                  icon!,
                   size: 50,
                   color: Color.fromARGB(255, 3, 152, 85),
                 ),
@@ -323,7 +323,7 @@ class _HomeState extends State<Home> {
         const SizedBox(width: 20),
         Expanded(
           child: Align(
-            alignment: Alignment.centerLeft, // Align text to start
+            alignment: Alignment.centerLeft, 
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -335,7 +335,7 @@ class _HomeState extends State<Home> {
                     color: Color.fromARGB(255, 3, 152, 85),
                   ),
                 ),
-                if (subtitle != null) // Display subtitle if provided
+                if (subtitle != null) 
                   if (subtitle is String)
                     Text(
                       subtitle,
@@ -346,7 +346,7 @@ class _HomeState extends State<Home> {
                       ),
                     )
                   else
-                    subtitle, // Display the Widget if the subtitle is not a String
+                    subtitle, 
               ],
             ),
           ),

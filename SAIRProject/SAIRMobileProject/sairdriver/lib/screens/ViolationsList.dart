@@ -10,9 +10,8 @@ import 'package:sairdriver/screens/ViolationDetail.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:sairdriver/services/crashstreambuilder.dart';
 
-// ignore: must_be_immutable
 class Violationslist extends StatefulWidget {
-  final String driverId; // DriverID passed from previous page
+  final String driverId; 
   Violationslist({required this.driverId});
 
   @override
@@ -85,8 +84,6 @@ class _ViolationslistState extends State<Violationslist> {
 
   Future<void> fetchViolations({DateTime? filterDate}) async {
     try {
-      print('++++++++++++++++++hi fetchViolations=+++++++++++++++++++++++++');
-      // Fetch all violations for the driver from Firestore
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('Violation')
           .where('driverID', isEqualTo: driverNat_Res?.driverId)
@@ -281,8 +278,8 @@ class _ViolationslistState extends State<Violationslist> {
                     ? const Color.fromARGB(255, 199, 199, 199)
                     : isDateFiltered
                         ? const Color(
-                            0xFFFFC800) // Date is selected (traffic yellow)
-                        : Color(0xFFF3F3F3), // No date selected
+                            0xFFFFC800) 
+                        : Color(0xFFF3F3F3), 
               ),
             ),
           ],
@@ -455,7 +452,6 @@ class _ViolationslistState extends State<Violationslist> {
                   },
                 ),
               ),
-              //show crash dialog if needed
               CrashStreamBuilder(driverId: widget.driverId),
             ],
           ),

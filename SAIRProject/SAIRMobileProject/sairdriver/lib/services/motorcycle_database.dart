@@ -11,7 +11,7 @@ class MotorcycleDatabase {
   try {
     var motorcycleSnapshot = await FirebaseFirestore.instance
         .collection('Motorcycle')
-        .where('DriverID', isEqualTo: driverId)  // Ensure this DriverID matches exactly
+        .where('DriverID', isEqualTo: driverId)  
         .limit(1)
         .get();
 
@@ -25,8 +25,7 @@ class MotorcycleDatabase {
   } catch (e) {
     print('Error fetching LicensePlate: $e');
   }
-  return null; // Return null if no motorcycle is found
-  
+  return null; 
 }
 
 Future<Motorcycle?> getMotorcycleByGPS(String GPSNumber) async {
@@ -34,17 +33,17 @@ Future<Motorcycle?> getMotorcycleByGPS(String GPSNumber) async {
     var snapshot = await FirebaseFirestore.instance
         .collection('Motorcycle')
         .where('GPSnumber', isEqualTo: GPSNumber)
-        .limit(1) // Limit to one result
+        .limit(1) 
         .get();
 
     if (snapshot.docs.isNotEmpty) {
       var motorcycleData = snapshot.docs.first.data() as Map<String, dynamic>;
-      return Motorcycle.fromMap(motorcycleData, snapshot.docs.first.id); // Use fromMap method
+      return Motorcycle.fromMap(motorcycleData, snapshot.docs.first.id); 
     }
-    return null; // Return null if no motorcycle is found
+    return null; 
   } catch (e) {
     print("Error fetching motorcycle info: $e");
-    return null; // Return null on error
+    return null; 
   }
 }
 
@@ -58,7 +57,7 @@ Future<Motorcycle?> getMotorcycleByIDhis(String id) async {
 
     if (snapshot.docs.isNotEmpty) {
       var motorcycleData = snapshot.docs.first.data();
-      return Motorcycle.fromMap(motorcycleData, snapshot.docs.first.id); // Use fromMap method
+      return Motorcycle.fromMap(motorcycleData, snapshot.docs.first.id); 
     }
     return null; 
   } catch (e) {
@@ -72,17 +71,17 @@ Future<Motorcycle?> getMotorcycleByDriverID(String driverID) async {
     var snapshot = await FirebaseFirestore.instance
         .collection('Motorcycle')
         .where('DriverID', isEqualTo: driverID)
-        .limit(1) // Limit to one result
+        .limit(1) 
         .get();
 
     if (snapshot.docs.isNotEmpty) {
       var motorcycleData = snapshot.docs.first.data() as Map<String, dynamic>;
-      return Motorcycle.fromMap(motorcycleData, snapshot.docs.first.id); // Use fromMap method
+      return Motorcycle.fromMap(motorcycleData, snapshot.docs.first.id); 
     }
-    return null; // Return null if no motorcycle is found
+    return null; 
   } catch (e) {
     print("Error fetching motorcycle info: $e");
-    return null; // Return null on error
+    return null; 
   }
 }
 }

@@ -56,9 +56,8 @@ class _WelcomepageState extends State<Welcomepage> {
               padding: const EdgeInsets.symmetric(horizontal: 30.0),
               child: Column(
                 children: [
-                  // Login button
                   SizedBox(
-                    width: double.infinity, // Makes the button stretch across the screen
+                    width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromARGB(202, 3, 152, 85),
@@ -68,7 +67,6 @@ class _WelcomepageState extends State<Welcomepage> {
                         ),
                       ),
                       onPressed: () {
-                        // Navigate to the Login page using MaterialPageRoute
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -79,7 +77,7 @@ class _WelcomepageState extends State<Welcomepage> {
                         'Login',
                         style: GoogleFonts.poppins(
                           color: Colors.white,
-                          fontSize: 16, // Keep text size as it is
+                          fontSize: 16,
                         ),
                       ),
                     ),

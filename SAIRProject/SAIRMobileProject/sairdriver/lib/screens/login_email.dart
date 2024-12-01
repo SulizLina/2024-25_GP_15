@@ -88,15 +88,13 @@ class _LoginEmailState extends State<LoginEmail> {
           final String driverId = driverDoc.docs.first.id;
           final bool isDefaultPassword =
               driverDoc.docs.first.data()['isDefaultPassword'] ?? false;
-
-          if (!mounted) return; // Avoid state changes if widget is disposed
-
-                    // Fetch the driver ID to use for notifications or other purposes
+          // Avoid state changes if widget is disposed
+          if (!mounted) return;
+          // Fetch the driver ID to use for notifications or other purposes
           final String? driverID = driverDoc.docs.first.data()['driverId'];
           if (driverID != null) {
-
             // Call the notification initialization or pass it as needed
-            await _notificationService.init(driverID); // Replace with actual initialization
+            await _notificationService.init(driverID);
           }
 
           if (!isDefaultPassword) {

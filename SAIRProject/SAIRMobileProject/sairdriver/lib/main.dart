@@ -54,26 +54,8 @@ void _setupFirebaseMessaging() {
       
       else if (screen == 'CrashList') {
         final CrashDoc = message.data['crashData'] ?? null;
-        print('----------current crashDoc:-------------------------$CrashDoc');
-        print(
-            '-----------------before adding------------------$processedCrashes');
         if (CrashDoc != null && !processedCrashes.contains(CrashDoc)) {
-          print(
-              'CrashDoc is not null and the crash is not in processedCrashes');
-          //processedCrashes.add(CrashDoc);
-          print(
-              '--------processedCrashes-----after adding----------------------$processedCrashes');         
-          /*
-          navigatorKey.currentState?.pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => BottomNavBar(
-                driverId: driverData,
-                initialIndex: 0, // Set index for Crashes tab
-              ),
-            ),
-          );
-          */
-          
+
         } else {
           print('CrashDoc is null or the crash is in processedCrashes');
         }

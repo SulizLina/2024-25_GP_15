@@ -13,7 +13,7 @@ class CrashDatabase {
 
       // Mapping the documents to the Violation model using the document snapshot
       return snapshot.docs.map((doc) {
-        return Crash.fromJson(doc); // Pass the entire DocumentSnapshot
+        return Crash.fromJson(doc); 
       }).toList();
     } catch (e) {
       print("Error fetching crashes: $e");
@@ -25,11 +25,11 @@ class CrashDatabase {
     try {
       DocumentSnapshot snapshot = await FirebaseFirestore.instance
           .collection('Crash')
-          .doc(crashId) // Use the document ID directly
+          .doc(crashId) 
           .get();
 
       if (snapshot.exists) {
-        return Crash.fromJson(snapshot); // Return the violation object
+        return Crash.fromJson(snapshot); 
       }
       return null; 
     } catch (e) {

@@ -37,7 +37,7 @@ class _CrasheslistState extends State<Crasheslist>
   late TabController _tabController;
   List<DocumentSnapshot> filteredCrashes = [];
   Map<String, String?> licensePlateMap = {};
-  Timer? _timer; // Timer for auto-confirmation
+  Timer? _timer;
 
   @override
   void initState() {
@@ -236,7 +236,7 @@ class _CrasheslistState extends State<Crasheslist>
                           : (selectedPlate == null
                               ? const Color(0xFFF3F3F3) // no plate selected
                               : Color(
-                                  0xFFFF9E00)), //  plate is selected (traffic yellow)
+                                  0xFFFFC800)), //  plate is selected (traffic yellow)
                       BlendMode.srcIn,
                     ),
                     child: Image.asset(
@@ -275,11 +275,12 @@ class _CrasheslistState extends State<Crasheslist>
                     : HugeIcons.strokeRoundedCalendar03,
                 size: 24,
                 color: crashes.isEmpty
-                    ? const Color(0xFFB3B3B3) // List is empty
-                    : isDateFiltered
-                        ? const Color(0xFFFFC800) // No date selected
-                        : Color(
-                            0xFFF3F3F3), // Date is selected (traffic yellow)
+                    ?  const Color.fromARGB(
+                        255, 199, 199, 199) // List is empty
+                     : isDateFiltered
+                        ? const Color(
+                            0xFFFFC800) // Date is selected (traffic yellow)
+                        : Color(0xFFF3F3F3), // No date selected
               ),
             ),
           ],
@@ -513,7 +514,7 @@ class _CrasheslistState extends State<Crasheslist>
                               return crashB.time!.compareTo(
                                   crashA.time!); // Sort by time, descending
                             });
-// If the crashes list is empty, display the appropriate message based on filters
+                            // If the crashes list is empty, display the appropriate message based on filters
                             if (filteredList.isEmpty) {
                               return Center(
                                 child: Text(

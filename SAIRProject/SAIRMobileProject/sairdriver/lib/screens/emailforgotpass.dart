@@ -96,7 +96,7 @@ class _EmailforgotpassState extends State<Emailforgotpass> {
                     SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.pop(context); // Close dialog
+                        Navigator.pop(context); 
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (context) => const LoginEmail()),
@@ -169,7 +169,7 @@ class _EmailforgotpassState extends State<Emailforgotpass> {
           ],
         ),
       ),
-      //resizeToAvoidBottomInset: true,
+   
       body: Container(
         width: double.infinity,
         padding: const EdgeInsets.only(top: 16),

@@ -97,7 +97,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
           ),
           const SizedBox(height: 4),
           Image.asset(
-            'assets/icons/accident.png', //'assets/icons/Crash.png',
+            'assets/icons/accident.png',
             color: _controller.index == 0
                 ? const Color.fromARGB(202, 3, 152, 85)
                 : Colors.grey[500],

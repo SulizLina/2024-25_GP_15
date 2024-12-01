@@ -19,7 +19,7 @@ String generateComplaintID() {
 
     try {
       await _firestore.collection('Complaint').add({
-        'ComplaintID': complaintID, //////////new genrated
+        'ComplaintID': complaintID,
         'driverID': v.driverId,
         'DateTime': Timestamp.now(),
         'Description': desc,
@@ -41,12 +41,12 @@ String generateComplaintID() {
           .get();
 
       if (snapshot.exists) {
-        return Complaint.fromJson(snapshot); // Return the violation object
+        return Complaint.fromJson(snapshot); 
       }
-      return null; // Return null if no violation found
+      return null;
     } catch (e) {
       print("Error fetching violation: $e");
-      return null; // Return null on error
+      return null;
     }
   }
 }
