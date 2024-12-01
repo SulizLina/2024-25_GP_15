@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // For Firebase Firestore
-import 'package:firebase_auth/firebase_auth.dart'; // For Firebase Authentication
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sairdriver/messages/error_messages.dart';
 import 'package:sairdriver/messages/phone_validator.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 
 class EditPhonePage extends StatefulWidget {
   final String driverId;
@@ -254,9 +255,24 @@ class _EditPhonePageState extends State<EditPhonePage> {
                     ),
                   ),
                   keyboardType: TextInputType.phone,
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(13),
+                  FilteringTextInputFormatter.allow(RegExp(r'^\+?\d*$')),
+                  ],
+                  onChanged: (text) {
+                    setState(() {});
+                  },
                   validator: validatePhoneNumber,
                 ),
                 SizedBox(height: 10),
+                Text(
+                  ' ${_phoneController.text.length}/13 characters',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 12,
+                  ),
+                ),
+
                 if (errorMessage != null)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
