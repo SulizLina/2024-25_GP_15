@@ -211,7 +211,7 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 165),
+                    SizedBox(height: 190),
                   ],
                 ),
               ),

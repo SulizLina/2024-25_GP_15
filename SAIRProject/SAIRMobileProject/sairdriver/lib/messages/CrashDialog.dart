@@ -159,7 +159,7 @@ static Future<void> showAutoConfirmationMessage(
     builder: (BuildContext context) {
       return WarningDialog(
         message:
-            "The crash with ID: ${crash.cid}\n has been automatically confirmed due to no action being taken within the allotted 5-minute timeframe.\n\nPlease wait, you will receive a call from your delivery company or the concerned authorities.",
+            "The crash with ID: ${crash.cid}\n has been automatically confirmed due to no action being taken within the allotted 10-minute timeframe.\n\nPlease wait, you will receive a call from your delivery company or the concerned authorities.",
       );
     },
   ).then((_) {
