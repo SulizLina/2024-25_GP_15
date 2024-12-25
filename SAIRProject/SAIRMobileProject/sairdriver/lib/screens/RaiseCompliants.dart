@@ -5,7 +5,8 @@ import 'package:sairdriver/messages/success.dart';
 import 'package:sairdriver/screens/ViewComplaints.dart';
 import 'package:sairdriver/services/Complaint_database.dart';
 import 'package:flutter/services.dart';
-import 'ViolationDetail.dart';
+import 'package:flutter/material.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 
 class Raisecomplaint extends StatefulWidget {
   final Violation violation;
@@ -22,10 +23,104 @@ class Raisecomplaint extends StatefulWidget {
   State<Raisecomplaint> createState() => _RaisecomplaintState();
 }
 
+class StyledDropdown extends StatelessWidget {
+  final String? selectedReason;
+  final List<String> reasons;
+  final Function(String?) onChanged;
+
+  const StyledDropdown({
+    Key? key,
+    required this.selectedReason,
+    required this.reasons,
+    required this.onChanged,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField2<String>(
+      isExpanded: true,
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.symmetric(vertical: 16),
+        border: OutlineInputBorder(
+          borderSide: const BorderSide(
+            color: Color.fromARGB(201, 3, 152, 85),
+            width: 1.5,
+          ),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: const BorderSide(
+            color: Color.fromARGB(201, 3, 152, 85),
+            width: 1.5,
+          ),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: const BorderSide(
+            color: Color.fromARGB(255, 3, 152, 85),
+            width: 2.0,
+          ),
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      hint: Text(
+        'Select a reason',
+        style: GoogleFonts.poppins(
+          fontSize: 15,
+          color: Colors.black,
+        ),
+      ),
+      items: reasons
+          .map((reason) => DropdownMenuItem<String>(
+                value: reason,
+                child: Text(
+                  reason,
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ))
+          .toList(),
+      value: selectedReason,
+      onChanged: (value) {
+        onChanged(value); // Notify parent about the change
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please choose a reason';
+        }
+        return null;
+      },
+      dropdownStyleData: DropdownStyleData(
+        maxHeight: 200, // Limit dropdown height
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          color: Colors.white,
+        ),
+      ),
+      menuItemStyleData: const MenuItemStyleData(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+      ),
+    );
+  }
+}
+
 class _RaisecomplaintState extends State<Raisecomplaint> {
   final _controller = TextEditingController();
   final maxChararcter = 250;
   final _formKey = GlobalKey<FormState>();
+  String? selectedReason;
+
+  final List<String> reasons = [
+    'Damaged motorcycle',
+    'I do not own a motorcycle',
+    'Stolen motorcycle',
+    'Motorcycle license plate is stolen or lost',
+    'I have not been notified of this violation',
+    'No violation committed',
+    'I did not visit the place where this violation was recorded',
+    'Emergency case',
+    'My motorcycle suddenly disrupted',
+    'Other',
+  ];
 
   @override
   void initState() {
@@ -55,6 +150,7 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
           widget.violation,
           _controller.text,
           widget.driverid,
+          selectedReason!,
         );
         // Show a confirmation message
         SuccessMessageDialog.show(context, "Complaint submitted successfully!");
@@ -87,29 +183,29 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 3, 152, 85),
+      backgroundColor: const Color.fromARGB(255, 3, 152, 85),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
-        backgroundColor: Color.fromARGB(255, 3, 152, 85),
+        backgroundColor: const Color.fromARGB(255, 3, 152, 85),
         toolbarHeight: 100,
         iconTheme: const IconThemeData(color: Color(0xFFFAFAFF)),
         title: Row(
           children: [
             IconButton(
-              icon: Icon(Icons.arrow_back),
+              icon: const Icon(Icons.arrow_back),
               onPressed: () {
                 Navigator.pop(context);
               },
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Expanded(
               child: Text(
                 "Raise Complaint",
                 style: GoogleFonts.poppins(
                   fontSize: 23,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFFAFAFF),
+                  color: const Color(0xFFFAFAFF),
                 ),
                 textAlign: TextAlign.start,
               ),
@@ -144,16 +240,28 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
                       style: GoogleFonts.poppins(
                         fontSize: 21,
                         fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(201, 3, 152, 85),
+                        color: const Color.fromARGB(201, 3, 152, 85),
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       'Describe your complaint about the violation below',
-                      style:
-                          GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
+                    StyledDropdown(
+                      selectedReason: selectedReason,
+                      reasons: reasons,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedReason = value!;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 20),
                     TextFormField(
                       controller: _controller,
                       maxLines: 5,
@@ -165,28 +273,28 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
                         labelText: 'Enter Your Complaint',
                         alignLabelWithHint: true,
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color.fromARGB(201, 3, 152, 85),
                             width: 1.5,
                           ),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Color.fromARGB(201, 3, 152, 85),
                             width: 2.0,
                           ),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Colors.red,
-                            width: 1.5,
+                            width: 2.0,
                           ),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         focusedErrorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             color: Colors.red,
                             width: 2.0,
                           ),
@@ -200,25 +308,26 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       '${_controller.text.length}/$maxChararcter characters',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.grey,
                         fontSize: 12,
                       ),
                     ),
-                    SizedBox(height: 32),
+                    const SizedBox(height: 32),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: submitComplaint,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromARGB(201, 3, 152, 85),
+                          backgroundColor:
+                              const Color.fromARGB(201, 3, 152, 85),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15.0),
                           ),
-                          padding: EdgeInsets.symmetric(vertical: 16),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
                         child: Text(
                           'Submit',
@@ -229,7 +338,7 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 242),
+                    const SizedBox(height: 242),
                   ],
                 ),
               ),

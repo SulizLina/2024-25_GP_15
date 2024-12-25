@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -39,6 +40,10 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
   late TabController _tabController;
   List<DocumentSnapshot> filteredComplaints = [];
   Motorcycle? motorcycle;
+  String? selectedReason;
+  List<String> complaintsReasons = [];
+  ValueNotifier<String?> selectedReasonNotifier = ValueNotifier<String?>(null);
+
   @override
   void initState() {
     super.initState();
@@ -84,6 +89,23 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
         .snapshots();
   }
 
+  Stream<List<String>> fetchComplaintReasonsStream() {
+    return FirebaseFirestore.instance
+        .collection('Complaint')
+        .where('driverID', isEqualTo: driverNat_Res?.driverId)
+        .snapshots()
+        .map((snapshot) {
+      Set<String> reasonsSet = {};
+      for (var doc in snapshot.docs) {
+        Complaint complaint = Complaint.fromJson(doc);
+        if (complaint.Reason != null) {
+          reasonsSet.add(complaint.Reason!);
+        }
+      }
+      return ['All', ...reasonsSet.toList()]; // Add 'All' as the first option
+    });
+  }
+
   Map<String, String?> licensePlateMap =
       {}; // Store license plates by complints ID
 
@@ -106,7 +128,14 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
       }).toList();
 
       await Future.wait(fetchTasks);
-
+      Set<String> ReasonsSet = {};
+      for (var doc in snapshot.docs) {
+        Complaint complaint = Complaint.fromJson(doc);
+        if (complaint.Reason != null) {
+          ReasonsSet.add(complaint.Reason!); // Add non-null reason
+        }
+      }
+      complaintsReasons = ['All', ...ReasonsSet.toList()];
       setState(() {
         if (plateN.isNotEmpty) {
           plateN = {
@@ -153,6 +182,10 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
 
   void filterComplaints() {
     setState(() {
+      if (selectedReason == null) {
+      // Handle the case where selected reason is null 'when driver edit/delete complint from filter'
+      selectedReason = 'All'; // Reset to default value or handle as needed
+    }
       filteredComplaints = complaints.where((doc) {
         Complaint complaint = Complaint.fromJson(doc);
 
@@ -165,9 +198,17 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
         bool plateMatch = selectedPlate == null
             ? true
             : licensePlateMap[complaint.Vid] == selectedPlate;
+        bool reasonMatch = selectedReason == null ||
+            selectedReason == 'All' ||
+            complaint.Reason == selectedReason;
 
-        return statusMatch && dateMatch && plateMatch;
+        return statusMatch && dateMatch && plateMatch && reasonMatch;
       }).toList();
+
+      if (filteredComplaints.isEmpty && selectedReason == null) {
+      selectedReason = 'All';
+      filterComplaints(); // Re-run the filter with the updated selectedReason
+    }
     });
   }
 
@@ -322,6 +363,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                 ),
               ),
               child: Column(
+                //mainAxisSize: MainAxisSize.min, //new
                 children: [
                   Padding(
                     padding:
@@ -459,6 +501,34 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                       ),
                     ),
                   ),
+                  if (filteredComplaint.isNotEmpty)
+                    StreamBuilder<List<String>>(
+                      stream: fetchComplaintReasonsStream(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        }
+
+                        if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        }
+
+                        complaintsReasons = snapshot.data ?? [];
+
+                        return Dropdown(
+                          selectedReason: selectedReason,
+                          reasons: complaintsReasons,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedReasonNotifier.value = value;
+                              selectedReason = value;
+                              filterComplaints();
+                            });
+                          },
+                        );
+                      },
+                    ),
                   Expanded(
                     child: Container(
                       width: double.infinity,
@@ -521,7 +591,15 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                               bool statusMatch = selectedStatus == "All" ||
                                   complaint.Status == selectedStatus;
 
-                              return dateMatch && plateMatch && statusMatch;
+                              // Reason match filter
+                              bool reasonMatch = selectedReason == null ||
+                                  selectedReason == 'All' ||
+                                  complaint.Reason == selectedReason;
+
+                              return dateMatch &&
+                                  plateMatch &&
+                                  statusMatch &&
+                                  reasonMatch;
                             }).toList();
                             // Sort filtered list by date (descending)
                             filteredList.sort((a, b) {
@@ -632,6 +710,10 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                                             style: GoogleFonts.poppins(
                                                 color: Colors.grey),
                                           ),
+                                          _buildSpeedLimitRow(
+                                          'Reason:',
+                                          '${complaint.Reason}',
+                                        ),
                                         ],
                                       ),
                                       trailing: Icon(
@@ -746,6 +828,122 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
     );
   }
 
+  Widget _buildSpeedLimitRow(String bullet, String text) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          bullet,
+          style: GoogleFonts.poppins(
+            color: Colors.grey,
+            height: 1.5,
+          ),
+        ),
+        const SizedBox(width: 8), // Space between bullet and text
+        Expanded(
+          child: Text(
+            text,
+            style: GoogleFonts.poppins(
+              color: Colors.grey,
+              height: 1.5,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class Dropdown extends StatelessWidget {
+  final String? selectedReason;
+  final List<String> reasons;
+  final Function(String?) onChanged;
+
+  const Dropdown({
+    Key? key,
+    required this.selectedReason,
+    required this.reasons,
+    required this.onChanged,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      child: DropdownButtonFormField2<String>(
+        isExpanded: true,
+        decoration: InputDecoration(
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+            borderSide: const BorderSide(
+              color: Colors.grey,
+              width: 1.5,
+            ),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: const BorderSide(
+              color: Colors.grey,
+              width: 1.5,
+            ),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: const BorderSide(
+              color: Colors.grey,
+              width: 2.0,
+            ),
+            borderRadius: BorderRadius.circular(15),
+          ),
+        ),
+        hint: Text(
+          'Filter by complaint reason',
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            color: Colors.black,
+          ),
+        ),
+        items: reasons
+            .map((reason) => DropdownMenuItem<String>(
+                  value: reason,
+                  child: Text(
+                    reason,
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ))
+            .toList(),
+        value: selectedReason,
+        onChanged: (value) {
+          onChanged(value); // Notify parent about the change
+        },
+        dropdownStyleData: DropdownStyleData(
+          maxHeight: 200, // Limit dropdown height
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: Colors.white,
+          ),
+        ),
+        menuItemStyleData: const MenuItemStyleData(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+        ),
+        iconStyleData: IconStyleData(
+          icon: Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Icon(
+              Icons.arrow_drop_down,
+              color: Colors.grey,
+            ),
+          ),
+          iconSize: 24,
+        ),
+      ),
+    );
+  }
+}
+
   Stream<bool> isButtonEnabledStream(String? driverId) {
   if (driverId == null) return Stream.value(false);
 
@@ -850,9 +1048,11 @@ Stream<List<QueryDocumentSnapshot>> getComplaintsStream(String? driverId) {
             !complaintViolationIds.contains(violationId);
       }).toList();
 
+      // Debug: Print filtered violations
+      print(
+          "Filtered Violations: ${filteredViolations.map((doc) => doc.id).toList()}");
+
       return filteredViolations;
     },
   );
-}
-
 }

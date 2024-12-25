@@ -262,7 +262,13 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                     ),
                     const SizedBox(height: 15),
                     buildDetailSection(
-                      'Complaint',
+                      'Complaint Reason',
+                      complaint?.Reason?? '',
+                      HugeIcons.strokeRoundedFileEdit,
+                    ),
+                    const SizedBox(height: 15),
+                    buildDetailSection(
+                      'Complaint Description',
                       complaint?.Description!,
                       HugeIcons.strokeRoundedFileEdit,
                     ),

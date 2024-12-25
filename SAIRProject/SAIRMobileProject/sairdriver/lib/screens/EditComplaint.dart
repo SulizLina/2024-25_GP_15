@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sairdriver/messages/Warning.dart';
 import 'package:sairdriver/models/complaint.dart';
 import 'package:sairdriver/messages/success.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sairdriver/screens/RaiseCompliants.dart';
 
 class editcomplaint extends StatefulWidget {
   final Complaint complaint;
@@ -28,6 +30,21 @@ class _editcomplaintState extends State<editcomplaint> {
   String? errorMessage;
   bool isInitialized = false;
   String initialdescription = "";
+  String initialReason = "";
+  String? selectedReason;
+
+  final List<String> reasons = [
+    'Damaged motorcycle',
+    'I do not own a motorcycle',
+    'Stolen motorcycle',
+    'Motorcycle license plate is stolen or lost',
+    'I have not been notified of this violation',
+    'No violation committed',
+    'I did not visit the place where this violation was recorded',
+    'Emergency case',
+    'My motorcycle suddenly disrupted',
+    'Other',
+  ];
 
   @override
   void initState() {
@@ -49,10 +66,18 @@ class _editcomplaintState extends State<editcomplaint> {
     if (snapshot.docs.isNotEmpty) {
       var data = snapshot.docs.first.data() as Map<String, dynamic>?;
       complaintText.text = data?['Description'] ?? '';
-      initialdescription = complaintText.text; 
+      selectedReason = data?['Reason'] ?? 'Select a reson';
+      initialReason = selectedReason!;
+      initialdescription = complaintText.text;
     }
     setState(() {
       isInitialized = true;
+    });
+  }
+
+  void _onDropdownChanged(String? value) {
+    setState(() {
+      selectedReason = value;
     });
   }
 
@@ -69,6 +94,7 @@ class _editcomplaintState extends State<editcomplaint> {
   }
 
   bool get isTextChanged => complaintText.text != initialdescription;
+  bool get isReasonChanged => selectedReason != initialReason;
 
   @override
   void dispose() {
@@ -76,7 +102,8 @@ class _editcomplaintState extends State<editcomplaint> {
     super.dispose();
   }
 
-  Future<bool> updateComplaintInFirebase(String description) async {
+  Future<bool> updateComplaintInFirebase(
+      String description, String reason) async {
     try {
       User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null) {
@@ -87,10 +114,11 @@ class _editcomplaintState extends State<editcomplaint> {
 
         if (snapshot.docs.isNotEmpty) {
           for (var doc in snapshot.docs) {
-            await doc.reference.update({'Description': description});
+            await doc.reference
+                .update({'Description': description, 'Reason': reason});
           }
-
-          widget.onComplaintUpdated(description);
+          widget.onComplaintUpdated(
+              description); // Pass only description if required
           return true;
         } else {
           setState(() {
@@ -117,14 +145,16 @@ class _editcomplaintState extends State<editcomplaint> {
       errorMessage = null;
     });
 
-    if (!isTextChanged) {
+    if (!isTextChanged && !isReasonChanged) { //hmmmm
       _formKey.currentState?.validate();
       return;
     }
 
     if (_formKey.currentState != null && _formKey.currentState!.validate()) {
       String description = complaintText.text;
-      bool updateSuccessful = await updateComplaintInFirebase(description);
+      String? reason = selectedReason;
+      bool updateSuccessful =
+          await updateComplaintInFirebase(description, reason!);
 
       if (updateSuccessful) {
         SuccessMessageDialog.show(context, "Complaint updated successfully!");
@@ -211,7 +241,18 @@ class _editcomplaintState extends State<editcomplaint> {
                       style:
                           GoogleFonts.poppins(fontSize: 14, color: Colors.grey),
                     ),
-                    SizedBox(height: 15),
+                    SizedBox(height: 20),
+                    StyledDropdown(
+                      selectedReason: selectedReason,
+                      reasons: reasons,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedReason = value!;
+                        });
+                      },
+                    ),
+
+                    SizedBox(height: 20),
                     if (!isInitialized)
                       CircularProgressIndicator() // Show loading indicator while initializing
                     else
@@ -253,11 +294,10 @@ class _editcomplaintState extends State<editcomplaint> {
                           ),
                         ),
                         validator: (value) {
+                          //i may delete this??
                           if (value == null || value.isEmpty) {
                             return 'Please enter your complaint';
-                          } else if (!isTextChanged) {
-                            return 'Please edit your complaint';
-                          }
+                          } //delete
                           return null;
                         },
                       ),
@@ -274,15 +314,21 @@ class _editcomplaintState extends State<editcomplaint> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          if (isTextChanged) {
+                          if (isTextChanged || isReasonChanged) {
                             _updateComplaint();
                           } else {
-                            _formKey.currentState!
-                                .validate(); 
+                            // Display the warning dialog if no changes are made
+                            showDialog(
+                              context: context,
+                              builder: (context) => const WarningDialog(
+                                message:
+                                    "No changes were made. Please update either the complaint description or the reason",
+                              ),
+                            );
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isTextChanged
+                          backgroundColor: (isTextChanged || isReasonChanged)
                               ? Color.fromARGB(202, 3, 152, 85)
                               : Colors.grey,
                           shape: RoundedRectangleBorder(
@@ -299,7 +345,7 @@ class _editcomplaintState extends State<editcomplaint> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 250),
+                    SizedBox(height: 190),
                   ],
                 ),
               ),

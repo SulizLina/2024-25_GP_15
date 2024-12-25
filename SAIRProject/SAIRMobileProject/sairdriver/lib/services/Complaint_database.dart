@@ -13,7 +13,7 @@ String generateComplaintID() {
 
 
   //method to raise complaint
-  Future<void> raiseComplaint(Violation v, String desc, String driverid) async {
+  Future<void> raiseComplaint(Violation v, String desc, String driverid, String reason) async { //new
 
     String complaintID = generateComplaintID(); 
 
@@ -23,6 +23,7 @@ String generateComplaintID() {
         'driverID': v.driverId,
         'DateTime': Timestamp.now(),
         'Description': desc,
+        'Reason': reason, //new
         'GPSnumber': v.gspNumber,
         'ViolationID': v.Vid,
         'Status': 'Pending',

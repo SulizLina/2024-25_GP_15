@@ -6,7 +6,7 @@ class Complaint {
   String? driverId;
   Timestamp? timestamp; 
   String? Description;
-  String? Response;
+  String? Reason;
   String? gspNumber; 
   String? Vid; 
   String? Status;
@@ -16,6 +16,7 @@ class Complaint {
     required this.driverId,
     required this.timestamp,
     required this.Description,
+    required this.Reason,
      required this.gspNumber,
     required this.Vid,
     required this.Status,
@@ -30,6 +31,7 @@ class Complaint {
       driverId: parsedJSON['driverID'].toString(),
       timestamp: parsedJSON['DateTime'] as Timestamp,
       Description: parsedJSON['Description'] as String?,
+      Reason: parsedJSON['Reason'] as String?,
       gspNumber: parsedJSON['GPSnumber'].toString(),
       Vid: parsedJSON['ViolationID'].toString(),
       Status: parsedJSON['Status'] as String?,
@@ -42,6 +44,7 @@ class Complaint {
       driverId: parsedJSON['driverID']?.toString(),
       timestamp: parsedJSON['DateTime'] as Timestamp?,
       Description: parsedJSON['Description'] as String?,
+      Reason: parsedJSON['Reason'] as String?,
       gspNumber: parsedJSON['GPSnumber']?.toString(),
       Vid: parsedJSON['ViolationID']?.toString(),
       Status: parsedJSON['Status'] as String?,
