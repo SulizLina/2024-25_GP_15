@@ -85,7 +85,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
     }
   }
 
-    Future<void> fetchMotor() async {
+  Future<void> fetchMotor() async {
     if (complaint?.Vid != null) {
       MotorcycleDatabase mdb = MotorcycleDatabase();
       motorcycle = await mdb.getMotorcycleByIDhis(complaint!.Vid!);
@@ -108,7 +108,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
           return true;
         } else {
           setState(() {
-            errorMessage = 'Complaint not found.';
+           
           });
           return false;
         }
@@ -187,284 +187,319 @@ class _ComplaintdetailState extends State<Complaintdetail> {
             topRight: Radius.circular(30),
           ),
         ),
-        child: SingleChildScrollView(
-          child: Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'You can edit and delete the complaint only when pending',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: Colors.grey[400],
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 20),
-                  buildDetailSection(
-                    'Complaint ID ',
-                    complaint?.ComID ?? '',
-                    HugeIcons.strokeRoundedFileEdit,
-                  ),
-                  const SizedBox(height: 15),
-                  buildDetailSection(
-                    'Time',
-                    complaint?.getFormattedTime() ?? '',
-                    HugeIcons.strokeRoundedClock03,
-                  ),
-                  const SizedBox(height: 15),
-                  buildDetailSection(
-                    'Date',
-                    complaint?.getFormattedDate() ?? '',
-                    HugeIcons.strokeRoundedCalendar01,
-                  ),
-                  const SizedBox(height: 15),
-                  buildDetailSectionIcon(
-                    'Status',
-                    complaint?.Status ?? '',
-                    complaint?.Status,
-                  ),
-                  const SizedBox(height: 15),
-                  buildDetailSection(
-                    'Complaint',
-                    complaint?.Description!,
-                    HugeIcons.strokeRoundedFileEdit,
-                  ),
-                  Divider(color: Colors.grey[350]),
-                  const SizedBox(height: 15),
-                  buildDetailSection('Violation ID', complaint?.Vid ?? '',
-                      HugeIcons.strokeRoundedDoNotTouch02),
-                  Divider(color: Colors.grey[350]),
-                  const SizedBox(height: 15),
-                  buildDetailSection(
-                      'Motorcycle Brand',
-                      motorcycle?.brand ?? '',
-                      HugeIcons.strokeRoundedMotorbike02),
-                  const SizedBox(height: 15),
-                  buildDetailSection(
-                      'Motorcycle Type',
-                      motorcycle?.type ?? '',
-                      HugeIcons.strokeRoundedMotorbike02),
-                  const SizedBox(height: 15),
-                  buildDetailSection(
-                      'Motorcycle Model',
-                      motorcycle?.model ?? '',
-                      HugeIcons.strokeRoundedMotorbike02),
-                  const SizedBox(height: 15),
-                  buildDetailSectionWithImage(
-                    'Motorcycle Licence Plate',
-                      motorcycle?.licensePlate ?? ''),
-                  const SizedBox(height: 15),
-                  buildDetailSection(
-                      'GPS Serial Number',
-                      complaint?.gspNumber ?? '',
-                      HugeIcons.strokeRoundedShareLocation01),
-                  const SizedBox(height: 15),
+        child: StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('Complaint')
+              .doc(widget.ComplaintID)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (!snapshot.hasData || !snapshot.data!.exists) {
+              return Center(
+                child: Text(
+                  '',
+                  style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
+                ),
+              );
+            }
 
-                  //View Violation details
-                  ElevatedButton(
-                    onPressed: complaint != null
-                        ? () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Violationdetail(
-                                  violationId: vioDocid ?? '',
-                                  driverid: widget.driverid,
-                                ),
-                              ),
-                            );
-                          }
-                        : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(202, 3, 152, 85),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      textStyle: GoogleFonts.poppins(fontSize: 18),
-                    ),
-                    child: Text(
-                      'View Violation',
-                      style: GoogleFonts.poppins(
-                          color: Colors.white, fontSize: 16),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
+            // Safely retrieve Firestore document data
+            final data = snapshot.data!.data();
 
-                  //edit button if the Status is Pending
-                  ElevatedButton(
-                    onPressed: (complaint != null &&
-                            complaint!.Status == "Pending")
-                        ? () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => editcomplaint(
-                                  complaint: complaint!,
-                                  driverid: widget.driverid,
-                                  onComplaintUpdated: (newDesc) {
-                                    setState(() {
-                                      complainttext.text = newDesc;
-                                    });
-                                  },
-                                ),
-                              ),
-                            );
-                          }
-                        : () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return const WarningDialog(
-                                  message:
-                                      "You can't edit the complaint unless the complaint status is pending",
-                                );
-                              },
-                            );
-                          },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          complaint != null && complaint!.Status == "Pending"
-                              ? Color.fromARGB(202, 3, 152, 85)
-                              : Colors.grey,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      textStyle: GoogleFonts.poppins(fontSize: 18),
-                    ),
-                    child: Text(
-                      'Edit Complaint',
+            // Check if data is null
+            if (data == null) {
+              return Center(
+                child: Text(
+                  'No data available',
+                  style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey),
+                ),
+              );
+            }
+
+            // Parse data using Complaint model
+            Complaint complaint = Complaint.fromJsonn(
+                snapshot.data!.data() as Map<String, dynamic>);
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'You can edit and delete the complaint only when pending',
                       style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 14,
+                        color: Colors.grey[400],
                       ),
+                      textAlign: TextAlign.center,
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: (complaint != null &&
-                            complaint!.Status == "Pending")
-                        ? () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return Dialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
+                    const SizedBox(height: 20),
+                    buildDetailSection(
+                      'Complaint ID ',
+                      complaint?.ComID ?? '',
+                      HugeIcons.strokeRoundedFileEdit,
+                    ),
+                    const SizedBox(height: 15),
+                    buildDetailSection(
+                      'Time',
+                      complaint?.getFormattedTime() ?? '',
+                      HugeIcons.strokeRoundedClock03,
+                    ),
+                    const SizedBox(height: 15),
+                    buildDetailSection(
+                      'Date',
+                      complaint?.getFormattedDate() ?? '',
+                      HugeIcons.strokeRoundedCalendar01,
+                    ),
+                    const SizedBox(height: 15),
+                    buildDetailSectionIcon(
+                      'Status',
+                      complaint?.Status ?? '',
+                      complaint?.Status,
+                    ),
+                    const SizedBox(height: 15),
+                    buildDetailSection(
+                      'Complaint',
+                      complaint?.Description!,
+                      HugeIcons.strokeRoundedFileEdit,
+                    ),
+                    Divider(color: Colors.grey[350]),
+                    const SizedBox(height: 15),
+                    buildDetailSection('Violation ID', complaint?.Vid ?? '',
+                        HugeIcons.strokeRoundedDoNotTouch02),
+                    Divider(color: Colors.grey[350]),
+                    const SizedBox(height: 15),
+                    buildDetailSection(
+                        'Motorcycle Brand',
+                        motorcycle?.brand ?? '',
+                        HugeIcons.strokeRoundedMotorbike02),
+                    const SizedBox(height: 15),
+                    buildDetailSection(
+                        'Motorcycle Type',
+                        motorcycle?.type ?? '',
+                        HugeIcons.strokeRoundedMotorbike02),
+                    const SizedBox(height: 15),
+                    buildDetailSection(
+                        'Motorcycle Model',
+                        motorcycle?.model ?? '',
+                        HugeIcons.strokeRoundedMotorbike02),
+                    const SizedBox(height: 15),
+                    buildDetailSectionWithImage('Motorcycle Licence Plate',
+                        motorcycle?.licensePlate ?? ''),
+                    const SizedBox(height: 15),
+                    buildDetailSection(
+                        'GPS Serial Number',
+                        complaint?.gspNumber ?? '',
+                        HugeIcons.strokeRoundedShareLocation01),
+                    const SizedBox(height: 15),
+
+                    //View Violation details
+                    ElevatedButton(
+                      onPressed: complaint != null
+                          ? () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Violationdetail(
+                                    violationId: vioDocid ?? '',
+                                    driverid: widget.driverid,
                                   ),
-                                  child: Container(
-                                    padding: EdgeInsets.all(16),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          "Delete",
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            color: Color.fromARGB(202, 3, 152, 85),
-                                          ),
-                                        ),
-                                        SizedBox(height: 20),
-                                        Text(
-                                          'Are you sure that you want to delete the complaint?',
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 16,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        SizedBox(height: 20),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: Colors.grey,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                ),
-                                              ),
-                                              child: Text(
-                                                'Cancel',
-                                                style: GoogleFonts.poppins(
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ),
-                                            ElevatedButton(
-                                              onPressed: () async {
-                                                Navigator.of(context)
-                                                    .pop(); 
-                                                await _DeleteComplaint(); // Execute delete action
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: Colors.red,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                ),
-                                              ),
-                                              child: Text(
-                                                'Delete',
-                                                style: GoogleFonts.poppins(
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                ),
+                              );
+                            }
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color.fromARGB(202, 3, 152, 85),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        textStyle: GoogleFonts.poppins(fontSize: 18),
+                      ),
+                      child: Text(
+                        'View Violation',
+                        style: GoogleFonts.poppins(
+                            color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    //edit button if the Status is Pending
+                    ElevatedButton(
+                      onPressed:
+                          (complaint != null && complaint!.Status == "Pending")
+                              ? () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => editcomplaint(
+                                        complaint: complaint!,
+                                        driverid: widget.driverid,
+                                        onComplaintUpdated: (newDesc) {
+                                          setState(() {
+                                            complainttext.text = newDesc;
+                                          });
+                                        },
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                            );
-                          }
-                        : () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return const WarningDialog(
-                                  message:
-                                      "You can't delete the complaint unless the complaint status is pending",
-                                );
-                              },
-                            );
-                          },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          complaint != null && complaint!.Status == "Pending"
-                              ? Colors.red
-                              : Colors.grey,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                                  );
+                                }
+                              : () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return const WarningDialog(
+                                        message:
+                                            "You can't edit the complaint unless the complaint status is pending",
+                                      );
+                                    },
+                                  );
+                                },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            complaint != null && complaint!.Status == "Pending"
+                                ? Color.fromARGB(202, 3, 152, 85)
+                                : Colors.grey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        textStyle: GoogleFonts.poppins(fontSize: 18),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      textStyle: GoogleFonts.poppins(fontSize: 18),
-                    ),
-                    child: Text(
-                      'Delete Complaint',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 16,
+                      child: Text(
+                        'Edit Complaint',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 60),
-                ],
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: (complaint != null &&
+                              complaint!.Status == "Pending")
+                          ? () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return Dialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Container(
+                                      padding: EdgeInsets.all(16),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            "Delete",
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color.fromARGB(
+                                                  202, 3, 152, 85),
+                                            ),
+                                          ),
+                                          SizedBox(height: 20),
+                                          Text(
+                                            'Are you sure that you want to delete the complaint?',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 16,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          SizedBox(height: 20),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.grey,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  'Cancel',
+                                                  style: GoogleFonts.poppins(
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () async {
+                                                  Navigator.of(context).pop();
+                                                  await _DeleteComplaint(); // Execute delete action
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.red,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  'Delete',
+                                                  style: GoogleFonts.poppins(
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            }
+                          : () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return const WarningDialog(
+                                    message:
+                                        "You can't delete the complaint unless the complaint status is pending",
+                                  );
+                                },
+                              );
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            complaint != null && complaint!.Status == "Pending"
+                                ? Colors.red
+                                : Colors.grey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        textStyle: GoogleFonts.poppins(fontSize: 18),
+                      ),
+                      child: Text(
+                        'Delete Complaint',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 60),
+                  ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );

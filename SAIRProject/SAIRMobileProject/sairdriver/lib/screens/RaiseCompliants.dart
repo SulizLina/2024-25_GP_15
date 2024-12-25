@@ -2,15 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/models/violation.dart';
 import 'package:sairdriver/messages/success.dart';
+import 'package:sairdriver/screens/ViewComplaints.dart';
 import 'package:sairdriver/services/Complaint_database.dart';
 import 'package:flutter/services.dart';
+import 'ViolationDetail.dart';
 
 class Raisecomplaint extends StatefulWidget {
   final Violation violation;
   final String driverid;
-
+  final String page;
   const Raisecomplaint(
-      {Key? key, required this.violation, required this.driverid})
+      {Key? key,
+      required this.violation,
+      required this.driverid,
+      required this.page})
       : super(key: key);
 
   @override
@@ -56,7 +61,20 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
 
         // Close the current screen after showing the dialog
         Future.delayed(Duration(seconds: 1), () {
-          Navigator.pop(context);
+          // Navigator.pop(context);
+          if (widget.page == 'violation') {
+            Navigator.pop(context);
+          }
+          if (widget.page == 'complaints') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Viewcomplaints(
+                  driverId: widget.driverid,
+                ),
+              ),
+            );
+          }
         });
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -211,7 +229,7 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 190),
+                    SizedBox(height: 242),
                   ],
                 ),
               ),

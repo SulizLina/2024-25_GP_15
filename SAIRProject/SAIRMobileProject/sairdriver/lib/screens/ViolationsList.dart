@@ -3,16 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sairdriver/models/violation.dart';
 import 'package:sairdriver/models/driver.dart';
+import 'package:sairdriver/screens/RaiseCompliants.dart';
 import 'package:sairdriver/services/driver_database.dart';
 import 'package:sairdriver/models/motorcycle.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sairdriver/screens/ViolationDetail.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:sairdriver/services/crashstreambuilder.dart';
+import 'package:sairdriver/services/motorcycle_database.dart';
 
 class Violationslist extends StatefulWidget {
-  final String driverId; 
-  Violationslist({required this.driverId});
+  final String driverId;
+  final String page;
+  Violationslist({required this.driverId, required this.page});
 
   @override
   State<Violationslist> createState() => _ViolationslistState();
@@ -23,7 +26,8 @@ class _ViolationslistState extends State<Violationslist> {
   List<DocumentSnapshot> filteredViolations =
       []; // List for filtered violations based on date
   List<bool> isHoveredList = [];
-
+  Map<String, String?> licensePlateMap = {};
+  Motorcycle? motorcycle;
   List<String> plateN = [];
   String? selectedPlate;
   String? mtoken = "";
@@ -38,19 +42,11 @@ class _ViolationslistState extends State<Violationslist> {
     super.initState();
     fetchDriverData();
   }
-
-  Future<String?> fetchLicensePlate(String? gspNumber) async {
-    if (gspNumber == null) return null;
-    QuerySnapshot motorcycleSnapshot = await FirebaseFirestore.instance
-        .collection('Motorcycle')
-        .where('GPSnumber', isEqualTo: gspNumber)
-        .get();
-    if (motorcycleSnapshot.docs.isNotEmpty) {
-      Motorcycle motorcycle =
-          Motorcycle.fromDocument(motorcycleSnapshot.docs.first);
-      return motorcycle.licensePlate;
-    }
-    return null;
+  Future<String?> fetchLicensePlate(String? id) async {
+    if (id == null) return 'null';
+     MotorcycleDatabase mdb = MotorcycleDatabase();
+      motorcycle = await mdb.getMotorcycleByIDhis(id);
+      return motorcycle!.licensePlate;
   }
 
   Future<void> fetchDriverData() async {
@@ -60,43 +56,126 @@ class _ViolationslistState extends State<Violationslist> {
     if (driverNat_Res != null) {
       print(
           "Driver data found for ID: ${widget.driverId}, driverID: ${driverNat_Res?.driverId}");
-      await fetchViolations();
+      await fetchViolations(page: widget.page);
     } else {
       print("Driver data not found for ID: ${widget.driverId}");
     }
   }
 
-  Stream<QuerySnapshot> fetchViolationsStream() {
+  Stream<List<QueryDocumentSnapshot<Object?>>> fetchViolationsStream(
+      String? page) {
+    if (page == 'menu') {
+      return FirebaseFirestore.instance
+          .collection('Violation')
+          .where('driverID', isEqualTo: driverNat_Res?.driverId)
+          .snapshots()
+          .map((snapshot) => snapshot.docs);
+    } else if (page == 'complaints') {
+ final complaintsStream = FirebaseFirestore.instance
+        .collection('Complaint')
+        .where('driverID', isEqualTo: driverNat_Res?.driverId)
+        .snapshots();
+
     return FirebaseFirestore.instance
         .collection('Violation')
         .where('driverID', isEqualTo: driverNat_Res?.driverId)
-        .snapshots();
+        .snapshots()
+        .asyncMap((violationsSnapshot) async {
+      final complaintsSnapshot = await complaintsStream.first;
+
+      // Extract violation IDs with complaints
+      final complaintViolationIds = complaintsSnapshot.docs
+          .where((doc) => doc.data()?.containsKey('ViolationID') == true)
+          .map((doc) => doc['ViolationID'] as String?)
+          .toSet();
+ // Get the current date
+      final now = DateTime.now();
+
+      // Filter violations: exclude those with complaints and older than 30 days
+      final filteredViolations = violationsSnapshot.docs.where((doc) {
+        final violationId = doc.data()?.containsKey('violationID') == true
+            ? doc['violationID'] as String?
+            : null;
+
+        // Check if the date field exists
+        if (!doc.data()!.containsKey('time')) {
+          print("Skipping violation without time field: ${doc.id}");
+          return false;
+        }
+
+        // Parse the violation date
+        DateTime violationDate;
+        try {
+          final timeField = doc['time'];
+          if (timeField is String) {
+            violationDate = DateTime.parse(timeField);
+          } else if (timeField is int) {
+            // Assuming the timestamp is in seconds, convert to milliseconds
+            violationDate = DateTime.fromMillisecondsSinceEpoch(timeField * 1000); 
+          } else {
+            print("Invalid type for time field in violation ${doc.id}: ${timeField.runtimeType}");
+            return false;
+          }
+        } catch (e) {
+          print("Error parsing date for violation ${doc.id}: $e");
+          return false;
+        }
+
+        final isOlderThan30Days = violationDate.isBefore(now.subtract(Duration(days: 30)));
+
+        if (violationId == null || isOlderThan30Days) {
+          print("Skipping violation: ${doc.id}");
+          return false;
+        }
+
+        // Final condition to include the violation
+        return !complaintViolationIds.contains(violationId);
+      }).toList();
+
+      // Debug: Print filtered violations
+      print("Filtered Violations: ${filteredViolations.map((doc) => doc.id).toList()}");
+
+      return filteredViolations;
+    });
+  } else {
+    return Stream.value([]);
   }
-
-  Stream<QuerySnapshot> fetchCrashesStream() {
-    return FirebaseFirestore.instance
-        .collection('Crash')
-        .where('driverID', isEqualTo: driverNat_Res?.driverId)
-        .snapshots();
-  }
-
-  Map<String, String?> licensePlateMap = {};
-
-  Future<void> fetchViolations({DateTime? filterDate}) async {
+}
+  Future<void> fetchViolations({DateTime? filterDate, String? page}) async {
     try {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance
+      // Fetch all violations
+      QuerySnapshot violationSnapshot = await FirebaseFirestore.instance
           .collection('Violation')
           .where('driverID', isEqualTo: driverNat_Res?.driverId)
           .get();
 
-      // Store the violations
-      violations = snapshot.docs;
+      List<QueryDocumentSnapshot> allViolations = violationSnapshot.docs;
+
+      List<QueryDocumentSnapshot> filteredResults = allViolations;
+
+      if (page == 'complaints') {
+        // Fetch complaints to exclude them from the results
+        QuerySnapshot complaintSnapshot = await FirebaseFirestore.instance
+            .collection('Complaint')
+            .where('driverID', isEqualTo: driverNat_Res?.driverId)
+            .get();
+
+        List<String?> complaintViolationIds = complaintSnapshot.docs
+            .map((doc) => doc.get('ViolationID') as String?)
+            .toList();
+
+        filteredResults = allViolations.where((violationDoc) {
+          final violationId = violationDoc.get('violationID') as String?;
+
+          return !complaintViolationIds.contains(violationId);
+        }).toList();
+      }
 
       // Process license plates for each violation
-      List<Future<void>> fetchTasks = violations.map((doc) async {
+      List<Future<void>> fetchTasks = filteredResults.map((doc) async {
         Violation violation = Violation.fromJson(doc);
         if (violation.gspNumber != null) {
-          String? plate = await fetchLicensePlate(violation.gspNumber!);
+          String? plate = await fetchLicensePlate(violation.Vid!);
           if (plate != null && violation.Vid != null) {
             licensePlateMap[violation.Vid!] = plate;
             plateN.add(plate);
@@ -107,23 +186,20 @@ class _ViolationslistState extends State<Violationslist> {
       await Future.wait(fetchTasks);
 
       setState(() {
-        // Process license plates list
         if (plateN.isNotEmpty) {
           plateN = [
             "Reset",
             ...{...plateN}
           ].toSet().toList();
         } else {
-          plateN = []; // Empty list when no plates
+          plateN = [];
         }
 
-        // Reset selected plate if it's not available
         if (!plateN.contains(selectedPlate)) {
           selectedPlate = null;
         }
 
-        // Apply filters based on selectedPlate and filterDate
-        filteredViolations = violations.where((doc) {
+        filteredViolations = filteredResults.where((doc) {
           Violation violation = Violation.fromJson(doc);
 
           bool dateMatch = isDateFiltered
@@ -138,7 +214,6 @@ class _ViolationslistState extends State<Violationslist> {
           return dateMatch && plateMatch;
         }).toList();
 
-        // Update hover state for the violation list
         isHoveredList =
             List.generate(filteredViolations.length, (index) => false);
         _isLoading = false;
@@ -192,6 +267,14 @@ class _ViolationslistState extends State<Violationslist> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            if (widget.page == 'complaints')
+              IconButton(
+                icon: Icon(Icons.arrow_back,
+                    color: Colors.white), // Arrow is now white
+                onPressed: () {
+                  Navigator.pop(context); // Navigate back
+                },
+              ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(left: 7),
@@ -201,7 +284,7 @@ class _ViolationslistState extends State<Violationslist> {
                     Padding(
                       padding: const EdgeInsets.only(left: 5),
                       child: Text(
-                        "My Violations",
+                        widget.page == 'menu' ? "My Violations" : 'Violations',
                         style: GoogleFonts.poppins(
                           fontSize: 22,
                           color: Color(0xFFF3F3F3),
@@ -261,25 +344,24 @@ class _ViolationslistState extends State<Violationslist> {
                           _isLoading = true;
                         });
                         fetchViolations(
-                          filterDate: isDateFiltered ? selectDate : null,
-                        );
+                            filterDate: isDateFiltered ? selectDate : null,
+                            page: widget.page);
                       },
               ),
             ),
             // Filter by date
             IconButton(
-              onPressed: violations.isEmpty ? null : _chooseDate,
+              onPressed: filteredViolations.isEmpty ? null : _chooseDate,
               icon: Icon(
                 isDateFiltered
                     ? HugeIcons.strokeRoundedCalendarRemove02
                     : HugeIcons.strokeRoundedCalendar03,
                 size: 24,
-                color: violations.isEmpty
+                color: filteredViolations.isEmpty
                     ? const Color.fromARGB(255, 199, 199, 199)
                     : isDateFiltered
-                        ? const Color(
-                            0xFFFFC800) 
-                        : Color(0xFFF3F3F3), 
+                        ? const Color(0xFFFFC800)
+                        : Color(0xFFF3F3F3),
               ),
             ),
           ],
@@ -298,16 +380,25 @@ class _ViolationslistState extends State<Violationslist> {
           padding: const EdgeInsets.symmetric(vertical: 15),
           child: Column(
             children: [
+              if (widget.page == 'complaints')
+                Text(
+                  'Select a violation to submit your complaint',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors
+                        .red, //Colors.black, //Color(0xFFFFC800) //Colors.grey[400],
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              if (widget.page == 'complaints') const SizedBox(height: 20),
               // Violations StreamBuilder
               Expanded(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: fetchViolationsStream(),
+                child: StreamBuilder<List<QueryDocumentSnapshot<Object?>>>(
+                  stream: fetchViolationsStream(widget.page),
                   builder: (context, snapshot) {
-                    if (_isLoading) {
-                      return Center(child: CircularProgressIndicator());
-                    }
-
-                    if (snapshot.connectionState == ConnectionState.waiting) {
+                    if (_isLoading ||
+                        snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
                     }
 
@@ -315,7 +406,7 @@ class _ViolationslistState extends State<Violationslist> {
                       return Center(child: Text("Error loading violations"));
                     }
 
-                    if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       return Center(
                         child: Text(
                           isDateFiltered || isPlateFiltered
@@ -328,8 +419,10 @@ class _ViolationslistState extends State<Violationslist> {
                       );
                     }
 
-                    final violations = snapshot.data!.docs;
+                    // Extract violations from snapshot
+                    final violations = snapshot.data!;
 
+                    // Filter and sort violations
                     final filteredList = violations.where((doc) {
                       Violation violation = Violation.fromJson(doc);
 
@@ -337,6 +430,7 @@ class _ViolationslistState extends State<Violationslist> {
                           ? violation.getFormattedDate().split(' ')[0] ==
                               selectDate.toString().split(' ')[0]
                           : true;
+
                       bool plateMatch = selectedPlate != null
                           ? licensePlateMap[violation.Vid] == selectedPlate
                           : true;
@@ -344,16 +438,16 @@ class _ViolationslistState extends State<Violationslist> {
                       return dateMatch && plateMatch;
                     }).toList();
 
-                    // Sort filtered list by date (descending)
                     filteredList.sort((a, b) {
                       Violation violationA = Violation.fromJson(a);
                       Violation violationB = Violation.fromJson(b);
-                      return violationB.time!.compareTo(
-                          violationA.time!); // Sort by time, descending
+                      return violationB.time!.compareTo(violationA.time!);
                     });
 
                     isHoveredList =
                         List.generate(filteredList.length, (index) => false);
+
+                    // Check if the filtered list is empty
                     if (filteredList.isEmpty) {
                       return Center(
                         child: Text(
@@ -369,18 +463,9 @@ class _ViolationslistState extends State<Violationslist> {
                       );
                     }
 
-                    if (filteredList.isEmpty) {
-                      return Center(
-                        child: Text(
-                          "No violations found for the selected date.",
-                          style: GoogleFonts.poppins(
-                              fontSize: 18, color: Colors.grey),
-                          textAlign: TextAlign.center,
-                        ),
-                      );
-                    }
-
+                    // Display the filtered violations in a ListView
                     return ListView.builder(
+                      itemCount: filteredList.length,
                       itemBuilder: (BuildContext context, int index) {
                         if (index >= filteredList.length) return Container();
 
@@ -421,7 +506,7 @@ class _ViolationslistState extends State<Violationslist> {
                                         GoogleFonts.poppins(color: Colors.grey),
                                   ),
                                   Text(
-                                    'Licence Plate: ${licensePlateMap[violation.Vid] ?? ""}',
+                                    'License Plate: ${licensePlateMap[violation.Vid] ?? ""}',
                                     style:
                                         GoogleFonts.poppins(color: Colors.grey),
                                   ),
@@ -433,21 +518,36 @@ class _ViolationslistState extends State<Violationslist> {
                                 size: 20,
                               ),
                               onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Violationdetail(
-                                      violationId: filteredList[index].id,
-                                      driverid: widget.driverId,
+                                if (widget.page == 'menu') {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Violationdetail(
+                                        violationId: filteredList[index].id,
+                                        driverid: widget.driverId,
+                                      ),
                                     ),
-                                  ),
-                                );
+                                  );
+                                }
+                                if (widget.page == 'complaints') {
+                                  Violation violation =
+                                      Violation.fromJson(filteredList[index]);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Raisecomplaint(
+                                        violation: violation,
+                                        driverid: widget.driverId,
+                                        page:"complaints"
+                                      ),
+                                    ),
+                                  );
+                                }
                               },
                             ),
                           ),
                         );
                       },
-                      itemCount: filteredList.length,
                     );
                   },
                 ),

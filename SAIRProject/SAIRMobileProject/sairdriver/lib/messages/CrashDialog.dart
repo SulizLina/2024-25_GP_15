@@ -70,7 +70,6 @@ class CrashDialog {
                       Navigator.of(context).pop();
                       isDialogShown = false;
 
-
                       await FirebaseFirestore.instance
                           .collection('Crash')
                           .doc(crashDoc.id)
@@ -102,7 +101,17 @@ class CrashDialog {
                         SuccessMessageDialog.show(
                           context,
                           'The crash with ID:${crash.cid!} has been rejected successfully!',
-                        );
+                        ).then((_) {
+                          // This runs after the dialog is closed
+                          FirebaseFirestore.instance
+                              .collection('Crash')
+                              .doc(crash.cDocid)
+                              .update({
+                            'isAutoshown': FieldValue.delete(),
+                          });
+                          // Reset the dialog shown flag
+                          isDialogShown = false;
+                        });
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
@@ -126,7 +135,17 @@ class CrashDialog {
                         await SuccessMessageDialog.show(
                           context,
                           "The crash with ID:${crash.cid} has been confirmed.\n\nPlease wait, you will receive a call from your delivery company or the concerned authorities.",
-                        );
+                        ).then((_) {
+                          // This runs after the dialog is closed
+                          FirebaseFirestore.instance
+                              .collection('Crash')
+                              .doc(crash.cDocid)
+                              .update({
+                            'isAutoshown': FieldValue.delete(),
+                          });
+                          // Reset the dialog shown flag
+                          isDialogShown = false;
+                        });
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color.fromARGB(255, 3, 152, 85),
@@ -151,32 +170,32 @@ class CrashDialog {
     );
   }
 
-static Future<void> showAutoConfirmationMessage(
-  BuildContext context, Crash crash) async {
-  await showDialog(
-    context: context,
-    barrierDismissible: false, 
-    builder: (BuildContext context) {
-      return WarningDialog(
-        message:
-            "The crash with ID: ${crash.cid}\n has been automatically confirmed due to no action being taken within the allotted 10-minute timeframe.\n\nPlease wait, you will receive a call from your delivery company or the concerned authorities.",
-      );
-    },
-  ).then((_) {
-    // This runs after the dialog is closed
-    FirebaseFirestore.instance.collection('Crash').doc(crash.cDocid).update({
-      'isAutoshown': FieldValue.delete(),
+  static Future<void> showAutoConfirmationMessage(
+      BuildContext context, Crash crash) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return WarningDialog(
+          message:
+              "The crash with ID: ${crash.cid}\n has been automatically confirmed due to no action being taken within the allotted 10-minute timeframe.\n\nPlease wait, you will receive a call from your delivery company or the concerned authorities.",
+        );
+      },
+    ).then((_) {
+      // This runs after the dialog is closed
+      FirebaseFirestore.instance.collection('Crash').doc(crash.cDocid).update({
+        'isAutoshown': FieldValue.delete(),
+      });
+      // Reset the dialog shown flag
+      isDialogShown = false;
     });
-    // Reset the dialog shown flag
-    isDialogShown = false;
-  });
-}
+  }
 
   static void _updateCrashStatus(String crashId, String status) {
     FirebaseFirestore.instance
         .collection('Crash')
         .doc(crashId)
-        .update({'Status': status}).catchError((error) {
+        .update({'Status': status, 'isAuto': true}).catchError((error) {
       print("Failed to update crash status: $error");
     });
   }

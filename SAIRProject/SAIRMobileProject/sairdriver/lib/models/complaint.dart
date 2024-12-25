@@ -35,6 +35,18 @@ class Complaint {
       Status: parsedJSON['Status'] as String?,
     );
   }
+// Factory constructor to create a Complaint from a Map
+  factory Complaint.fromJsonn(Map<String, dynamic> parsedJSON) {
+    return Complaint(
+      ComID: parsedJSON['ComplaintID']?.toString(),
+      driverId: parsedJSON['driverID']?.toString(),
+      timestamp: parsedJSON['DateTime'] as Timestamp?,
+      Description: parsedJSON['Description'] as String?,
+      gspNumber: parsedJSON['GPSnumber']?.toString(),
+      Vid: parsedJSON['ViolationID']?.toString(),
+      Status: parsedJSON['Status'] as String?,
+    );
+  }
 
   // Method to get date in 'yyyy-MM-dd' format
   String getFormattedDate() {

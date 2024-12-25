@@ -256,23 +256,43 @@ class _EditPhonePageState extends State<EditPhonePage> {
                   ),
                   keyboardType: TextInputType.phone,
                   inputFormatters: [
-                    LengthLimitingTextInputFormatter(13),
-                  FilteringTextInputFormatter.allow(RegExp(r'^\+?\d*$')),
+                    LengthLimitingTextInputFormatter(
+                        13), // Limit total input to 13 characters
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'^\+?\d*$')), // Allow only numbers and '+'
                   ],
                   onChanged: (text) {
-                    setState(() {});
+                    // Check if the input starts with +9660
+                    if (text.startsWith("+9660")) {
+                      // Remove the leading 0 after +966
+                      String cleanedText = "+966" + text.substring(5);
+                      _phoneController.value = TextEditingValue(
+                        text: cleanedText,
+                        selection:
+                            TextSelection.collapsed(offset: cleanedText.length),
+                      );
+                    } else if (text.length > 13) {
+                      // Enforce max length
+                      String truncatedText = text.substring(0, 13);
+                      _phoneController.value = TextEditingValue(
+                        text: truncatedText,
+                        selection: TextSelection.collapsed(
+                            offset: truncatedText.length),
+                      );
+                    }
+                    setState(() {}); // Trigger UI update
                   },
-                  validator: validatePhoneNumber,
+                  validator:
+                      validatePhoneNumber, // Use your existing validation logic
                 ),
                 SizedBox(height: 10),
                 Text(
-                  ' ${_phoneController.text.length}/13 characters',
+                  ' ${_phoneController.text.length}/13 digit',
                   style: TextStyle(
                     color: Colors.grey,
                     fontSize: 12,
                   ),
                 ),
-
                 if (errorMessage != null)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),

@@ -299,7 +299,7 @@ class _editcomplaintState extends State<editcomplaint> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 190),
+                    SizedBox(height: 250),
                   ],
                 ),
               ),

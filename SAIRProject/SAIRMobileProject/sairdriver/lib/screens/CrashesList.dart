@@ -11,6 +11,7 @@ import 'package:sairdriver/models/motorcycle.dart';
 import 'package:sairdriver/screens/CrashDetail.dart';
 import 'package:sairdriver/services/driver_database.dart';
 import 'package:sairdriver/globals.dart';
+import 'package:sairdriver/services/motorcycle_database.dart';
 
 class Crasheslist extends StatefulWidget {
   final Function(String crashId)? onCrashDetected;
@@ -38,7 +39,7 @@ class _CrasheslistState extends State<Crasheslist>
   List<DocumentSnapshot> filteredCrashes = [];
   Map<String, String?> licensePlateMap = {};
   Timer? _timer;
-
+ Motorcycle? motorcycle;
   @override
   void initState() {
     super.initState();
@@ -87,8 +88,8 @@ class _CrasheslistState extends State<Crasheslist>
 
       List<Future<void>> fetchTasks = snapshot.docs.map((doc) async {
         Crash crash = Crash.fromJson(doc);
-        if (crash.gspNumber != null) {
-          String? plate = await fetchLicensePlate(crash.gspNumber!);
+        if (crash.cid != null) {
+          String? plate = await fetchLicensePlate(crash.cid!);
           if (plate != null && crash.cid != null) {
             licensePlateMap[crash.cid!] = plate;
             plateN.add(plate);
@@ -128,18 +129,11 @@ class _CrasheslistState extends State<Crasheslist>
         .where('driverID', isEqualTo: driverNat_Res?.driverId)
         .snapshots();
   }
-
-  Future<String?> fetchLicensePlate(String gspNumber) async {
-    QuerySnapshot motorcycleSnapshot = await FirebaseFirestore.instance
-        .collection('Motorcycle')
-        .where('GPSnumber', isEqualTo: gspNumber)
-        .get();
-    if (motorcycleSnapshot.docs.isNotEmpty) {
-      Motorcycle motorcycle =
-          Motorcycle.fromDocument(motorcycleSnapshot.docs.first);
-      return motorcycle.licensePlate;
-    }
-    return null;
+ Future<String?> fetchLicensePlate(String? id) async {
+    if (id == null) return 'null';
+     MotorcycleDatabase mdb = MotorcycleDatabase();
+      motorcycle = await mdb.getMotorcycleByIDhis(id);
+      return motorcycle!.licensePlate;
   }
 
   void filterCrashes() {

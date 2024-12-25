@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sairdriver/messages/Warning.dart';
 import 'package:sairdriver/models/driver.dart';
+import 'package:sairdriver/screens/ViolationsList.dart';
 import 'package:sairdriver/services/crashstreambuilder.dart';
 import 'package:sairdriver/services/driver_database.dart';
 import 'package:sairdriver/models/motorcycle.dart';
@@ -9,6 +11,8 @@ import 'package:sairdriver/models/complaint.dart';
 import 'package:sairdriver/screens/ComplaintDetail.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:board_datetime_picker/board_datetime_picker.dart';
+import 'package:sairdriver/services/motorcycle_database.dart';
+import 'package:rxdart/rxdart.dart';
 
 class Viewcomplaints extends StatefulWidget {
   final String driverId; // DriverID passed from previous page
@@ -34,7 +38,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
   String selectedStatus = "All";
   late TabController _tabController;
   List<DocumentSnapshot> filteredComplaints = [];
-
+  Motorcycle? motorcycle;
   @override
   void initState() {
     super.initState();
@@ -57,18 +61,11 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
     super.dispose();
   }
 
-  Future<String?> fetchLicensePlate(String? gspNumber) async {
-    if (gspNumber == null) return null;
-    QuerySnapshot motorcycleSnapshot = await FirebaseFirestore.instance
-        .collection('Motorcycle')
-        .where('GPSnumber', isEqualTo: gspNumber)
-        .get();
-    if (motorcycleSnapshot.docs.isNotEmpty) {
-      Motorcycle motorcycle =
-          Motorcycle.fromDocument(motorcycleSnapshot.docs.first);
-      return motorcycle.licensePlate;
-    }
-    return null;
+  Future<String?> fetchLicensePlate(String? id) async {
+    if (id == null) return 'null';
+    MotorcycleDatabase mdb = MotorcycleDatabase();
+    motorcycle = await mdb.getMotorcycleByIDhis(id);
+    return motorcycle!.licensePlate;
   }
 
   Future<void> fetchDriverData() async {
@@ -99,8 +96,8 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
 
       List<Future<void>> fetchTasks = snapshot.docs.map((doc) async {
         Complaint complaint = Complaint.fromJson(doc);
-        if (complaint.gspNumber != null) {
-          String? plate = await fetchLicensePlate(complaint.gspNumber!);
+        if (complaint.Vid != null) {
+          String? plate = await fetchLicensePlate(complaint.Vid!);
           if (plate != null && complaint.Vid != null) {
             licensePlateMap[complaint.Vid!] = plate;
             plateN.add(plate);
@@ -252,8 +249,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                               255, 199, 199, 199) //list is empty
                           : (selectedPlate == null
                               ? const Color(0xFFF3F3F3) // no plate selected
-                              : Color(
-                                  0xFFFFC800)), 
+                              : Color(0xFFFFC800)),
                       BlendMode.srcIn,
                     ),
                     child: Image.asset(
@@ -487,16 +483,15 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                                 snapshot.data!.docs.isEmpty) {
                               return Center(
                                 child: Text(
-                                  isDateFiltered 
+                                  isDateFiltered
                                       ? "You don't have any complaint\nfor the selected date."
-                                      : _tabController.index ==
-                                              0 
+                                      : _tabController.index == 0
                                           ? "You don't have any complaint,\nride safe :)"
                                           : "You don't have any ${[
                                               "Accepted",
                                               "Pending",
                                               "Rejected"
-                                            ][_tabController.index - 1]} complaint", 
+                                            ][_tabController.index - 1]} complaint",
                                   style: GoogleFonts.poppins(
                                       fontSize: 20, color: Colors.grey),
                                   textAlign: TextAlign.center,
@@ -676,6 +671,188 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
           ),
         ],
       ),
+      floatingActionButton: StreamBuilder<bool>(
+        stream: hasAnyViolationsStream(driverNat_Res?.driverId),
+        builder: (context, hasViolationSnapshot) {
+          // Show a loading indicator while waiting for the stream
+          if (hasViolationSnapshot.connectionState == ConnectionState.waiting) {
+            return FloatingActionButton(
+              onPressed: null,
+              backgroundColor: const Color.fromARGB(255, 199, 199, 199),
+              shape: const CircleBorder(),
+              child: const CircularProgressIndicator(color: Colors.white),
+            );
+          }
+
+          final hasViolations = hasViolationSnapshot.data ?? false;
+
+          // If no violations exist, show a button with the warning message
+          if (!hasViolations) {
+            return FloatingActionButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => WarningDialog(
+                    message:
+                        "You don't have a violation to raise a complaint for it.",
+                  ),
+                );
+              },
+              backgroundColor: const Color.fromARGB(255, 199, 199, 199),
+              shape: const CircleBorder(),
+              child: const Icon(Icons.add, color: Colors.white),
+            );
+          }
+
+          // If violations exist, use the existing StreamBuilder for filtering complaints
+          return StreamBuilder<List<QueryDocumentSnapshot>>(
+            stream: getComplaintsStream(driverNat_Res?.driverId),
+            builder: (context, snapshot) {
+              final hasEligibleViolations =
+                  snapshot.hasData && snapshot.data!.isNotEmpty;
+
+              return FloatingActionButton(
+                onPressed: hasEligibleViolations
+                    ? () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Violationslist(
+                              driverId: widget.driverId,
+                              page: 'complaints',
+                            ),
+                          ),
+                        );
+                      }
+                    : () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => WarningDialog(
+                            message:
+                                'You currently have no violations eligible for raising complaints. You can raise a complaint when:\n1. The violation is within the past 30 days.\n2. The violation does not already have a complaint.\n\nDrive safely!',
+                          ),
+                        );
+                      },
+                backgroundColor: hasEligibleViolations
+                    ? const Color.fromARGB(202, 3, 152, 85)
+                    : const Color.fromARGB(255, 199, 199, 199),
+                shape: const CircleBorder(),
+                child: const Icon(Icons.add, color: Colors.white),
+              );
+            },
+          );
+        },
+      ),
     );
   }
+
+  Stream<bool> isButtonEnabledStream(String? driverId) {
+  if (driverId == null) return Stream.value(false);
+
+  final violationsStream = FirebaseFirestore.instance
+      .collection('Violation')
+      .where('driverID', isEqualTo: driverId)
+      .snapshots();
+
+  final complaintsStream = FirebaseFirestore.instance
+      .collection('Complaint')
+      .where('driverID', isEqualTo: driverId)
+      .snapshots();
+
+  return Rx.combineLatest2<QuerySnapshot, QuerySnapshot, bool>(
+    violationsStream,
+    complaintsStream,
+    (violationsSnapshot, complaintsSnapshot) {
+     final complaintViolationIds = complaintsSnapshot.docs
+    .where((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      return data.containsKey('ViolationID');
+    })
+    .map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      return data['ViolationID'] as String?;
+    })
+    .toSet();
+
+
+      final hasEligibleViolations = violationsSnapshot.docs.any((violationDoc) {
+        final violationId = violationDoc['violationID'] as String?;
+        return violationId != null &&
+            !complaintViolationIds.contains(violationId);
+      });
+
+      return hasEligibleViolations;
+    },
+  );
+}
+
+
+  Stream<bool> hasAnyViolationsStream(String? driverId) {
+    if (driverId == null) {
+      // Return a stream that immediately emits false
+      return Stream.value(false);
+    }
+
+    return FirebaseFirestore.instance
+        .collection('Violation')
+        .where('driverID', isEqualTo: driverId)
+        .snapshots()
+        .map((snapshot) =>
+            snapshot.docs.isNotEmpty); // Emit true if there are violations
+  }
+
+Stream<List<QueryDocumentSnapshot>> getComplaintsStream(String? driverId) {
+  if (driverId == null) return Stream.value([]);
+
+  final violationsStream = FirebaseFirestore.instance
+      .collection('Violation')
+      .where('driverID', isEqualTo: driverId)
+      .snapshots();
+
+  final complaintsStream = FirebaseFirestore.instance
+      .collection('Complaint')
+      .where('driverID', isEqualTo: driverId)
+      .snapshots();
+
+  final now = DateTime.now();
+
+  return Rx.combineLatest2<QuerySnapshot, QuerySnapshot,
+      List<QueryDocumentSnapshot>>(
+    violationsStream,
+    complaintsStream,
+    (violationsSnapshot, complaintsSnapshot) {
+     final complaintViolationIds = complaintsSnapshot.docs
+    .where((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      return data.containsKey('ViolationID');
+    })
+    .map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      return data['ViolationID'] as String?;
+    })
+    .toSet();
+
+      final filteredViolations = violationsSnapshot.docs.where((violationDoc) {
+        final violationId = violationDoc['violationID'] as String?;
+
+        final timeField = violationDoc['time'];
+        final violationDate = timeField is String
+            ? DateTime.parse(timeField)
+            : DateTime.fromMillisecondsSinceEpoch(
+                (timeField as int) * 1000,
+              );
+
+        final isOlderThan30Days =
+            violationDate.isBefore(now.subtract(const Duration(days: 30)));
+
+        return violationId != null &&
+            !isOlderThan30Days &&
+            !complaintViolationIds.contains(violationId);
+      }).toList();
+
+      return filteredViolations;
+    },
+  );
+}
+
 }
