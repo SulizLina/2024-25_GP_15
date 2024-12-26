@@ -120,7 +120,7 @@ class CrashDialog {
                         ),
                       ),
                       child: Text(
-                        'Help me',
+                        'Alert Authorities',
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                         ),
