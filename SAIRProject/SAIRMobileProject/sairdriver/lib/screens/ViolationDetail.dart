@@ -63,7 +63,7 @@ class _ViolationdetailState extends State<Violationdetail> {
     }
   }
 
-    Future<void> deleteIsAutoField() async {
+  Future<void> deleteIsAutoField() async {
     try {
       await FirebaseFirestore.instance
           .collection('Violation')
@@ -199,28 +199,65 @@ class _ViolationdetailState extends State<Violationdetail> {
                   buildDetailPriceSection(
                     'Violation Amount',
                     violation != null
-                        ? ((violation?.count30 ?? 0) > 0 ||
-                                (violation?.count50 ?? 0) > 0
-                            ? '${violation?.price ?? ''} SAR'
-                            : '${violation?.price ?? ''} SAR')
+                        ? '${violation?.price ?? ''} SAR'
                         : 'Amount unavailable',
                     HugeIcons.strokeRoundedInvoice,
                   ),
-              //Reckless violation mgs for the amount 
-              if ((violation?.count30 ?? 0) > 0 ||
-                (violation?.count50 ?? 0) > 0)
-              Padding(
-                padding: const EdgeInsets.only(left: 32, bottom: 20),
-                child: Text(
-                  'According to General Department of Traffic regulations, this speed violation is considered reckless and marks your ${getOrdinal(sum!)} offense. As a result, the penalty amount has been increased.',
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: const ui.Color.fromARGB(255, 216, 6, 6),
+                  // Reckless violation message
+                  if ((violation?.count30 ?? 0) > 0 ||
+                      (violation?.count50 ?? 0) > 0)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 32, bottom: 8),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            HugeIcons.strokeRoundedInformationCircle,
+                            color: Colors.red,
+                            size: 20,
+                          ),
+                          const SizedBox(
+                              width: 8), // Space between icon and text
+                          Expanded(
+                            child: Text(
+                              'According to General Department of Traffic regulations, this speed violation is considered reckless and marks your ${getOrdinal(sum!)} offense. As a result, the penalty amount has been increased.',
+                              style: GoogleFonts.poppins(
+                                 fontSize: 12,
+                                  color:
+                                  Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+// Disclaimer message below the reckless violation message
+                  Padding(
+                    padding: const EdgeInsets.only(left: 32, bottom: 20),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          HugeIcons.strokeRoundedInformationCircle,
+                          color: Colors.red,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Disclaimer: This fee is an estimated amount, calculated based on the executive regulations issued under ministerial decision No. 2249, Article 115.',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color:
+                                  Colors.grey, // Muted color for the disclaimer
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              )
-            else
-              const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
                   buildDetailSection(
                       'Time',
@@ -297,10 +334,9 @@ class _ViolationdetailState extends State<Violationdetail> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => Raisecomplaint(
-                                        violation: violation!,
-                                        driverid: widget.driverid,
-                                        page: "violation"
-                                      ),
+                                          violation: violation!,
+                                          driverid: widget.driverid,
+                                          page: "violation"),
                                     ),
                                   );
                                 }
@@ -444,12 +480,13 @@ class _ViolationdetailState extends State<Violationdetail> {
     );
   }
 
-    Widget buildDetailPriceSection(
+  Widget buildDetailPriceSection(
       String title, String? content, IconData? icon) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (icon != null) ...[
               Icon(icon, size: 24, color: Color.fromARGB(255, 3, 152, 85)),
@@ -470,12 +507,18 @@ class _ViolationdetailState extends State<Violationdetail> {
         const SizedBox(height: 8),
         Padding(
           padding: const EdgeInsets.only(left: 32),
-          child: Text(
-            content ?? '',
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              color: Color(0xFF211D1D),
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                content ?? '',
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: Color(0xFF211D1D),
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
           ),
         ),
         const SizedBox(height: 2),
