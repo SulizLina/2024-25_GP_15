@@ -59,7 +59,7 @@ class CrashDialog {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Please confirm or reject the crash. You have 10 minutes to respond before it will be automatically confirmed.',
+                    'You may have been involved in a crash. Confirm you’re safe or request help within 10 minutes. Afterward, the alert will be confirmed automatically to ensure your safety.',
                     style: GoogleFonts.poppins(fontSize: 16),
                   ),
                   SizedBox(height: 20),
@@ -120,7 +120,7 @@ class CrashDialog {
                         ),
                       ),
                       child: Text(
-                        '  Reject  ',
+                        'Help me',
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                         ),
@@ -154,7 +154,7 @@ class CrashDialog {
                         ),
                       ),
                       child: Text(
-                        'Confirm',
+                        'I\'Safe',
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                         ),
