@@ -31,6 +31,7 @@ class _ViolationdetailState extends State<Violationdetail> {
   Motorcycle? motorcycle;
   static const LatLng defaultLoc = LatLng(0.0, 0.0);
   int? sum;
+  bool _isRecklessTextVisible = false;
   @override
   void initState() {
     super.initState();
@@ -208,31 +209,46 @@ class _ViolationdetailState extends State<Violationdetail> {
                       (violation?.count50 ?? 0) > 0)
                     Padding(
                       padding: const EdgeInsets.only(left: 32, bottom: 8),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(
-                            HugeIcons.strokeRoundedInformationCircle,
-                            color: Colors.red,
-                            size: 20,
-                          ),
-                          const SizedBox(
-                              width: 8), // Space between icon and text
-                          Expanded(
-                            child: Text(
-                              'According to General Department of Traffic regulations, this speed violation is considered reckless and marks your ${getOrdinal(sum!)} offense. As a result, the penalty amount has been increased.',
-                              style: GoogleFonts.poppins(
-                                 fontSize: 12,
-                                  color:
-                                  Colors.grey,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _isRecklessTextVisible = !_isRecklessTextVisible;
+                          });
+                        },
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              HugeIcons.strokeRoundedArrowDown01,
+                              color: Colors.red,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Reckless violation',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                 color: Color(0xFF211D1D)
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-
-// Disclaimer message below the reckless violation message
+                  if (_isRecklessTextVisible)
+                    Padding(
+               padding: const EdgeInsets.only(left: 60, bottom: 20),
+                      child: Text(
+                        'According to General Department of Traffic regulations, this speed violation is considered reckless and marks your ${getOrdinal(sum!)} offense. As a result, the penalty amount has been increased.',
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+            // Disclaimer message below the reckless violation message
                   Padding(
                     padding: const EdgeInsets.only(left: 32, bottom: 20),
                     child: Row(
@@ -507,18 +523,12 @@ class _ViolationdetailState extends State<Violationdetail> {
         const SizedBox(height: 8),
         Padding(
           padding: const EdgeInsets.only(left: 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                content ?? '',
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  color: Color(0xFF211D1D),
-                ),
-              ),
-              const SizedBox(height: 8),
-            ],
+          child: Text(
+            content ?? '',
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              color: Color(0xFF211D1D),
+            ),
           ),
         ),
         const SizedBox(height: 2),
