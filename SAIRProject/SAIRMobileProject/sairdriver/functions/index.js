@@ -3,6 +3,7 @@ const admin = require('firebase-admin');
 
 admin.initializeApp();
 
+//Sending notification about new violation
 exports.sendnotificationViolation = functions.firestore
 .document('Violation/{violationID}')
 .onCreate(async (snapshot, context) => {
@@ -71,6 +72,75 @@ exports.sendnotificationViolation = functions.firestore
         console.error('Error sending notification:', error);
     }
 });
+//Sending notification about potential violation
+exports.sendnotificationPotentialViolation= functions.firestore
+.document('PotentialViolation/{PotentialViolationID}')
+.onCreate(async (snapshot, context) => {
+    const newData = snapshot.data();
+
+    try {
+        const driverId = newData.driverID;
+
+        // Check if driverId is defined
+        if (!driverId) {
+            console.error('driverId is undefined or null.');
+            return;
+        }
+
+        const driverQuery = admin.firestore().collection('Driver').where('DriverID', '==', driverId);
+        const driverQuerySnapshot = await driverQuery.get();
+
+        if (driverQuerySnapshot.empty) {
+            console.log(`Driver document with driverId ${driverId} does not exist.`);
+            return;
+        }
+
+        const driverDoc = driverQuerySnapshot.docs[0];
+        const driverData = driverDoc.data();
+        const documentId = driverDoc.id; // Driver document ID
+        const userToken = driverData.token; // Fetch the token directly from the Driver document
+
+        if (!userToken) {
+            console.error('No token found for the driver.');
+            return;
+        }
+
+        const payload = {
+            notification: {
+                title: 'Caution: Potential Violation Ahead',
+                body: 'You are nearing the maximum speed limit. Please drive safely!',
+            },
+            data: {
+                sound: 'beep',
+                driverData: documentId || '',
+            },
+            android: {
+                priority: 'high',
+            },
+            apns: {
+                payload: {
+                    aps: {
+                        sound: 'beep',
+                    },
+                },
+            },
+        };
+
+        const response = await admin.messaging().send({
+            token: userToken,
+            notification: payload.notification,
+            data: payload.data,
+            android: payload.android,
+            apns: payload.apns,
+        });
+
+        console.log('Notification sent successfully:', response);
+
+    } catch (error) {
+        console.error('Error sending notification:', error);
+    }
+});
+//Sending notification about new crash
     exports.sendNotificationForPendingStatus = functions.firestore
     .document('Crash/{Status}')
     .onCreate(async (snapshot, context) => {
@@ -166,6 +236,8 @@ exports.sendnotificationViolation = functions.firestore
             console.log('Status is not Pending; no notification sent.');
         }
     });
+
+    //Confirming crashes
     exports.autoConfirmPendingCrashes = functions.firestore
     .document('Crash/{crashID}')
     .onCreate(async (snapshot, context) => {
@@ -216,7 +288,7 @@ exports.sendnotificationViolation = functions.firestore
             console.log('Crash status is not "Pending". No action required.');
         }
     });
-
+//Sending notification about complaints 
     exports.sendnotificationComplaints = functions.firestore
     .document('Complaint/{Status}')
     .onUpdate(async (change, context) => {
