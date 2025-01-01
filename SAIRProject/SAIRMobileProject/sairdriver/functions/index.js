@@ -108,7 +108,7 @@ exports.sendnotificationPotentialViolation= functions.firestore
         const payload = {
             notification: {
                 title: 'Caution: Potential Violation Ahead',
-                body: 'You are nearing the maximum speed limit. Please drive safely!',
+                body: 'You are approaching the maximum speed limit. Please drive slowly and safely to avoid any violations.',
             },
             data: {
                 sound: 'beep',
