@@ -228,9 +228,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                               child: Text(
                                 'Reckless violation',
                                 style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                 color: Color(0xFF211D1D)
-                                ),
+                                    fontSize: 14, color: Color(0xFF211D1D)),
                               ),
                             ),
                           ],
@@ -239,16 +237,17 @@ class _ViolationdetailState extends State<Violationdetail> {
                     ),
                   if (_isRecklessTextVisible)
                     Padding(
-               padding: const EdgeInsets.only(left: 60, bottom: 20),
+                      padding: const EdgeInsets.only(left: 60, bottom: 20),
                       child: Text(
-                        'According to General Department of Traffic regulations, this speed violation is considered reckless and marks your ${getOrdinal(sum!)} offense. As a result, the penalty amount has been increased.',
+                        'According to General Department of Traffic regulations, this speed violation is considered reckless and marks your ${getOrdinal(sum!)} offense.'
+                        '${(violation!.count30! > 1 || violation!.count50! > 1) ? " As a result, the penalty amount has been increased." : ""}',
                         style: GoogleFonts.poppins(
                           fontSize: 12,
                           color: Colors.grey,
                         ),
                       ),
                     ),
-            // Disclaimer message below the reckless violation message
+                  // Disclaimer message below the reckless violation message
                   Padding(
                     padding: const EdgeInsets.only(left: 32, bottom: 20),
                     child: Row(
