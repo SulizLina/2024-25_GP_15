@@ -322,7 +322,7 @@ class _CrashdetailState extends State<Crashdetail> {
       case 'Pending':
         circleColor = Color(0xFFFFC800);
         break;
-      case 'Confirmed':
+      case 'Emergency SOS':
         circleColor = Colors.green;
         break;
       default:

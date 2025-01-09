@@ -59,8 +59,9 @@ class CrashDialog {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'You may have been involved in a crash. Confirm you’re safe or request help within 10 minutes. Afterward, the alert will be confirmed automatically to ensure your safety.',
+                    'You may have been involved in a crash. Please confirm your safety or request assistance within 10 minutes. If no response is received, the emergency SOS will activate automatically to ensure your safety.',
                     style: GoogleFonts.poppins(fontSize: 16),
+                    textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 20),
                   CountdownTimer(
@@ -74,7 +75,7 @@ class CrashDialog {
                           .collection('Crash')
                           .doc(crashDoc.id)
                           .update({
-                        'Status': 'Confirmed',
+                        'Status': 'Emergency SOS',
                         'isAuto': true,
                         'isAutoshown': true,
                       });
@@ -89,18 +90,20 @@ class CrashDialog {
                 ],
               ),
               actions: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                Column(
+                  mainAxisSize: MainAxisSize.min, // Ensure it fits the content
+                  crossAxisAlignment:
+                      CrossAxisAlignment.stretch, // Full width buttons
                   children: [
                     TextButton(
                       onPressed: () async {
                         Navigator.of(context).pop();
                         isDialogShown = false;
                         // Reject logic
-                        _updateCrashStatus(crashDoc.id, "Rejected");
+                        _updateCrashStatus(crashDoc.id, "Denied");
                         SuccessMessageDialog.show(
                           context,
-                          'The crash with ID:${crash.cid!} has been rejected successfully!',
+                          'The crash with ID:${crash.cid!} has been denied successfully!',
                         ).then((_) {
                           // This runs after the dialog is closed
                           FirebaseFirestore.instance
@@ -120,7 +123,7 @@ class CrashDialog {
                         ),
                       ),
                       child: Text(
-                        'Notify Authorities',
+                        'Deny',
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                         ),
@@ -129,7 +132,7 @@ class CrashDialog {
                     SizedBox(width: 10),
                     ElevatedButton(
                       onPressed: () async {
-                        _updateCrashStatus(crashDoc.id, "Confirmed");
+                        _updateCrashStatus(crashDoc.id, "Emergency SOS");
                         Navigator.of(context).pop();
                         isDialogShown = false;
                         await SuccessMessageDialog.show(
@@ -154,7 +157,7 @@ class CrashDialog {
                         ),
                       ),
                       child: Text(
-                        'I\'m Safe',
+                        'Emergency SOS',
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                         ),

@@ -197,8 +197,8 @@ exports.sendnotificationPotentialViolation= functions.firestore
                 // Prepare notification payload
                 const payload = {
                     notification: {
-                        title: 'New Crash detected!',
-                        body: 'Please open the app to respond within 10 minutes before it is automatically confirmed.',
+                        title: 'Crash detected!',
+                        body: 'Confirm your safety or request help in the app within 10 minutes. SOS will activate automatically if no response is received.',
                     },
                     data: {
                         sound: 'beep', // Custom data
@@ -272,7 +272,7 @@ exports.sendnotificationPotentialViolation= functions.firestore
                         // Check if the status is still 'Pending'
                         if (docData && docData.Status === 'Pending') {
                             console.log(`Auto-confirming crash with ID: ${context.params.crashID}`);
-                            await crashRef.update({ Status: 'Confirmed', isAuto: true, isAutoshown: true  });
+                            await crashRef.update({ Status: 'Emergency SOS', isAuto: true, isAutoshown: true  });
                             console.log('Crash status successfully updated to "auto confirmed".');
                         } else {
                             console.log(`Crash ID ${context.params.crashID} status is no longer "Pending". Status: ${docData.Status}`);

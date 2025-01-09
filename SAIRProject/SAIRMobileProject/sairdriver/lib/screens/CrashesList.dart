@@ -39,7 +39,7 @@ class _CrasheslistState extends State<Crasheslist>
   List<DocumentSnapshot> filteredCrashes = [];
   Map<String, String?> licensePlateMap = {};
   Timer? _timer;
- Motorcycle? motorcycle;
+  Motorcycle? motorcycle;
   @override
   void initState() {
     super.initState();
@@ -49,7 +49,7 @@ class _CrasheslistState extends State<Crasheslist>
       if (_tabController.indexIsChanging) {
         setState(() {
           selectedStatus =
-              ["All", "confirmed", "rejected"][_tabController.index];
+              ["All", "Emergency SOS", "Denied"][_tabController.index];
         });
         filterCrashes();
       }
@@ -129,11 +129,12 @@ class _CrasheslistState extends State<Crasheslist>
         .where('driverID', isEqualTo: driverNat_Res?.driverId)
         .snapshots();
   }
- Future<String?> fetchLicensePlate(String? id) async {
+
+  Future<String?> fetchLicensePlate(String? id) async {
     if (id == null) return 'null';
-     MotorcycleDatabase mdb = MotorcycleDatabase();
-      motorcycle = await mdb.getMotorcycleByIDhis(id);
-      return motorcycle!.licensePlate;
+    MotorcycleDatabase mdb = MotorcycleDatabase();
+    motorcycle = await mdb.getMotorcycleByIDhis(id);
+    return motorcycle!.licensePlate;
   }
 
   void filterCrashes() {
@@ -269,9 +270,8 @@ class _CrasheslistState extends State<Crasheslist>
                     : HugeIcons.strokeRoundedCalendar03,
                 size: 24,
                 color: crashes.isEmpty
-                    ?  const Color.fromARGB(
-                        255, 199, 199, 199) // List is empty
-                     : isDateFiltered
+                    ? const Color.fromARGB(255, 199, 199, 199) // List is empty
+                    : isDateFiltered
                         ? const Color(
                             0xFFFFC800) // Date is selected (traffic yellow)
                         : Color(0xFFF3F3F3), // No date selected
@@ -342,7 +342,7 @@ class _CrasheslistState extends State<Crasheslist>
                             child: InkWell(
                               onTap: () {
                                 setState(() {
-                                  selectedStatus = "Confirmed";
+                                  selectedStatus = "Emergency SOS";
                                   _tabController.index = 1;
                                 });
                                 filterCrashes();
@@ -350,19 +350,20 @@ class _CrasheslistState extends State<Crasheslist>
                               child: Container(
                                 padding: EdgeInsets.symmetric(vertical: 10),
                                 decoration: BoxDecoration(
-                                  color: selectedStatus == "Confirmed"
+                                  color: selectedStatus == "Emergency SOS"
                                       ? Colors.white
                                       : Colors.transparent,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Center(
                                   child: Text(
-                                    'Confirmed',
+                                    'Emergency SOS',
                                     style: GoogleFonts.poppins(
                                       fontSize: 13,
-                                      fontWeight: selectedStatus == "Confirmed"
-                                          ? FontWeight.w600
-                                          : FontWeight.normal,
+                                      fontWeight:
+                                          selectedStatus == "Emergency SOS"
+                                              ? FontWeight.w600
+                                              : FontWeight.normal,
                                     ),
                                   ),
                                 ),
@@ -373,7 +374,7 @@ class _CrasheslistState extends State<Crasheslist>
                             child: InkWell(
                               onTap: () {
                                 setState(() {
-                                  selectedStatus = "Rejected";
+                                  selectedStatus = "Denied";
                                   _tabController.index = 2;
                                 });
                                 filterCrashes();
@@ -381,17 +382,17 @@ class _CrasheslistState extends State<Crasheslist>
                               child: Container(
                                 padding: EdgeInsets.symmetric(vertical: 10),
                                 decoration: BoxDecoration(
-                                  color: selectedStatus == "Rejected"
+                                  color: selectedStatus == "Denied"
                                       ? Colors.white
                                       : Colors.transparent,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Center(
                                   child: Text(
-                                    'Rejected',
+                                    'Denied',
                                     style: GoogleFonts.poppins(
                                       fontSize: 13,
-                                      fontWeight: selectedStatus == "Rejected"
+                                      fontWeight: selectedStatus == "Denied"
                                           ? FontWeight.w600
                                           : FontWeight.normal,
                                     ),
@@ -575,11 +576,10 @@ class _CrasheslistState extends State<Crasheslist>
                                                     'pending'
                                                 ? Color(
                                                     0xFFFFC800) // traffic yellow
-                                                : (crash.status
-                                                            ?.toLowerCase() ==
-                                                        'confirmed'
+                                                : crash.status?.toLowerCase() ==
+                                                        'emergency sos'
                                                     ? Colors.green
-                                                    : Colors.red),
+                                                    : Colors.red,
                                             shape: BoxShape.circle,
                                           ),
                                           width: 10,
