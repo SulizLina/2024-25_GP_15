@@ -198,7 +198,7 @@ exports.sendnotificationPotentialViolation= functions.firestore
                 const payload = {
                     notification: {
                         title: 'Crash detected!',
-                        body: 'Confirm your safety or request help in the app within 10 minutes. SOS will activate automatically if no response is received.',
+                        body: 'Please open the app and confirm your safety or request help within 10 minutes. SOS will activate automatically if no response is received.',
                     },
                     data: {
                         sound: 'beep', // Custom data
