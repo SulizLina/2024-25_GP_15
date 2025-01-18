@@ -578,8 +578,8 @@ class _CrasheslistState extends State<Crasheslist>
                                                     0xFFFFC800) // traffic yellow
                                                 : crash.status?.toLowerCase() ==
                                                         'emergency sos'
-                                                    ? Colors.green
-                                                    : Colors.red,
+                                                    ? Colors.red
+                                                    : Colors.green,
                                             shape: BoxShape.circle,
                                           ),
                                           width: 10,

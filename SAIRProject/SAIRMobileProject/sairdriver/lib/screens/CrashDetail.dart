@@ -323,10 +323,10 @@ class _CrashdetailState extends State<Crashdetail> {
         circleColor = Color(0xFFFFC800);
         break;
       case 'Emergency SOS':
-        circleColor = Colors.green;
+        circleColor = Colors.red;
         break;
       default:
-        circleColor = Colors.red;
+        circleColor = Colors.green;
     }
 
     return Column(
