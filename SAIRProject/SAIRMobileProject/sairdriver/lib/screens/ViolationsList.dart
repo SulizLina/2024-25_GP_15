@@ -519,11 +519,23 @@ class _ViolationslistState extends State<Violationslist> {
                                     style:
                                         GoogleFonts.poppins(color: Colors.grey),
                                   ),
-                                  Text(
-                                    'License Plate: ${licensePlateMap[violation.Vid] ?? ""}',
-                                    style:
-                                        GoogleFonts.poppins(color: Colors.grey),
-                                  ),
+FutureBuilder<String?>(
+  future: fetchLicensePlate(violation.Vid), // Fetch the data
+  builder: (context, snapshot) {
+   if (snapshot.connectionState == ConnectionState.waiting) {
+      return Text("Loading...", style: GoogleFonts.poppins(color: Colors.grey));
+    }else
+     if (snapshot.hasError) {
+      return Text("Error fetching plate", style: GoogleFonts.poppins(color: Colors.red));
+    } else {
+      return Text(
+        'License Plate: ${snapshot.data ?? "Unknown"}',
+        style: GoogleFonts.poppins(color: Colors.grey),
+      );
+    }
+  },
+)
+
                                 ],
                               ),
                               trailing: Icon(
