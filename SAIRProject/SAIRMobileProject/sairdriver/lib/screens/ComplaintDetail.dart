@@ -638,6 +638,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
           ),
         ),
         const SizedBox(height: 20),
+        //removing violation
         if (status == 'Accepted')
           Padding(
             padding: const EdgeInsets.only(left: 32, bottom: 20),
@@ -652,7 +653,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Since this complaint is accepted, the violation will be deleted so you don’t have any fee to pay.',
+                    "Since this complaint has been accepted, the associated violation will be removed from the violation list, and no payment will be required.",
                     style: GoogleFonts.poppins(
                       fontSize: 12,
                       color: Colors.grey, // Muted color for the disclaimer

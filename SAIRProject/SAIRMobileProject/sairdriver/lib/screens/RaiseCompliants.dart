@@ -315,7 +315,18 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
                         fontSize: 12,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Misusing this service and repeatedly rejecting complaints may eventually lead to a temporary suspension of the service.',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.red, //Colors.black, //Color(0xFFFFC800)
+                        // Colors.grey[400],
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 25),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
