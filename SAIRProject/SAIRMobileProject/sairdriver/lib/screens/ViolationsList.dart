@@ -42,11 +42,12 @@ class _ViolationslistState extends State<Violationslist> {
     super.initState();
     fetchDriverData();
   }
+
   Future<String?> fetchLicensePlate(String? id) async {
     if (id == null) return 'null';
-     MotorcycleDatabase mdb = MotorcycleDatabase();
-      motorcycle = await mdb.getMotorcycleByIDhis(id);
-      return motorcycle!.licensePlate;
+    MotorcycleDatabase mdb = MotorcycleDatabase();
+    motorcycle = await mdb.getMotorcycleByIDhis(id);
+    return motorcycle!.licensePlate;
   }
 
   Future<void> fetchDriverData() async {
@@ -62,18 +63,11 @@ class _ViolationslistState extends State<Violationslist> {
     }
   }
 
-  Stream<List<QueryDocumentSnapshot<Object?>>> fetchViolationsStream(
-      String? page) {
-    if (page == 'menu') {
-      return FirebaseFirestore.instance
-          .collection('Violation')
-          .where('driverID', isEqualTo: driverNat_Res?.driverId)
-          .snapshots()
-          .map((snapshot) => snapshot.docs);
-    } else if (page == 'complaints') {
- final complaintsStream = FirebaseFirestore.instance
+  Stream<List<QueryDocumentSnapshot<Object?>>> fetchViolationsStream(String? page) {
+    final complaintsStream = FirebaseFirestore.instance
         .collection('Complaint')
         .where('driverID', isEqualTo: driverNat_Res?.driverId)
+        .where('Status', isEqualTo: 'Accepted') // Get only Accepted complaints
         .snapshots();
 
     return FirebaseFirestore.instance
@@ -83,66 +77,86 @@ class _ViolationslistState extends State<Violationslist> {
         .asyncMap((violationsSnapshot) async {
       final complaintsSnapshot = await complaintsStream.first;
 
-      // Extract violation IDs with complaints
+      // Extract violation IDs with accepted complaints
       final complaintViolationIds = complaintsSnapshot.docs
-          .where((doc) => doc.data()?.containsKey('ViolationID') == true)
-          .map((doc) => doc['ViolationID'] as String?)
+          .where((doc) => doc.data().containsKey('ViolationID'))
+          .map((doc) => doc['ViolationID'] as String)
           .toSet();
- // Get the current date
+
+      // Get the current date
       final now = DateTime.now();
 
-      // Filter violations: exclude those with complaints and older than 30 days
+      // Filter violations based on the page type
       final filteredViolations = violationsSnapshot.docs.where((doc) {
-        final violationId = doc.data()?.containsKey('violationID') == true
-            ? doc['violationID'] as String?
-            : null;
+        final violationId =
+        doc.data().containsKey('violationID') ? doc['violationID'] as String : null;
 
-        // Check if the date field exists
-        if (!doc.data()!.containsKey('time')) {
-          print("Skipping violation without time field: ${doc.id}");
+        if (violationId == null) {
+          print("Skipping violation without ID: ${doc.id}");
           return false;
         }
 
-        // Parse the violation date
-        DateTime violationDate;
-        try {
-          final timeField = doc['time'];
-          if (timeField is String) {
-            violationDate = DateTime.parse(timeField);
-          } else if (timeField is int) {
-            // Assuming the timestamp is in seconds, convert to milliseconds
-            violationDate = DateTime.fromMillisecondsSinceEpoch(timeField * 1000); 
-          } else {
-            print("Invalid type for time field in violation ${doc.id}: ${timeField.runtimeType}");
+        // Exclude violations that have an accepted complaint
+        if (complaintViolationIds.contains(violationId)) {
+          print("Skipping violation with accepted complaint: ${doc.id}");
+          return false;
+        }
+
+        // Apply date filtering ONLY for 'complaints' page
+        if (page == 'complaints') {
+          if (!doc.data().containsKey('time')) {
+            print("Skipping violation without time field: ${doc.id}");
             return false;
           }
-        } catch (e) {
-          print("Error parsing date for violation ${doc.id}: $e");
-          return false;
+
+          // Parse violation date
+          DateTime violationDate;
+          try {
+            final timeField = doc['time'];
+            if (timeField is String) {
+              violationDate = DateTime.parse(timeField);
+            } else if (timeField is int) {
+              violationDate = DateTime.fromMillisecondsSinceEpoch(timeField * 1000);
+            } else {
+              print("Invalid type for time field in violation ${doc.id}: ${timeField.runtimeType}");
+              return false;
+            }
+          } catch (e) {
+            print("Error parsing date for violation ${doc.id}: $e");
+            return false;
+          }
+
+          final isOlderThan30Days = violationDate.isBefore(now.subtract(Duration(days: 30)));
+
+          if (isOlderThan30Days) {
+            print("Skipping old violation: ${doc.id}");
+            return false;
+          }
         }
 
-        final isOlderThan30Days = violationDate.isBefore(now.subtract(Duration(days: 30)));
-
-        if (violationId == null || isOlderThan30Days) {
-          print("Skipping violation: ${doc.id}");
-          return false;
-        }
-
-        // Final condition to include the violation
-        return !complaintViolationIds.contains(violationId);
+        return true;
       }).toList();
 
-      // Debug: Print filtered violations
-      print("Filtered Violations: ${filteredViolations.map((doc) => doc.id).toList()}");
+      print("Filtered Violations (${page} Page): ${filteredViolations.map((doc) => doc.id).toList()}");
 
       return filteredViolations;
     });
-  } else {
-    return Stream.value([]);
   }
-}
+
+
   Future<void> fetchViolations({DateTime? filterDate, String? page}) async {
     try {
+      // Fetch accepted complaints
+      QuerySnapshot acceptedComplaintSnapshot = await FirebaseFirestore.instance
+          .collection('Complaint')
+          .where('driverID', isEqualTo: driverNat_Res?.driverId)
+          .where('Status', isEqualTo: 'Accepted')
+          .get();
+
+      List<String> acceptedViolationIds = acceptedComplaintSnapshot.docs
+          .map((doc) => doc.get('ViolationID') as String)
+          .toList();
+
       // Fetch all violations
       QuerySnapshot violationSnapshot = await FirebaseFirestore.instance
           .collection('Violation')
@@ -536,10 +550,9 @@ class _ViolationslistState extends State<Violationslist> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => Raisecomplaint(
-                                        violation: violation,
-                                        driverid: widget.driverId,
-                                        page:"complaints"
-                                      ),
+                                          violation: violation,
+                                          driverid: widget.driverId,
+                                          page: "complaints"),
                                     ),
                                   );
                                 }
