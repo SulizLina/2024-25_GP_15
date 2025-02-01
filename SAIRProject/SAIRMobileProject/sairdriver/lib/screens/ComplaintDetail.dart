@@ -107,9 +107,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
           await snapshot.reference.delete();
           return true;
         } else {
-          setState(() {
-           
-          });
+          setState(() {});
           return false;
         }
       } else {
@@ -263,7 +261,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                     const SizedBox(height: 15),
                     buildDetailSection(
                       'Complaint Reason',
-                      complaint?.Reason?? '',
+                      complaint?.Reason ?? '',
                       HugeIcons.strokeRoundedFileEdit,
                     ),
                     const SizedBox(height: 15),
@@ -640,6 +638,30 @@ class _ComplaintdetailState extends State<Complaintdetail> {
           ),
         ),
         const SizedBox(height: 20),
+        if (status == 'Accepted')
+          Padding(
+            padding: const EdgeInsets.only(left: 32, bottom: 20),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  HugeIcons.strokeRoundedInformationCircle,
+                  color: Colors.red,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Since this complaint is accepted, the violation will be deleted so you don’t have any fee to pay.',
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: Colors.grey, // Muted color for the disclaimer
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }
