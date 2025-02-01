@@ -14,7 +14,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:sairdriver/services/motorcycle_database.dart';
 import 'package:rxdart/rxdart.dart';
-
+import 'package:hijri/hijri_calendar.dart';
 class Viewcomplaints extends StatefulWidget {
   final String driverId; // DriverID passed from previous page
   const Viewcomplaints({required this.driverId});
@@ -81,6 +81,34 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
       await fetchComplaint();
     }
   }
+
+Stream<int> fetchRejectedComplaintsCount(String? driverId) {
+  if (driverId == null) return Stream.value(0);
+
+  final now = HijriCalendar.now(); // Get the current Hijri date
+  final currentHijriYear = now.hYear; // Get the Hijri year
+
+  return FirebaseFirestore.instance
+      .collection('Complaint')
+      .where('driverID', isEqualTo: driverId)
+      .where('Status', isEqualTo: 'Rejected')
+      .snapshots()
+      .map((snapshot) {
+        return snapshot.docs.where((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+
+          // Extract the stored DateTime directly
+          final Timestamp timestamp = data['DateTime'] as Timestamp; // Firestore Timestamp
+          final DateTime gregorianDate = timestamp.toDate(); // Convert Firestore Timestamp to DateTime
+
+          // Convert to Hijri Date
+          final hijriDate = HijriCalendar.fromDate(gregorianDate);
+          
+          // Check if the Hijri year matches the current Hijri year
+          return hijriDate.hYear == currentHijriYear;
+        }).length;
+      });
+}
 
   Stream<QuerySnapshot> fetchComplaintStream() {
     return FirebaseFirestore.instance
@@ -183,9 +211,9 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
   void filterComplaints() {
     setState(() {
       if (selectedReason == null) {
-      // Handle the case where selected reason is null 'when driver edit/delete complint from filter'
-      selectedReason = 'All'; // Reset to default value or handle as needed
-    }
+        // Handle the case where selected reason is null 'when driver edit/delete complint from filter'
+        selectedReason = 'All'; // Reset to default value or handle as needed
+      }
       filteredComplaints = complaints.where((doc) {
         Complaint complaint = Complaint.fromJson(doc);
 
@@ -206,9 +234,9 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
       }).toList();
 
       if (filteredComplaints.isEmpty && selectedReason == null) {
-      selectedReason = 'All';
-      filterComplaints(); // Re-run the filter with the updated selectedReason
-    }
+        selectedReason = 'All';
+        filterComplaints(); // Re-run the filter with the updated selectedReason
+      }
     });
   }
 
@@ -711,9 +739,9 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                                                 color: Colors.grey),
                                           ),
                                           _buildSpeedLimitRow(
-                                          'Reason:',
-                                          '${complaint.Reason}',
-                                        ),
+                                            'Reason:',
+                                            '${complaint.Reason}',
+                                          ),
                                         ],
                                       ),
                                       trailing: Icon(
@@ -753,11 +781,10 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
           ),
         ],
       ),
-      floatingActionButton: StreamBuilder<bool>(
-        stream: hasAnyViolationsStream(driverNat_Res?.driverId),
-        builder: (context, hasViolationSnapshot) {
-          // Show a loading indicator while waiting for the stream
-          if (hasViolationSnapshot.connectionState == ConnectionState.waiting) {
+      floatingActionButton: StreamBuilder<int>(
+        stream: fetchRejectedComplaintsCount(driverNat_Res?.driverId),
+        builder: (context, rejectedSnapshot) {
+          if (rejectedSnapshot.connectionState == ConnectionState.waiting) {
             return FloatingActionButton(
               onPressed: null,
               backgroundColor: const Color.fromARGB(255, 199, 199, 199),
@@ -766,60 +793,94 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
             );
           }
 
-          final hasViolations = hasViolationSnapshot.data ?? false;
+          final rejectedCount = rejectedSnapshot.data ?? 0;
 
-          // If no violations exist, show a button with the warning message
-          if (!hasViolations) {
+          if (rejectedCount >= 3) {
             return FloatingActionButton(
               onPressed: () {
                 showDialog(
                   context: context,
                   builder: (context) => WarningDialog(
-                    message:
-                        "You don't have a violation to raise a complaint for it.",
+                    message: "Your complaint service is temporarily suspended due to three rejected complaints within this year. You will be able to submit complaints again next year. \n \n See you then!",
                   ),
                 );
               },
               backgroundColor: const Color.fromARGB(255, 199, 199, 199),
               shape: const CircleBorder(),
-              child: const Icon(Icons.add, color: Colors.white),
+              child:
+                 const Icon(Icons.add, color: Colors.white),
             );
           }
+          return StreamBuilder<bool>(
+            stream: hasAnyViolationsStream(driverNat_Res?.driverId),
+            builder: (context, hasViolationSnapshot) {
+              // Show a loading indicator while waiting for the stream
+              if (hasViolationSnapshot.connectionState ==
+                  ConnectionState.waiting) {
+                return FloatingActionButton(
+                  onPressed: null,
+                  backgroundColor: const Color.fromARGB(255, 199, 199, 199),
+                  shape: const CircleBorder(),
+                  child: const CircularProgressIndicator(color: Colors.white),
+                );
+              }
 
-          // If violations exist, use the existing StreamBuilder for filtering complaints
-          return StreamBuilder<List<QueryDocumentSnapshot>>(
-            stream: getComplaintsStream(driverNat_Res?.driverId),
-            builder: (context, snapshot) {
-              final hasEligibleViolations =
-                  snapshot.hasData && snapshot.data!.isNotEmpty;
+              final hasViolations = hasViolationSnapshot.data ?? false;
 
-              return FloatingActionButton(
-                onPressed: hasEligibleViolations
-                    ? () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Violationslist(
-                              driverId: widget.driverId,
-                              page: 'complaints',
-                            ),
-                          ),
-                        );
-                      }
-                    : () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => WarningDialog(
-                            message:
-                                'You currently have no violations eligible for raising complaints. You can raise a complaint when:\n1. The violation is within the past 30 days.\n2. The violation does not already have a complaint.\n\nDrive safely!',
-                          ),
-                        );
-                      },
-                backgroundColor: hasEligibleViolations
-                    ? const Color.fromARGB(202, 3, 152, 85)
-                    : const Color.fromARGB(255, 199, 199, 199),
-                shape: const CircleBorder(),
-                child: const Icon(Icons.add, color: Colors.white),
+              // If no violations exist, show a button with the warning message
+              if (!hasViolations) {
+                return FloatingActionButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => WarningDialog(
+                        message:
+                            "You don't have a violation to raise a complaint for it.",
+                      ),
+                    );
+                  },
+                  backgroundColor: const Color.fromARGB(255, 199, 199, 199),
+                  shape: const CircleBorder(),
+                  child: const Icon(Icons.add, color: Colors.white),
+                );
+              }
+
+              // If violations exist, use the existing StreamBuilder for filtering complaints
+              return StreamBuilder<List<QueryDocumentSnapshot>>(
+                stream: getComplaintsStream(driverNat_Res?.driverId),
+                builder: (context, snapshot) {
+                  final hasEligibleViolations =
+                      snapshot.hasData && snapshot.data!.isNotEmpty;
+
+                  return FloatingActionButton(
+                    onPressed: hasEligibleViolations
+                        ? () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Violationslist(
+                                  driverId: widget.driverId,
+                                  page: 'complaints',
+                                ),
+                              ),
+                            );
+                          }
+                        : () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => WarningDialog(
+                                message:
+                                    'You currently have no violations eligible for raising complaints. You can raise a complaint when:\n1. The violation is within the past 30 days.\n2. The violation does not already have a complaint.\n\nDrive safely!',
+                              ),
+                            );
+                          },
+                    backgroundColor: hasEligibleViolations
+                        ? const Color.fromARGB(202, 3, 152, 85)
+                        : const Color.fromARGB(255, 199, 199, 199),
+                    shape: const CircleBorder(),
+                    child: const Icon(Icons.add, color: Colors.white),
+                  );
+                },
               );
             },
           );
@@ -944,7 +1005,7 @@ class Dropdown extends StatelessWidget {
   }
 }
 
-  Stream<bool> isButtonEnabledStream(String? driverId) {
+Stream<bool> isButtonEnabledStream(String? driverId) {
   if (driverId == null) return Stream.value(false);
 
   final violationsStream = FirebaseFirestore.instance
@@ -961,17 +1022,13 @@ class Dropdown extends StatelessWidget {
     violationsStream,
     complaintsStream,
     (violationsSnapshot, complaintsSnapshot) {
-     final complaintViolationIds = complaintsSnapshot.docs
-    .where((doc) {
-      final data = doc.data() as Map<String, dynamic>;
-      return data.containsKey('ViolationID');
-    })
-    .map((doc) {
-      final data = doc.data() as Map<String, dynamic>;
-      return data['ViolationID'] as String?;
-    })
-    .toSet();
-
+      final complaintViolationIds = complaintsSnapshot.docs.where((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return data.containsKey('ViolationID');
+      }).map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return data['ViolationID'] as String?;
+      }).toSet();
 
       final hasEligibleViolations = violationsSnapshot.docs.any((violationDoc) {
         final violationId = violationDoc['violationID'] as String?;
@@ -984,20 +1041,19 @@ class Dropdown extends StatelessWidget {
   );
 }
 
-
-  Stream<bool> hasAnyViolationsStream(String? driverId) {
-    if (driverId == null) {
-      // Return a stream that immediately emits false
-      return Stream.value(false);
-    }
-
-    return FirebaseFirestore.instance
-        .collection('Violation')
-        .where('driverID', isEqualTo: driverId)
-        .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.isNotEmpty); // Emit true if there are violations
+Stream<bool> hasAnyViolationsStream(String? driverId) {
+  if (driverId == null) {
+    // Return a stream that immediately emits false
+    return Stream.value(false);
   }
+
+  return FirebaseFirestore.instance
+      .collection('Violation')
+      .where('driverID', isEqualTo: driverId)
+      .snapshots()
+      .map((snapshot) =>
+          snapshot.docs.isNotEmpty); // Emit true if there are violations
+}
 
 Stream<List<QueryDocumentSnapshot>> getComplaintsStream(String? driverId) {
   if (driverId == null) return Stream.value([]);
@@ -1019,16 +1075,13 @@ Stream<List<QueryDocumentSnapshot>> getComplaintsStream(String? driverId) {
     violationsStream,
     complaintsStream,
     (violationsSnapshot, complaintsSnapshot) {
-     final complaintViolationIds = complaintsSnapshot.docs
-    .where((doc) {
-      final data = doc.data() as Map<String, dynamic>;
-      return data.containsKey('ViolationID');
-    })
-    .map((doc) {
-      final data = doc.data() as Map<String, dynamic>;
-      return data['ViolationID'] as String?;
-    })
-    .toSet();
+      final complaintViolationIds = complaintsSnapshot.docs.where((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return data.containsKey('ViolationID');
+      }).map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return data['ViolationID'] as String?;
+      }).toSet();
 
       final filteredViolations = violationsSnapshot.docs.where((violationDoc) {
         final violationId = violationDoc['violationID'] as String?;

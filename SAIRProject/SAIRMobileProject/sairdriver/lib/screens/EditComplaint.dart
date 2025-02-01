@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:sairdriver/messages/Warning.dart';
 import 'package:sairdriver/models/complaint.dart';
 import 'package:sairdriver/messages/success.dart';
@@ -144,7 +145,8 @@ class _editcomplaintState extends State<editcomplaint> {
       errorMessage = null;
     });
 
-    if (!isTextChanged && !isReasonChanged) { //hmmmm
+    if (!isTextChanged && !isReasonChanged) {
+      //hmmmm
       _formKey.currentState?.validate();
       return;
     }
@@ -250,7 +252,6 @@ class _editcomplaintState extends State<editcomplaint> {
                         });
                       },
                     ),
-
                     SizedBox(height: 20),
                     if (!isInitialized)
                       CircularProgressIndicator() // Show loading indicator while initializing
@@ -308,7 +309,43 @@ class _editcomplaintState extends State<editcomplaint> {
                         fontSize: 12,
                       ),
                     ),
-                    SizedBox(height: 32),
+                    const SizedBox(height: 12),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 12), // Space before text
+                              Row(
+                                children: [
+                                  Icon(
+                                    HugeIcons.strokeRoundedInformationCircle,
+                                    color: Colors.red,
+                                    size: 24,
+                                    
+                                  ),
+                                  const SizedBox(
+                                      width: 4), // Space between icon and text
+                                  Expanded(
+                                    child: Text(
+                                      'repeatedly rejecting complaints may eventually lead to a temporary suspension of the service.',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        color: Colors.red,
+                                        
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 25),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(

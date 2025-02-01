@@ -30,6 +30,7 @@ dependencies:
   flutter_countdown_timer: ^4.1.0
   rxdart: ^0.28.0
   dropdown_button2: ^2.0.0
+  hijri: ^3.0.0
 
 
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:sairdriver/models/violation.dart';
 import 'package:sairdriver/messages/success.dart';
 import 'package:sairdriver/screens/ViewComplaints.dart';
@@ -315,18 +316,41 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
                         fontSize: 12,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Misusing this service and repeatedly rejecting complaints may eventually lead to a temporary suspension of the service.',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: Colors.red, //Colors.black, //Color(0xFFFFC800)
-                        // Colors.grey[400],
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
+                   const SizedBox(height: 12),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 12), // Space before text
+                        Row(
+                          children: [
+                            Icon(
+                              HugeIcons.strokeRoundedInformationCircle,
+                              color: Colors.red,
+                              size: 24,
+                            ),
+                            const SizedBox(width: 4), // Space between icon and text
+                            Expanded(
+                              child: Text(
+                                'repeatedly rejecting complaints may eventually lead to a temporary suspension of the service.',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  color: Colors.red,
+                            
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 25),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 25), // Add space after the content
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -348,7 +372,7 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 242),
+                    const SizedBox(height: 110),
                   ],
                 ),
               ),
