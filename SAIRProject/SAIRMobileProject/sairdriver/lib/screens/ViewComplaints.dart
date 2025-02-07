@@ -15,6 +15,7 @@ import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:sairdriver/services/motorcycle_database.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:hijri/hijri_calendar.dart';
+
 class Viewcomplaints extends StatefulWidget {
   final String driverId; // DriverID passed from previous page
   const Viewcomplaints({required this.driverId});
@@ -82,33 +83,35 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
     }
   }
 
-Stream<int> fetchRejectedComplaintsCount(String? driverId) {
-  if (driverId == null) return Stream.value(0);
+  Stream<int> fetchRejectedComplaintsCount(String? driverId) {
+    if (driverId == null) return Stream.value(0);
 
-  final now = HijriCalendar.now(); // Get the current Hijri date
-  final currentHijriYear = now.hYear; // Get the Hijri year
+    final now = HijriCalendar.now(); // Get the current Hijri date
+    final currentHijriYear = now.hYear; // Get the Hijri year
 
-  return FirebaseFirestore.instance
-      .collection('Complaint')
-      .where('driverID', isEqualTo: driverId)
-      .where('Status', isEqualTo: 'Rejected')
-      .snapshots()
-      .map((snapshot) {
-        return snapshot.docs.where((doc) {
-          final data = doc.data() as Map<String, dynamic>;
+    return FirebaseFirestore.instance
+        .collection('Complaint')
+        .where('driverID', isEqualTo: driverId)
+        .where('Status', isEqualTo: 'Rejected')
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.where((doc) {
+        final data = doc.data() as Map<String, dynamic>;
 
-          // Extract the stored DateTime directly
-          final Timestamp timestamp = data['DateTime'] as Timestamp; // Firestore Timestamp
-          final DateTime gregorianDate = timestamp.toDate(); // Convert Firestore Timestamp to DateTime
+        // Extract the stored DateTime directly
+        final Timestamp timestamp =
+            data['DateTime'] as Timestamp; // Firestore Timestamp
+        final DateTime gregorianDate =
+            timestamp.toDate(); // Convert Firestore Timestamp to DateTime
 
-          // Convert to Hijri Date
-          final hijriDate = HijriCalendar.fromDate(gregorianDate);
-          
-          // Check if the Hijri year matches the current Hijri year
-          return hijriDate.hYear == currentHijriYear;
-        }).length;
-      });
-}
+        // Convert to Hijri Date
+        final hijriDate = HijriCalendar.fromDate(gregorianDate);
+
+        // Check if the Hijri year matches the current Hijri year
+        return hijriDate.hYear == currentHijriYear;
+      }).length;
+    });
+  }
 
   Stream<QuerySnapshot> fetchComplaintStream() {
     return FirebaseFirestore.instance
@@ -801,14 +804,14 @@ Stream<int> fetchRejectedComplaintsCount(String? driverId) {
                 showDialog(
                   context: context,
                   builder: (context) => WarningDialog(
-                    message: "Your complaint service is temporarily suspended due to three rejected complaints within this year. You will be able to submit complaints again next year. \n \n See you then!",
+                    message:
+                        "Your complaint service is temporarily suspended due to three rejected complaints within this year. You will be able to submit complaints again next year. \n \n See you then!",
                   ),
                 );
               },
               backgroundColor: const Color.fromARGB(255, 199, 199, 199),
               shape: const CircleBorder(),
-              child:
-                 const Icon(Icons.add, color: Colors.white),
+              child: const Icon(Icons.add, color: Colors.white),
             );
           }
           return StreamBuilder<bool>(
@@ -1016,6 +1019,10 @@ Stream<bool> isButtonEnabledStream(String? driverId) {
   final complaintsStream = FirebaseFirestore.instance
       .collection('Complaint')
       .where('driverID', isEqualTo: driverId)
+      .where('Status', whereIn: [
+    'Accepted',
+    'Pending'
+  ]) // Get both Accepted & Pending complaints
       .snapshots();
 
   return Rx.combineLatest2<QuerySnapshot, QuerySnapshot, bool>(
@@ -1066,6 +1073,11 @@ Stream<List<QueryDocumentSnapshot>> getComplaintsStream(String? driverId) {
   final complaintsStream = FirebaseFirestore.instance
       .collection('Complaint')
       .where('driverID', isEqualTo: driverId)
+      .where('Status', whereIn: [
+    'Accepted',
+    'Pending'
+  ]) // Get both Accepted & Pending complaints
+
       .snapshots();
 
   final now = DateTime.now();

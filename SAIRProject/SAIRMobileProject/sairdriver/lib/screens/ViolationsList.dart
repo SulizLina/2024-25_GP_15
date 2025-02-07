@@ -21,7 +21,8 @@ class Violationslist extends StatefulWidget {
   State<Violationslist> createState() => _ViolationslistState();
 }
 
-class _ViolationslistState extends State<Violationslist> {
+class _ViolationslistState extends State<Violationslist>
+    with SingleTickerProviderStateMixin {
   List<DocumentSnapshot> violations = []; // List to hold violation documents
   List<DocumentSnapshot> filteredViolations =
       []; // List for filtered violations based on date
@@ -36,11 +37,34 @@ class _ViolationslistState extends State<Violationslist> {
   bool isDateFiltered = false;
   bool isPlateFiltered = false;
   bool _isLoading = true;
-
+  String selectedStatus = "All";
+  late TabController _tabController;
+  ValueNotifier<String?> selectedReasonNotifier = ValueNotifier<String?>(null);
+  int selectedIndex = 0;
   @override
   void initState() {
     super.initState();
+    _tabController =
+        TabController(length: 3, vsync: this); // Adjust length as needed
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        setState(() {
+          selectedStatus = [
+            "All",
+            "Active Violation",
+            "Deleted Violation"
+          ][_tabController.index];
+        });
+        fetchViolationsStream(widget.page, selectedStatus);
+      }
+    });
     fetchDriverData();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<String?> fetchLicensePlate(String? id) async {
@@ -63,11 +87,15 @@ class _ViolationslistState extends State<Violationslist> {
     }
   }
 
-  Stream<List<QueryDocumentSnapshot<Object?>>> fetchViolationsStream(String? page) {
+  Stream<List<QueryDocumentSnapshot<Object?>>> fetchViolationsStream(
+      String? page, String? selectedStatus) {
     final complaintsStream = FirebaseFirestore.instance
         .collection('Complaint')
         .where('driverID', isEqualTo: driverNat_Res?.driverId)
-        .where('Status', isEqualTo: 'Accepted') // Get only Accepted complaints
+        .where('Status', whereIn: [
+      'Accepted',
+      'Pending'
+    ]) // Get both Accepted & Pending complaints
         .snapshots();
 
     return FirebaseFirestore.instance
@@ -87,9 +115,11 @@ class _ViolationslistState extends State<Violationslist> {
       final now = DateTime.now();
 
       // Filter violations based on the page type
-      final filteredViolations = violationsSnapshot.docs.where((doc) {
-        final violationId =
-        doc.data().containsKey('violationID') ? doc['violationID'] as String : null;
+      List<QueryDocumentSnapshot<Object?>> filteredViolations =
+          violationsSnapshot.docs.where((doc) {
+        final violationId = doc.data().containsKey('violationID')
+            ? doc['violationID'] as String
+            : null;
 
         if (violationId == null) {
           print("Skipping violation without ID: ${doc.id}");
@@ -105,7 +135,8 @@ class _ViolationslistState extends State<Violationslist> {
         // Apply date filtering ONLY for 'complaints' page
         if (page == 'complaints') {
           if (!doc.data().containsKey('time')) {
-            print("Skipping violation without time field: ${doc.id}");
+            print(
+                "(complaints)Skipping violation without time field: ${doc.id}");
             return false;
           }
 
@@ -116,9 +147,11 @@ class _ViolationslistState extends State<Violationslist> {
             if (timeField is String) {
               violationDate = DateTime.parse(timeField);
             } else if (timeField is int) {
-              violationDate = DateTime.fromMillisecondsSinceEpoch(timeField * 1000);
+              violationDate =
+                  DateTime.fromMillisecondsSinceEpoch(timeField * 1000);
             } else {
-              print("Invalid type for time field in violation ${doc.id}: ${timeField.runtimeType}");
+              print(
+                  "Invalid type for time field in violation ${doc.id}: ${timeField.runtimeType}");
               return false;
             }
           } catch (e) {
@@ -126,7 +159,8 @@ class _ViolationslistState extends State<Violationslist> {
             return false;
           }
 
-          final isOlderThan30Days = violationDate.isBefore(now.subtract(Duration(days: 30)));
+          final isOlderThan30Days =
+              violationDate.isBefore(now.subtract(Duration(days: 30)));
 
           if (isOlderThan30Days) {
             print("Skipping old violation: ${doc.id}");
@@ -137,12 +171,31 @@ class _ViolationslistState extends State<Violationslist> {
         return true;
       }).toList();
 
-      print("Filtered Violations (${page} Page): ${filteredViolations.map((doc) => doc.id).toList()}");
+      // Additional filtering for 'menu' page
+      if (page == 'menu') {
+        if (selectedStatus == 'Active Violations') {
+          filteredViolations = filteredViolations
+              .where((violationDoc) =>
+                  !complaintViolationIds.contains(violationDoc['violationID']))
+              .toList();
+        } else if (selectedStatus == 'All') {
+          filteredViolations = violationsSnapshot.docs.toList();
+        } else if (selectedStatus == 'Deleted Violations') {
+          // Include violations that have accepted complaints
+          filteredViolations = violationsSnapshot.docs.where((violationDoc) {
+            final violationId = violationDoc.data().containsKey('violationID')
+                ? violationDoc['violationID'] as String
+                : null;
+            return complaintViolationIds.contains(violationId);
+          }).toList();
+        }
+      }
+      print(
+          "Filtered Violations (${page} Page): ${filteredViolations.map((doc) => doc.id).toList()}");
 
       return filteredViolations;
     });
   }
-
 
   Future<void> fetchViolations({DateTime? filterDate, String? page}) async {
     try {
@@ -394,7 +447,115 @@ class _ViolationslistState extends State<Violationslist> {
           padding: const EdgeInsets.symmetric(vertical: 15),
           child: Column(
             children: [
-              if (widget.page == 'complaints')
+              // Only show the container if the page is 'menu'
+              if (widget.page == 'menu') ...[
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 9),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                _tabController.index = 0;
+                                selectedStatus = "All";
+                              });
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              decoration: BoxDecoration(
+                                color: _tabController.index == 0
+                                    ? Colors.white
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'All',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: _tabController.index == 0
+                                        ? FontWeight.w600
+                                        : FontWeight.normal,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                _tabController.index = 1;
+                                selectedStatus = "Active Violations";
+                              });
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              decoration: BoxDecoration(
+                                color: _tabController.index == 1
+                                    ? Colors.white
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Active Violations',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: _tabController.index == 1
+                                        ? FontWeight.w600
+                                        : FontWeight.normal,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                _tabController.index = 2;
+                                selectedStatus = "Deleted Violations";
+                              });
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              decoration: BoxDecoration(
+                                color: _tabController.index == 2
+                                    ? Colors.white
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Deleted Violations',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: _tabController.index == 2
+                                        ? FontWeight.w600
+                                        : FontWeight.normal,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],   if (widget.page == 'complaints')
                 Text(
                   'Select a violation to submit your complaint',
                   style: GoogleFonts.poppins(
@@ -406,10 +567,10 @@ class _ViolationslistState extends State<Violationslist> {
                   textAlign: TextAlign.center,
                 ),
               if (widget.page == 'complaints') const SizedBox(height: 20),
-              // Violations StreamBuilder
+              const SizedBox(height: 10),
               Expanded(
                 child: StreamBuilder<List<QueryDocumentSnapshot<Object?>>>(
-                  stream: fetchViolationsStream(widget.page),
+                  stream: fetchViolationsStream(widget.page, selectedStatus),
                   builder: (context, snapshot) {
                     if (_isLoading ||
                         snapshot.connectionState == ConnectionState.waiting) {
@@ -519,23 +680,28 @@ class _ViolationslistState extends State<Violationslist> {
                                     style:
                                         GoogleFonts.poppins(color: Colors.grey),
                                   ),
-FutureBuilder<String?>(
-  future: fetchLicensePlate(violation.Vid), // Fetch the data
-  builder: (context, snapshot) {
-   if (snapshot.connectionState == ConnectionState.waiting) {
-      return Text("Loading...", style: GoogleFonts.poppins(color: Colors.grey));
-    }else
-     if (snapshot.hasError) {
-      return Text("Error fetching plate", style: GoogleFonts.poppins(color: Colors.red));
-    } else {
-      return Text(
-        'License Plate: ${snapshot.data ?? "Unknown"}',
-        style: GoogleFonts.poppins(color: Colors.grey),
-      );
-    }
-  },
-)
-
+                                  FutureBuilder<String?>(
+                                    future: fetchLicensePlate(
+                                        violation.Vid), // Fetch the data
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return Text("Loading...",
+                                            style: GoogleFonts.poppins(
+                                                color: Colors.grey));
+                                      } else if (snapshot.hasError) {
+                                        return Text("Error fetching plate",
+                                            style: GoogleFonts.poppins(
+                                                color: Colors.red));
+                                      } else {
+                                        return Text(
+                                          'License Plate: ${snapshot.data ?? "Unknown"}',
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.grey),
+                                        );
+                                      }
+                                    },
+                                  )
                                 ],
                               ),
                               trailing: Icon(
