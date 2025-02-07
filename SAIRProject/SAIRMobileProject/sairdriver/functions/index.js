@@ -325,7 +325,7 @@ exports.sendnotificationComplaints = functions.firestore
             const payload = {
                 notification: {
                     title: 'Complaint Status Updated!',
-                    body: `The status of your complaint (ID: ${complaintId}) has been updated to ${newData.Status}. Open the app to more details.`,
+                    body: `The status of your complaint (ID: ${complaintId}) has been updated to ${newData.Status.toLowerCase()}. Open the app for more details.`,
                 },
                 data: {
                     sound: 'beep',
