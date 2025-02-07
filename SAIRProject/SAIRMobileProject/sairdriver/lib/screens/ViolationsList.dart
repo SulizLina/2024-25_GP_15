@@ -444,7 +444,7 @@ class _ViolationslistState extends State<Violationslist>
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 15),
+                padding: const EdgeInsets.only(left: 7),
           child: Column(
             children: [
               // Only show the container if the page is 'menu'
@@ -509,7 +509,7 @@ class _ViolationslistState extends State<Violationslist>
                               ),
                               child: Center(
                                 child: Text(
-                                  'Active Violations',
+                                  'Active',
                                   style: GoogleFonts.poppins(
                                     fontSize: 13,
                                     fontWeight: _tabController.index == 1
@@ -539,7 +539,7 @@ class _ViolationslistState extends State<Violationslist>
                               ),
                               child: Center(
                                 child: Text(
-                                  'Deleted Violations',
+                                  'Revoked',
                                   style: GoogleFonts.poppins(
                                     fontSize: 13,
                                     fontWeight: _tabController.index == 2
