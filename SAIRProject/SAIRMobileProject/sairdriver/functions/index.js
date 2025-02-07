@@ -5,143 +5,143 @@ admin.initializeApp();
 
 //Sending notification about new violation
 exports.sendnotificationViolation = functions.firestore
-.document('Violation/{violationID}')
-.onCreate(async (snapshot, context) => {
-    const newData = snapshot.data();
+    .document('Violation/{violationID}')
+    .onCreate(async (snapshot, context) => {
+        const newData = snapshot.data();
 
-    try {
-        const driverId = newData.driverID;
+        try {
+            const driverId = newData.driverID;
 
-        // Check if driverId is defined
-        if (!driverId) {
-            console.error('driverId is undefined or null.');
-            return;
-        }
+            // Check if driverId is defined
+            if (!driverId) {
+                console.error('driverId is undefined or null.');
+                return;
+            }
 
-        const driverQuery = admin.firestore().collection('Driver').where('DriverID', '==', driverId);
-        const driverQuerySnapshot = await driverQuery.get();
+            const driverQuery = admin.firestore().collection('Driver').where('DriverID', '==', driverId);
+            const driverQuerySnapshot = await driverQuery.get();
 
-        if (driverQuerySnapshot.empty) {
-            console.log(`Driver document with driverId ${driverId} does not exist.`);
-            return;
-        }
+            if (driverQuerySnapshot.empty) {
+                console.log(`Driver document with driverId ${driverId} does not exist.`);
+                return;
+            }
 
-        const driverDoc = driverQuerySnapshot.docs[0];
-        const driverData = driverDoc.data();
-        const documentId = driverDoc.id; // Driver document ID
-        const userToken = driverData.token; // Fetch the token directly from the Driver document
+            const driverDoc = driverQuerySnapshot.docs[0];
+            const driverData = driverDoc.data();
+            const documentId = driverDoc.id; // Driver document ID
+            const userToken = driverData.token; // Fetch the token directly from the Driver document
 
-        if (!userToken) {
-            console.error('No token found for the driver.');
-            return;
-        }
+            if (!userToken) {
+                console.error('No token found for the driver.');
+                return;
+            }
 
-        const payload = {
-            notification: {
-                title: 'New Violation detected!',
-                body: 'You have a new violation. Please check the details.',
-            },
-            data: {
-                sound: 'beep',
-                screen: 'ViolationsList',
-                driverData: documentId || '',
-            },
-            android: {
-                priority: 'high',
-            },
-            apns: {
-                payload: {
-                    aps: {
-                        sound: 'beep',
+            const payload = {
+                notification: {
+                    title: 'New Violation detected!',
+                    body: 'You have a new violation. Please check the details.',
+                },
+                data: {
+                    sound: 'beep',
+                    screen: 'ViolationsList',
+                    driverData: documentId || '',
+                },
+                android: {
+                    priority: 'high',
+                },
+                apns: {
+                    payload: {
+                        aps: {
+                            sound: 'beep',
+                        },
                     },
                 },
-            },
-        };
+            };
 
-        const response = await admin.messaging().send({
-            token: userToken,
-            notification: payload.notification,
-            data: payload.data,
-            android: payload.android,
-            apns: payload.apns,
-        });
+            const response = await admin.messaging().send({
+                token: userToken,
+                notification: payload.notification,
+                data: payload.data,
+                android: payload.android,
+                apns: payload.apns,
+            });
 
-        console.log('Notification sent successfully:', response);
+            console.log('Notification sent successfully:', response);
 
-    } catch (error) {
-        console.error('Error sending notification:', error);
-    }
-});
+        } catch (error) {
+            console.error('Error sending notification:', error);
+        }
+    });
 //Sending notification about potential violation
-exports.sendnotificationPotentialViolation= functions.firestore
-.document('PotentialViolation/{PotentialViolationID}')
-.onCreate(async (snapshot, context) => {
-    const newData = snapshot.data();
+exports.sendnotificationPotentialViolation = functions.firestore
+    .document('PotentialViolation/{PotentialViolationID}')
+    .onCreate(async (snapshot, context) => {
+        const newData = snapshot.data();
 
-    try {
-        const driverId = newData.driverID;
+        try {
+            const driverId = newData.driverID;
 
-        // Check if driverId is defined
-        if (!driverId) {
-            console.error('driverId is undefined or null.');
-            return;
-        }
+            // Check if driverId is defined
+            if (!driverId) {
+                console.error('driverId is undefined or null.');
+                return;
+            }
 
-        const driverQuery = admin.firestore().collection('Driver').where('DriverID', '==', driverId);
-        const driverQuerySnapshot = await driverQuery.get();
+            const driverQuery = admin.firestore().collection('Driver').where('DriverID', '==', driverId);
+            const driverQuerySnapshot = await driverQuery.get();
 
-        if (driverQuerySnapshot.empty) {
-            console.log(`Driver document with driverId ${driverId} does not exist.`);
-            return;
-        }
+            if (driverQuerySnapshot.empty) {
+                console.log(`Driver document with driverId ${driverId} does not exist.`);
+                return;
+            }
 
-        const driverDoc = driverQuerySnapshot.docs[0];
-        const driverData = driverDoc.data();
-        const documentId = driverDoc.id; // Driver document ID
-        const userToken = driverData.token; // Fetch the token directly from the Driver document
+            const driverDoc = driverQuerySnapshot.docs[0];
+            const driverData = driverDoc.data();
+            const documentId = driverDoc.id; // Driver document ID
+            const userToken = driverData.token; // Fetch the token directly from the Driver document
 
-        if (!userToken) {
-            console.error('No token found for the driver.');
-            return;
-        }
+            if (!userToken) {
+                console.error('No token found for the driver.');
+                return;
+            }
 
-        const payload = {
-            notification: {
-                title: 'Caution: Potential Violation Ahead',
-                body: 'You are approaching the maximum speed limit. Please drive slowly and safely to avoid any violations.',
-            },
-            data: {
-                sound: 'beep',
-                driverData: documentId || '',
-            },
-            android: {
-                priority: 'high',
-            },
-            apns: {
-                payload: {
-                    aps: {
-                        sound: 'beep',
+            const payload = {
+                notification: {
+                    title: 'Caution: Potential Violation Ahead',
+                    body: 'You are approaching the maximum speed limit. Please drive slowly and safely to avoid any violations.',
+                },
+                data: {
+                    sound: 'beep',
+                    driverData: documentId || '',
+                },
+                android: {
+                    priority: 'high',
+                },
+                apns: {
+                    payload: {
+                        aps: {
+                            sound: 'beep',
+                        },
                     },
                 },
-            },
-        };
+            };
 
-        const response = await admin.messaging().send({
-            token: userToken,
-            notification: payload.notification,
-            data: payload.data,
-            android: payload.android,
-            apns: payload.apns,
-        });
+            const response = await admin.messaging().send({
+                token: userToken,
+                notification: payload.notification,
+                data: payload.data,
+                android: payload.android,
+                apns: payload.apns,
+            });
 
-        console.log('Notification sent successfully:', response);
+            console.log('Notification sent successfully:', response);
 
-    } catch (error) {
-        console.error('Error sending notification:', error);
-    }
-});
+        } catch (error) {
+            console.error('Error sending notification:', error);
+        }
+    });
 //Sending notification about new crash
-    exports.sendNotificationForPendingStatus = functions.firestore
+exports.sendNotificationForPendingStatus = functions.firestore
     .document('Crash/{Status}')
     .onCreate(async (snapshot, context) => {
         const newData = snapshot.data();
@@ -186,8 +186,8 @@ exports.sendnotificationPotentialViolation= functions.firestore
                 }
 
                 const crashDoc = crashQuerySnapshot.docs[0];
-                const crashdocumentId = crashDoc.id; 
-                const userToken = driverData.token; 
+                const crashdocumentId = crashDoc.id;
+                const userToken = driverData.token;
 
                 if (!userToken) {
                     console.error('No token found for the driver.');
@@ -237,8 +237,8 @@ exports.sendnotificationPotentialViolation= functions.firestore
         }
     });
 
-    //Confirming crashes
-    exports.autoConfirmPendingCrashes = functions.firestore
+//Confirming crashes
+exports.autoConfirmPendingCrashes = functions.firestore
     .document('Crash/{crashID}')
     .onCreate(async (snapshot, context) => {
         const newData = snapshot.data();
@@ -272,7 +272,7 @@ exports.sendnotificationPotentialViolation= functions.firestore
                         // Check if the status is still 'Pending'
                         if (docData && docData.Status === 'Pending') {
                             console.log(`Auto-confirming crash with ID: ${context.params.crashID}`);
-                            await crashRef.update({ Status: 'Emergency SOS', isAuto: true, isAutoshown: true  });
+                            await crashRef.update({ Status: 'Emergency SOS', isAuto: true, isAutoshown: true });
                             console.log('Crash status successfully updated to "auto confirmed".');
                         } else {
                             console.log(`Crash ID ${context.params.crashID} status is no longer "Pending". Status: ${docData.Status}`);
@@ -289,7 +289,7 @@ exports.sendnotificationPotentialViolation= functions.firestore
         }
     });
 //Sending notification about complaints 
-    exports.sendnotificationComplaints = functions.firestore
+exports.sendnotificationComplaints = functions.firestore
     .document('Complaint/{Status}')
     .onUpdate(async (change, context) => {
         const newData = change.after.data();
@@ -297,7 +297,7 @@ exports.sendnotificationPotentialViolation= functions.firestore
         try {
             const driverId = newData.driverID;
             const complaintId = newData.ComplaintID;
-           
+
             // Check if driverId is defined
             if (!driverId) {
                 console.error('driverId is undefined or null.');
@@ -325,7 +325,7 @@ exports.sendnotificationPotentialViolation= functions.firestore
             const payload = {
                 notification: {
                     title: 'Complaint Status Updated!',
-                    body: `The status of your complaint (ID: ${complaintId}) has been updated. Open the app to view the latest details.`,
+                    body: `The status of your complaint (ID: ${complaintId}) has been updated to ${newData.Status}. Open the app to more details.`,
                 },
                 data: {
                     sound: 'beep',
