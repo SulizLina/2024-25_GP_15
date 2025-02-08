@@ -555,7 +555,10 @@ class _ViolationslistState extends State<Violationslist>
                     ),
                   ),
                 ),
-              ],   if (widget.page == 'complaints')
+              ],  
+              if (widget.page == 'complaints')
+              const SizedBox(height: 20), 
+               if (widget.page == 'complaints')
                 Text(
                   'Select a violation to submit your complaint',
                   style: GoogleFonts.poppins(

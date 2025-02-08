@@ -2,14 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class Complaint {
-  String? ComID; 
+  String? ComID;
   String? driverId;
-  Timestamp? timestamp; 
+  Timestamp? timestamp;
   String? Description;
   String? Reason;
-  String? gspNumber; 
-  String? Vid; 
+  String? gspNumber;
+  String? Vid;
   String? Status;
+  String? gdtReason;
 
   Complaint({
     required this.ComID,
@@ -17,9 +18,10 @@ class Complaint {
     required this.timestamp,
     required this.Description,
     required this.Reason,
-     required this.gspNumber,
+    required this.gspNumber,
     required this.Vid,
     required this.Status,
+    required this.gdtReason,
   });
 
   // Factory constructor to create a Complaint from Firestore document
@@ -35,6 +37,7 @@ class Complaint {
       gspNumber: parsedJSON['GPSnumber'].toString(),
       Vid: parsedJSON['ViolationID'].toString(),
       Status: parsedJSON['Status'] as String?,
+      gdtReason: parsedJSON['GDTResponse'] as String?,
     );
   }
 // Factory constructor to create a Complaint from a Map
@@ -48,6 +51,7 @@ class Complaint {
       gspNumber: parsedJSON['GPSnumber']?.toString(),
       Vid: parsedJSON['ViolationID']?.toString(),
       Status: parsedJSON['Status'] as String?,
+      gdtReason: parsedJSON['GDTResponse'] as String?,
     );
   }
 

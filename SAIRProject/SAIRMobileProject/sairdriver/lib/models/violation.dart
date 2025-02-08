@@ -5,6 +5,7 @@ class Violation {
   String? Vid;
   String? driverId;
   String? gspNumber;
+   String? status;
   int? Maxspeed;
   String? location;
   GeoPoint? position; 
@@ -27,6 +28,7 @@ class Violation {
       required this.price,
       required this.time,
       required this.count50,
+       required this.status,
        required this.count30, 
       required this.newV});
 
@@ -52,6 +54,7 @@ class Violation {
       Vid: parsedJSON['violationID'].toString(),
       driverId: parsedJSON['driverID'].toString(),
       gspNumber: parsedJSON['GPSnumber'].toString(),
+        status: parsedJSON['status'].toString(),
       location: parsedJSON['location'] as String?, 
       position: parsedJSON['position'] != null
           ? GeoPoint(

@@ -246,6 +246,7 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                       complaint?.getFormattedTime() ?? '',
                       HugeIcons.strokeRoundedClock03,
                     ),
+                   
                     const SizedBox(height: 15),
                     buildDetailSection(
                       'Date',
@@ -270,6 +271,27 @@ class _ComplaintdetailState extends State<Complaintdetail> {
                       complaint?.Description!,
                       HugeIcons.strokeRoundedFileEdit,
                     ),
+                     if(complaint.gdtReason!=null)
+                     const SizedBox(height: 20),
+Column(
+  children: [
+
+    if (complaint.gdtReason != null && complaint.Status == 'Rejected')
+      buildDetailSection(
+        'Reason of Rejection',
+        complaint.gdtReason ?? '',
+        HugeIcons.strokeRoundedFileEdit,
+      ),
+        if (complaint.gdtReason != null && complaint.Status == 'Accepted')
+      buildDetailSection(
+        'Reason of Acceptance',
+        complaint.gdtReason ?? '',
+        HugeIcons.strokeRoundedFileEdit,
+      ),
+ 
+  ],
+),
+
                     Divider(color: Colors.grey[350]),
                     const SizedBox(height: 15),
                     buildDetailSection('Violation ID', complaint?.Vid ?? '',
