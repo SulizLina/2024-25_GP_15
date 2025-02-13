@@ -27,6 +27,7 @@ String generateComplaintID() {
         'GPSnumber': v.gspNumber,
         'ViolationID': v.Vid,
         'Status': 'Pending',
+        'RespondedBy': null
       });
       print("Complaint added successfully.");
     } catch (e) {

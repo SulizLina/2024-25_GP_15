@@ -335,7 +335,7 @@ class _RaisecomplaintState extends State<Raisecomplaint> {
                             const SizedBox(width: 4), // Space between icon and text
                             Expanded(
                               child: Text(
-                                'Three rejected complaints in a hijri year may eventually lead to a temporary suspension of the service.',
+                                'If you have three rejected complaints within a Hijri year, your access to the complaint service may be temporarily suspended.',
                                 style: GoogleFonts.poppins(
                                   fontSize: 14,
                                   color: Colors.red,
