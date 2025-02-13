@@ -11,7 +11,7 @@ class Complaint {
   String? Vid;
   String? Status;
   String? gdtReason;
-
+  String? RespondedBy;
   Complaint({
     required this.ComID,
     required this.driverId,
@@ -22,6 +22,7 @@ class Complaint {
     required this.Vid,
     required this.Status,
     required this.gdtReason,
+    required this.RespondedBy,
   });
 
   // Factory constructor to create a Complaint from Firestore document
@@ -38,6 +39,7 @@ class Complaint {
       Vid: parsedJSON['ViolationID'].toString(),
       Status: parsedJSON['Status'] as String?,
       gdtReason: parsedJSON['GDTResponse'] as String?,
+      RespondedBy: parsedJSON['RespondedBy'] as String?,
     );
   }
 // Factory constructor to create a Complaint from a Map
@@ -52,6 +54,7 @@ class Complaint {
       Vid: parsedJSON['ViolationID']?.toString(),
       Status: parsedJSON['Status'] as String?,
       gdtReason: parsedJSON['GDTResponse'] as String?,
+      RespondedBy: parsedJSON['RespondedBy'] as String?,
     );
   }
 
