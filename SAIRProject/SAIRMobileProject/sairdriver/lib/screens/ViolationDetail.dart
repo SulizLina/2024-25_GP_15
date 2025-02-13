@@ -189,6 +189,11 @@ class _ViolationdetailState extends State<Violationdetail> {
                   const SizedBox(height: 15),
                   buildDetailSection('Violation ID', violation?.Vid ?? '',
                       HugeIcons.strokeRoundedDoNotTouch02),
+                       buildDetailSectionIconStatus(
+                    'Status',
+                    violation?.status ?? '',
+                    violation?.status,
+                  ),
                   buildDetailSection(
                       'Street Speed',
                       '${violation?.Maxspeed ?? ''} Km/h',
@@ -601,7 +606,62 @@ class _ViolationdetailState extends State<Violationdetail> {
         return '${sum}th';
     }
   }
+  Widget buildDetailSectionIconStatus(
+      String title, String? content, String? status) {
+    Color circleColor;
 
+    switch (status) {
+      case 'Revoked':
+        circleColor =  Colors.red;
+        break;
+      default:
+        circleColor = Colors.green;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            SizedBox(
+              width: 25,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: circleColor,
+                  shape: BoxShape.circle,
+                ),
+                width: 10,
+                height: 10,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                title,
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF211D1D),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.only(left: 32),
+          child: Text(
+            content ?? '',
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              color: Color(0xFF211D1D),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
   void submitComplaint() {
     Navigator.of(context).pop();
   }

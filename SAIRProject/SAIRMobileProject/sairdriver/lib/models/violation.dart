@@ -54,7 +54,7 @@ class Violation {
       Vid: parsedJSON['violationID'].toString(),
       driverId: parsedJSON['driverID'].toString(),
       gspNumber: parsedJSON['GPSnumber'].toString(),
-        status: parsedJSON['status'].toString(),
+        status: parsedJSON['Status'].toString(),
       location: parsedJSON['location'] as String?, 
       position: parsedJSON['position'] != null
           ? GeoPoint(
