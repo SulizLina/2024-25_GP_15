@@ -159,7 +159,7 @@ class _ViolationdetailState extends State<Violationdetail> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    hasComplaint
+                    hasComplaint //the use the intial delaration of the variable (which is not correct !)
                         ? 'You can raise one complaint within 30 days'
                         : 'A complaint has already been raised for this violation',
                     style: GoogleFonts.poppins(
