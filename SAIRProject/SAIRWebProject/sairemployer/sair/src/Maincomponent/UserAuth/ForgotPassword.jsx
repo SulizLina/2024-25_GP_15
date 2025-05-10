@@ -9,6 +9,7 @@ import s from "../../css/ForgotPassword.module.css"
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { Modal } from 'antd';
 import '../../css/CustomModal.css';
+import { useLocation } from 'react-router-dom';
 
 const ForgetPassword = () => {
   const [email, setEmail] = useState('');
@@ -19,6 +20,9 @@ const ForgetPassword = () => {
   const [canRequestAgain, setCanRequestAgain] = useState(true); // Track if the user can request again
   const [timer, setTimer] = useState(60); // Timer for 1 minute
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const role = queryParams.get('role'); // Retrieve the role parameter
 
   function validEmail(email) {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -43,11 +47,12 @@ const ForgetPassword = () => {
     }
 
     try {
+      if (role === 'employer') {
       const q = query(collection(db, 'Employer'), where('CompanyEmail', '==', email));
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
-        setValidationMessages({ emailError: 'The email is not invalid' });
+        setValidationMessages({ emailError: 'The email is invalid' });
       } else {
         const auth = getAuth();
         await sendPasswordResetEmail(auth, email);
@@ -58,6 +63,25 @@ const ForgetPassword = () => {
         // Start the timer
         setCanRequestAgain(false);
         setTimer(60);
+      }}
+      else  if (role === 'gdt') {
+        const q = query(collection(db, 'GDT'), where('GDTEmail', '==', email));
+        const querySnapshot = await getDocs(q);
+  
+        if (querySnapshot.empty) {
+          setValidationMessages({ emailError: 'The email is invalid' });
+        } else {
+          const auth = getAuth();
+          await sendPasswordResetEmail(auth, email);
+          setPopupVisible(true);
+          setPopupImage(successImage);
+          setPopupMessage("Password reset email sent!");
+  
+          // Start the timer
+          setCanRequestAgain(false);
+          setTimer(60);
+        }
+
       }
     } catch (error) {
       setPopupMessage('Failed to verify email. Please try again.');

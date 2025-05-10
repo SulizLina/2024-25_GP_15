@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
-import { Table } from 'antd';
+import { Table, Button } from 'antd';
 import { db } from '../firebase';
 import Header from './Header';
 import s from "../css/VDriver.module.css";
+import { FaEye } from "react-icons/fa";
 import EyeIcon from '../images/eye.png';
 import '../css/CustomModal.css';
+import { ArrowLeftOutlined } from "@ant-design/icons";
 
 const VMotorcycle  = () => {
   const { motorcycleId } = useParams(); // Get motorcycleId from URL parameters
@@ -38,7 +40,16 @@ const VMotorcycle  = () => {
 
     fetchViolations();
   }, [motorcycleId]);
-
+  const goBack = () => {
+    navigate(-1); // Navigates to the previous page
+  };
+  const formatDate = (time) => {
+    const date = new Date(time * 1000); // Assuming timestamp is in seconds
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based
+    const day = date.getDate().toString().padStart(2, '0'); // Days are 1-based
+    return `${month}/${day}/${year}`; // Format as MM/DD/YYYY
+  };
   const columns = [
     {
       title: 'Violation ID',
@@ -71,16 +82,34 @@ const VMotorcycle  = () => {
       align: 'center',
     },
     {
-      title: 'Actions',
+      title: 'Date',
+      key: 'date',
+      align: 'center',
+      render: (text, record) => formatDate(record.time),
+    },
+    {
+      title: 'Details',
       key: 'actions',
       align: 'center',
       render: (_, record) => (
-        <Link to={`/violation/detail/${record.id}`}
-        state={{ from: 'motorcycle' }}>
-          <img style={{ cursor: 'pointer' }} src={EyeIcon} alt="Details" />
-        </Link>
+          <Link 
+              to={`/violation/detail/${record.id}`} 
+              state={{ 
+                  from: 'motorcycle',  
+                  breadcrumbParam: 'motorcycle', 
+                  motorcycleId: motorcycleId 
+              }}
+          >
+              <FaEye
+                  style={{
+                      cursor: 'pointer',
+                      color: '#059855',
+                      fontSize: '24px',
+                  }}
+              />
+          </Link>
       ),
-    },
+  },
   ];
 
   if (error) {
@@ -104,6 +133,19 @@ const VMotorcycle  = () => {
       <div className={s.container}>
         <h2 className={s.title}>Violations for Motorcycle ID: {motorcycleId}</h2>
         <Table dataSource={violations} columns={columns} rowKey="id" />
+        </div>
+        <div style={{marginLeft:'250px', marginTop:'-60px'}}>
+        <Button
+                          onClick={goBack}
+                          style={{
+                            height: "60px",
+                            fontSize: "15px",
+                            color: "#059855",
+                            borderColor: "#059855",
+                          }}
+                        >
+                          <ArrowLeftOutlined style={{ marginRight: "8px" }} /> Go Back
+                        </Button>
       </div>
     </>
   );

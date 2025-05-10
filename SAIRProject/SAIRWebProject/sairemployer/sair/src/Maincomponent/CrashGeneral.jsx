@@ -59,7 +59,7 @@ const CrashGeneral = () => {
     }, [crashId]);
   
     const goBack = () => {
-      navigate(-1); // Navigate back to the previous page
+      navigate(-2); // Navigate back to the previous page
     };
   
     const formatDate = (time) => {
@@ -114,7 +114,18 @@ const CrashGeneral = () => {
     <path d="M19 17C19 17.8284 18.3284 18.5 17.5 18.5C16.6716 18.5 16 17.8284 16 17C16 16.1716 16.6716 15.5 17.5 15.5C18.3284 15.5 19 16.1716 19 17ZM19 17V17.5C19 18.3284 19.6716 19 20.5 19C21.3284 19 22 18.3284 22 17.5V17C22 14.5147 19.9853 12.5 17.5 12.5C15.0147 12.5 13 14.5147 13 17C13 19.4853 15.0147 21.5 17.5 21.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
 </svg>
 Email</h3>
-                        <p style={{fontSize:'18px', marginLeft:'45px'}}>{driverDetails.Email}</p>
+                        <p style={{fontSize:'18px', marginLeft:'45px'}}> <a
+    href={`mailto:${driverDetails.Email}`}
+    style={{
+      color: 'black', 
+      textDecoration: 'underline', 
+      transition: 'color 0.3s', 
+    }}
+    onMouseEnter={(e) => (e.currentTarget.style.color = 'green')} 
+    onMouseLeave={(e) => (e.currentTarget.style.color = 'black')} 
+  >
+    {driverDetails.Email}
+  </a></p>
 
             <hr /> 
 
@@ -175,7 +186,7 @@ Email</h3>
               <p style={{ fontSize: '18px', marginLeft: '45px' }}>{currentCrash.crashID}</p>
 
               <h3 style={{ color: "#059855", fontWeight: 'bold', fontSize: '20px' }}>   <span style={{ 
-    backgroundColor: currentCrash.Status === 'Confirmed' ? 'green' : 'red', // Set backgroundColor
+    backgroundColor: currentCrash.Status === "Emergency SOS" ? "red" : "green", // Set backgroundColor
     marginRight: '20px',
     marginLeft:'5px',
     borderRadius: '50%', 
@@ -224,7 +235,7 @@ Email</h3>
             <hr />
             <div style={{ marginBottom: '80px' }}>
               <Button onClick={goBack} style={{
-                float: 'right', marginBottom: '100px', width: 'auto',
+                float: 'left', marginBottom: '100px', width: 'auto',
                 height: '60px', fontSize: '15px', color: '#059855', borderColor: '#059855'
               }}>
                 <ArrowLeftOutlined style={{ marginRight: '8px' }} /> Go Back

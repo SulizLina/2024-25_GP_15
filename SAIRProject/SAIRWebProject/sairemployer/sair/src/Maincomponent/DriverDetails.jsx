@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { collection, query, where, getDocs, getDoc, doc } from 'firebase/firestore';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { db, auth } from '../firebase'; 
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Button, Dropdown, Menu, Modal } from 'antd'; 
@@ -19,7 +19,7 @@ const DriverDetails = () => {
   const [error, setError] = useState(null);
   const [currentEmployerCompanyName, setCurrentEmployerCompanyName] = useState('');
   const employerUID = sessionStorage.getItem('employerUID');
-
+  const location = useLocation();
 
   useEffect(() => {
     const fetchEmployerCompanyName = async () => {
@@ -47,6 +47,7 @@ const DriverDetails = () => {
           await fetchViolations(driverData.DriverID);
         } else {
           setError('No driver found with this ID.');
+          console.log("______________________________________________________________",DriverDetails);
         }
       } catch (error) {
         setError('Failed to fetch driver details.');
@@ -100,21 +101,31 @@ const DriverDetails = () => {
   const goBack = () => {
     navigate(-1); // Navigate back to the previous page
   };
+  const fromHeatmap = location.state?.from === "Heatmap";
 
  
   return (
     <div>
       
-      <Header active={"driverslist"} />
+    <Header active={fromHeatmap ? "EmployerHeatMap" : "driverslist"} />
 
       <div className="breadcrumb">
         <a onClick={() => navigate('/employer-home')}>Home</a>
         <span> / </span>
-        <a onClick={() => navigate('/driverslist')}>Drivers List</a>
-        <span> / </span>
-        <a onClick={() => navigate('/driver-details/:driverId')}>Drivers Details</a>
-
+        {fromHeatmap ? (
+          <>
+            <a onClick={() => navigate('/heat-map')}>Heat Map</a>
+            <span> / </span>
+          </>
+        ) : (
+          <>
+            <a onClick={() => navigate('/driverslist')}>Drivers List</a>
+            <span> / </span>
+          </>
+        )}
+        <a onClick={() => navigate(`/driver-details/${driverId}`)}>Driver Details</a>
       </div>
+
 
       <main className={s.detail} >
         <h2 className="title">Driver Details</h2>
@@ -151,7 +162,18 @@ const DriverDetails = () => {
     <path d="M19 17C19 17.8284 18.3284 18.5 17.5 18.5C16.6716 18.5 16 17.8284 16 17C16 16.1716 16.6716 15.5 17.5 15.5C18.3284 15.5 19 16.1716 19 17ZM19 17V17.5C19 18.3284 19.6716 19 20.5 19C21.3284 19 22 18.3284 22 17.5V17C22 14.5147 19.9853 12.5 17.5 12.5C15.0147 12.5 13 14.5147 13 17C13 19.4853 15.0147 21.5 17.5 21.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
 </svg>
 Email</h3>
-                        <p style={{fontSize:'18px', marginLeft:'45px'}}>{driverDetails.Email}</p>
+                        <p style={{fontSize:'18px', marginLeft:'45px'}}> <a
+    href={`mailto:${driverDetails.Email}`}
+    style={{
+      color: 'black', // Default color
+      textDecoration: 'underline', // Underline the text
+      transition: 'color 0.3s', // Smooth transition for color change
+    }}
+    onMouseEnter={(e) => (e.currentTarget.style.color = 'green')} // Change color on hover
+    onMouseLeave={(e) => (e.currentTarget.style.color = 'black')} // Revert color on mouse leave
+  >
+    {driverDetails.Email}
+  </a></p>
                     <br/>
 
                         <h3 style={{
@@ -207,28 +229,30 @@ Email</h3>
             ) : (
               <p>No motorcycles associated with this driver.</p> 
             )}
-            <button onClick={handleViewViolations} style={{
-              backgroundColor: '#059855',
-              color: 'white',
-              border: 'none',
-              borderRadius: '50px',
-              alignItems: 'center',
-              cursor: 'pointer',
-              padding: '20px 10px',
-              width: 'auto',
-              height: '60px',
-              fontFamily: 'Open Sans',
-            }}>    <i className="fas fa-eye" style={{ marginRight: '8px' }}></i>
-
-              View Violations
-            </button>
-
+            <div style={{ marginBottom: "90px" }}>
             <Button onClick={goBack} style={{
-              float: 'right', marginBottom: '100px', width: 'auto',
+              float: 'left', marginBottom: '100px', width: 'auto',
               height: '60px', fontSize: '15px', color: '#059855', borderColor: '#059855'
             }}>
               <ArrowLeftOutlined style={{ marginRight: '8px' }} /> Go Back
             </Button>
+            {/* View Violation Button */}
+                                <Button
+                                    onClick={handleViewViolations}
+                                    style={{
+                                        float: "right",
+                                        width: "auto",
+                                        height: "60px",
+                                        fontSize: "15px",
+                                        color: "#059855",
+                                        borderColor: "#059855",
+                                      }}
+                                >
+                                    <i className="fas fa-eye" style={{ marginRight: "8px" }}></i>
+                                    View Violation
+                                </Button>
+                                </div>
+            
           </>
         ) : null}
       </main>

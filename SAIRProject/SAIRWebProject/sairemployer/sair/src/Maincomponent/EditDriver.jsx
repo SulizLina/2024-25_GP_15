@@ -152,6 +152,9 @@ const EditDriver = () => {
     const previousGPS = oldDriverData.GPSnumber;
     const newGPS = values.GPSnumber;
 
+    setDriverData(values);
+    setOldDriverData(values);
+
     try {
       // Step 1: Check if DriverID has changed
       if (values.DriverID !== originalDriverID) {
@@ -229,10 +232,6 @@ const EditDriver = () => {
 
       const driverDocRef = querySnapshot.docs[0].ref;
 
-      console.log(' driverDocRef:', driverDocRef);
-      console.log('Updated driver data:', updatedData);
-
-
 
       await updateDoc(driverDocRef, updatedData);
       showNotification("Driver updated successfully!", true);
@@ -240,7 +239,7 @@ const EditDriver = () => {
       // Redirect to Driver List after a short delay
       setTimeout(() => {
         navigate('/driverslist');
-      }, 2000);
+      }, 5000);
     } catch (error) {
       console.error('Error updating driver:', error);
       showNotification(`Error updating driver: ${error.message}`, false);
@@ -550,9 +549,17 @@ const EditDriver = () => {
                 </div>
 
                 <div>
+                <button
+                                onClick={() => { navigate('/driverslist');}}
+                                className={s.profileCancel}
+                               
+                            >
+                                Cancel
+                            </button>
                   <button type="submit" className={s.editBtn}>
                     Update Driver
                   </button>
+                 
                 </div>
               </form>
             )}

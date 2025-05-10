@@ -66,7 +66,7 @@ const SignUp = () => {
 
   const fetchRegistrationInfo = async (commercialnumber) => {
     try {
-       const API_KEY='JKTStpvvTxlb9fL0qWXeK0Uj7iMBAzmC';
+       const API_KEY='McHbsOD0yY9dfuAy6aBOexEHz1W7aGSN';
         const response = await axios.get(
           `https://api.wathq.sa/v5/commercialregistration/info/${commercialnumber}`, 
             {

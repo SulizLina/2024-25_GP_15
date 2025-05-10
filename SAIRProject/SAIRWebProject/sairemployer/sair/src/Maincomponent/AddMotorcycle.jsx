@@ -233,7 +233,7 @@ const generateMotorcycleID = async (gpsNumber) => {
         <a onClick={() => navigate('/add-motorcycle')}>Add Motorcycle</a>
       </div>
 
-      <main className={s.container}>
+<div className={s.container}>
         <h2 className='title'>Add Motorcycle</h2>
         <form onSubmit={handleSubmit}>
           <div className={s.formRow}> 
@@ -306,6 +306,15 @@ const generateMotorcycleID = async (gpsNumber) => {
 >
   <option value="" disabled>Select a Driver</option> {/* Disabled placeholder option */}
   <option value={null}>None</option> {/* This will be treated as null */}
+  {motorcycle.DriverID && motorcycle.DriverID !== '' && (
+                  <option
+                    selected
+                    value={motorcycle.DriverID}
+                    key={motorcycle.DriverID}
+                  >
+                    {motorcycle.DriverID}
+                  </option>
+                )}
   {availableDrivers.length > 0 ? (
     availableDrivers.map(({ value, label }) => (
       <option key={value} value={value}>
@@ -321,12 +330,19 @@ const generateMotorcycleID = async (gpsNumber) => {
           </div>
 
           <div>
+            <button
+                onClick={() => { navigate('/motorcycleslist');}}
+                className={s.profileCancel}
+               
+            >
+                Cancel
+            </button>
             <button type="submit" className={s.editBtn}>
               Add Motorcycle
             </button>
           </div>
         </form>
-      </main>
+      </div>
 
 
 {popupVisible && (

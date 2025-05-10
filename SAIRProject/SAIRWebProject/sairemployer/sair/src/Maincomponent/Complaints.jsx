@@ -3,11 +3,14 @@ import { db } from '../firebase';
 import { Link, useNavigate } from 'react-router-dom';
 import { collection, onSnapshot, doc, getDoc, query, where } from 'firebase/firestore';
 import EyeIcon from '../images/eye.png';
+import { FaEye } from 'react-icons/fa';
 import { Table, Select } from 'antd';
 import Header from './Header';
 import { FaFilter } from 'react-icons/fa';
-import s from "../css/ComplaintList.module.css"; // CSS module for ComplaintList
+import s from "../css/ComplaintList.module.css"; 
 import '../css/CustomModal.css';
+import c from "../css/CrashList.module.css";
+
 
 const ComplaintList = () => {
   const [motorcycles, setMotorcycles] = useState({});
@@ -16,8 +19,15 @@ const ComplaintList = () => {
   const [selectedStatus, setSelectedStatus] = useState(''); // State for selected status
   const navigate = useNavigate();
   const [searchDate, setSearchDate] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   const employerUID = sessionStorage.getItem('employerUID');
+
+    // State to track viewed complaints
+    const [viewedComplaints, setViewedComplaints] = useState(() => {
+      const storedViewedComplaints = localStorage.getItem('viewedComplaints');
+      return storedViewedComplaints ? JSON.parse(storedViewedComplaints) : {};
+    });
 
   useEffect(() => {
     const fetchDriversAndComplaints = async () => {
@@ -107,8 +117,18 @@ const ComplaintList = () => {
     const matchesStatus = selectedStatus ? complaint.Status === selectedStatus : true;
     const matchesDate = searchDate ? complaintDate === searchDate : true;
 
-    return matchesStatus && matchesDate;
+    
+    const driverId = complaint.driverID;
+    const licensePlate = motorcycles[complaint.ViolationID] || " ";
+
+    const matchesSearchQuery =
+      driverId.includes(searchQuery) ||
+      licensePlate.toLowerCase().includes(searchQuery.toLowerCase());
+
+
+    return matchesStatus && matchesDate && matchesSearchQuery;
   });
+
 
   const columns = [
     {
@@ -144,13 +164,22 @@ const ComplaintList = () => {
       },
     },
     {
-      title: 'Details',
+      title: 'Date',
+      key: 'date',
+      align: 'center',
+      render: (text, record) => 
+        record.DateTime ? new Date(record.DateTime.seconds * 1000).toLocaleDateString() : '',
+    },
+    {
+      title: 'Complaint Details',
       key: 'Details',
       align: 'center',
       render: (text, record) => (
         <Link to={`/complaint/general/${record.id}`}>
-          <img style={{ cursor: 'pointer' }} src={EyeIcon} alt="Details" />
-        </Link>
+        <FaEye
+          style={{ cursor: 'pointer', fontSize: '1.5em', color: '#059855' }} 
+        />
+                </Link>
       ),
     },
   ];
@@ -168,33 +197,191 @@ const ComplaintList = () => {
           <div className={s.searchHeader}>
             <h2 className={s.title}>Complaints List</h2>
             <div className={s.searchInputs}>
-            <div className={s.searchContainer}>
-  <div className={s.selectWrapper}>
-    <FaFilter className={s.filterIcon} />
-    <select
-  className={s.customSelect}
-  onChange={event => setSelectedStatus(event.target.value)}
-  defaultValue=""
->
-  <option value="" disabled>
-    Filter by Status
-  </option>
-  <option value="">All</option>
-  <option value="Pending">Pending</option>
-  <option value="Accepted">Accepted</option>
-  <option value="Rejected">Rejected</option>
-</select>
-  </div>
-</div>
               <div className={s.searchContainer}>
+                <svg
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke="#059855"
+                    strokeLinecap="round"
+                    strokeWidth="2"
+                    d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
+                  />
+                </svg>
+
                 <input
-                  type="date"
-                  value={searchDate}
-                  className={s.dateInput}
-                  onChange={(e) => setSearchDate(e.target.value)}
-                  style={{ width: '120px', backgroundColor: 'transparent' }}
+                  type="text"
+                  placeholder="Search by Driver ID or License Plate"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{ width: "235px", height: "20px" }}
                 />
               </div>
+              
+  <div className={s.searchContainer}>
+  <div className={s.selectWrapper}>
+    <FaFilter style={{ width: '26px' }} className={s.filterIcon} />
+    <div style={{ position: 'relative', width: '280px' }}>
+      <div 
+        style={{
+          position: 'absolute',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          color: 'grey', // Grey color for selected status and placeholder
+          pointerEvents: 'none', // Prevent clicking on the placeholder
+          fontSize: '14px',
+          zIndex: 1, // Ensure it appears above the select
+
+        }}
+      >
+        {selectedStatus && selectedStatus !== "All" ? selectedStatus : 'Filter by Status'}
+      </div>
+      <select
+        className={s.customSelect}
+        onChange={event => {
+          const value = event.target.value;
+          setSelectedStatus(value === "All" ? "" : value); // Reset to empty string if "All" is selected
+        }}
+        defaultValue=""
+        style={{
+          width: "135%", // Adjust width to fit the container
+          height: "40px", // Increased height for better spacing
+          left:'-37px',
+          fontSize: "14px",
+          color: 'transparent', // Hide the default text color
+          appearance: 'none', // Remove default arrow
+          background: 'transparent', // Set background to transparent
+          border: 'none', // No border
+          borderRadius: '4px', // Rounded corners
+          paddingLeft: '10px', // Add space for placeholder
+          paddingRight: '30px', // Space for the arrow
+          paddingTop: '10px', // Padding to avoid overlap
+          paddingBottom: '10px',
+          boxSizing: 'border-box', // Ensure padding is included in total height
+          zIndex: 1,
+        }}
+      >
+        <option value="" disabled hidden></option>
+        <option value="All" style={{ color: 'black' }}>All</option>
+        <option value="Accepted" style={{ color: 'black' }}>Accepted</option>
+        <option value="Pending" style={{ color: 'black' }}>Pending</option>
+        <option value="Rejected" style={{ color: 'black' }}>Rejected</option>
+      </select>
+      <div className={s.customArrow} style={{ 
+        position: 'absolute', 
+        top: '50%', 
+        right: '10px', 
+        transform: 'translateY(-50%)',
+        color: '#1c7a50', // Arrow color
+        fontSize: '14px' // Adjust size if needed
+      }}>
+        ▼
+      </div>
+    </div>
+  </div>
+</div>
+<div
+  className={c.searchContainerdate}
+  style={{ position: "relative" }}
+>
+  <div>
+    {/* Conditional rendering for the green circle with tick */}
+    {searchDate && (
+      <div style={{
+        position: "absolute",
+        top: "-1px",  // Adjust to position it higher
+        right: "-1px",  // Adjust to position it to the right
+        width: "16px",  // Smaller size for better fit
+        height: "16px", // Smaller size for better fit
+        borderRadius: "50%",
+        backgroundColor: "#059855",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        color: "white",
+        fontSize: "12px", // Slightly smaller font size
+        zIndex: 1, // Ensure it appears in front
+
+      }}>
+        ✓ 
+      </div>
+    )}
+
+    {/* Your SVG Icon */}
+    <svg
+      onClick={() => document.getElementById("date-input").focus()}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{
+        position: "absolute",
+        top: "50%",
+        left: "1px",
+        transform: "translateY(-50%)",
+        cursor: "pointer",
+        width: "40px", // Adjusted width
+        height: "40px", // Adjusted height
+      }}
+    >
+      <path
+        d="M18 2V4M6 2V4"
+        stroke="#059855"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M11.9955 13H12.0045M11.9955 17H12.0045M15.991 13H16M8 13H8.00897M8 17H8.00897"
+        stroke="#059855"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M3.5 8H20.5"
+        stroke="#059855"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M2.5 12.2432C2.5 7.88594 2.5 5.70728 3.75212 4.35364C5.00424 3 7.01949 3 11.05 3H12.95C16.9805 3 18.9958 3 20.2479 4.35364C21.5 5.70728 21.5 7.88594 21.5 12.2432V12.7568C21.5 17.1141 21.5 19.2927 20.2479 20.6464C18.9958 22 16.9805 22 12.95 22H11.05C7.01949 22 5.00424 22 3.75212 20.6464C2.5 19.2927 2.5 17.1141 2.5 12.7568V12.2432Z"
+        stroke="#059855"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M3 8H21"
+        stroke="#059855"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+
+    <input
+      id="date-input"
+      type="date"
+      value={searchDate}
+      onChange={(e) => setSearchDate(e.target.value)}
+      style={{
+        width: "100%",
+        height: "40px", // Adjusted height
+        fontSize: "16px",
+        paddingLeft: "40px", // Add padding to avoid overlap with the icon
+        backgroundColor: "transparent",
+        border: "0px solid #ccc",
+        borderRadius: "4px",
+      }}
+    />
+  </div>
+</div>
             </div>
           </div>
 
@@ -203,6 +390,16 @@ const ComplaintList = () => {
             dataSource={filteredComplaints}
             rowKey="id"
             pagination={{ pageSize: 5 }}
+            onRow={(record) => ({
+              style: {
+                backgroundColor: !viewedComplaints[record.id] ? '#d0e0d0' : 'transparent',
+              },
+              onClick: () => {
+                const updatedViewedComplaints = { ...viewedComplaints, [record.id]: true };
+                setViewedComplaints(updatedViewedComplaints);
+                localStorage.setItem('viewedComplaints', JSON.stringify(updatedViewedComplaints));
+              },
+            })}
           />
         </div>
       </main>

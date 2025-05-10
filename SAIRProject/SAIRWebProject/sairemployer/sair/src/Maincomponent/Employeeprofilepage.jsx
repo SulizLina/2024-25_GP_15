@@ -472,7 +472,7 @@ const Profile = () => {
         <a onClick={() => navigate('/employee-profile')}>Profile</a>
       </div>
 <div className={s.forme}>
-      <main className={s.container}>
+      <div className={s.container}>
         <form onSubmit={handleSave} noValidate>
           <h2 className='title'>My Profile</h2>
 
@@ -684,7 +684,7 @@ const Profile = () => {
         </div>
       </Modal>
 
-      </main></div></div>
+      </div></div></div>
   );
 };
 

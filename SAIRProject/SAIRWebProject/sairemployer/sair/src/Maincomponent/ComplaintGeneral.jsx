@@ -11,11 +11,12 @@ const ComplaintGeneral = () => {
     const [currentComplaint, setCurrentComplaint] = useState({});
     const [driverDetails, setDriverDetails] = useState({});
     const { complaintId } = useParams();
+    const [violationDocId, setViolationDocId] = useState(null);
     const location = useLocation();
     const navigate = useNavigate();
     const from = location.state?.from; // Get the source of navigation
     const violationId = location.state?.violationId; // Get violationId from state
-
+    const { motorcycleId } = location.state || {};
 
     useEffect(() => {
         const fetchComplaintDetails = async () => {
@@ -26,6 +27,20 @@ const ComplaintGeneral = () => {
                     const complaintData = complaintDoc.data();
                     setCurrentComplaint(complaintData);
     
+                    const violationQuery = query(
+                        collection(db, "Violation"),
+                        where("violationID", "==", complaintData.ViolationID) // Querying by the violationID field
+                      );
+                
+                      const violationSnapshot = await getDocs(violationQuery);
+                      if (!violationSnapshot.empty) {
+                        // Assuming there's only one document with that violationID
+                        const violationDoc = violationSnapshot.docs[0];
+                        setViolationDocId(violationDoc.id); // Store the document ID
+                        console.log("Violation document found:", violationDoc.data());
+                      } else {
+                        console.error("Violation document not found for ID:", complaintData.ViolationID);
+                      }
                     // Fetch driver details using the driver's ID
                     const driverCollection = query(
                         collection(db, 'Driver'),
@@ -53,6 +68,21 @@ const ComplaintGeneral = () => {
         navigate(-1); // Navigate back to the previous page
     };
 
+    const viewViolation = () => {
+        if (violationDocId) {
+            navigate(`/violation/general/${violationDocId}`, {
+                state: {
+                    from: "ComplaintGeneral",
+                    breadcrumbParam: "ComplaintGeneral",
+                    complaintId: complaintId,
+                    previousList: "violations", // Set this to indicate the source is violations
+                },
+            });
+        } else {
+            console.error("No violation document ID found.");
+        }
+    };
+
     const formatDateTime = (timestamp) => {
         if (timestamp && timestamp.seconds) {
             const date = new Date(timestamp.seconds * 1000);
@@ -62,13 +92,21 @@ const ComplaintGeneral = () => {
     };
   // Determine the active state for the Header
   let activeHeader;
-  if (from === 'ViolationDetails') {
-    activeHeader = location.state?.previousList || 'complaints'; // Default to 'complaints' if not set
+  if (from === 'ViolationDetails' || location.state?.previousList === 'violations') {
+      activeHeader = 'violations'; // Set to violations if coming from ViolationDetails
   } else if (from === 'ViolationGeneral') {
-    activeHeader = 'violations';
+      activeHeader = 'violations';
+  } else if (from === 'RecklessDriversList') {
+      activeHeader = 'violations'; // Set active to violations if coming from ViolationList
+    } else if (from === 'driverslist') {
+        activeHeader = 'driverslist'; // Set active to violations if coming from ViolationList
+    } else if (from === 'motorcycleslist') {
+    activeHeader = 'motorcycleslist';
   } else {
-    activeHeader = 'complaints'; // Default case
+      activeHeader = 'complaints'; // Default case
   }
+
+  const { driverId } = location.state || {}; 
     return (
         
 <div>
@@ -77,39 +115,97 @@ const ComplaintGeneral = () => {
         <Header active={activeHeader} />
 
         <div className="breadcrumb">
-            <a onClick={() => navigate('/employer-home')}>Home</a>
+    <a onClick={() => navigate('/employer-home')}>Home</a>
+    <span> / </span>
+    {from === 'ViolationGeneral' && (
+        <>
+            <a onClick={() => navigate('/violations')}>Violations List</a>
             <span> / </span>
-            {from === 'ViolationGeneral' && (
-                <>
-                    <a onClick={() => navigate('/violations')}>Violations List</a>
-                    <span> / </span>
-                    <a onClick={() => navigate(`/violation/general/${violationId}`)}>Violation Details</a>
-                    <span> / </span>
-                    <a onClick={() => navigate(`/complaint/general/${complaintId}`)}>Complaint Details</a>
-                </>
-            )}
-            {from === 'ViolationDetails' && (
-                <>
+            <a onClick={() => navigate(`/violation/general/${violationId}`)}>Violation Details</a>
+            <span> / </span>
+            <a onClick={() => navigate(`/complaint/general/${complaintId}`)}>Complaint Details</a>
+        </>
+    )}
+    {from === 'ViolationDetails' && (
+        <>
+            <a onClick={() => navigate('/driverslist')}>Driver List</a>
+            <span> / </span>
+            <a onClick={() => navigate(`/driver-details/${driverDetails.DriverID}`)}>Drivers Details</a>
+            <span> / </span>
+            <a onClick={() => navigate(`/drivers/${driverDetails.DriverID}/violations`)}>Violations List</a>
+            <span> / </span>
+            <a onClick={() => navigate(`/violation/detail/${violationId}`)}>Violation Details</a>
+            <span> / </span>
+            <a onClick={() => navigate(`/complaint/general/${complaintId}`)}>Complaint Details</a>
+        </>
+    )}
+    {from === 'ViolationList' && (
+        <>
+            <a onClick={() => navigate('/violations')}>Violations List</a>
+            <span> / </span>
+            <a onClick={() => navigate(`/complaint/general/${complaintId}`)}>Complaint Details</a>
+        </>
+    )}
+    {from === 'RecklessDriversList' && ( // Adjusted case for Reckless Drivers List
+        <>
+            <a onClick={() => navigate('/violations')}>Violations List</a>
+            <span> / </span>
+            <a onClick={() => navigate('/recklessdrivers')}>Reckless Drivers List</a>
+            <span> / </span>
+            <a onClick={() => navigate(`/drivers/${driverDetails.DriverID}/violations`)}>Driver Violations List</a>
+            <span> / </span>
+            <a onClick={() => navigate(`/violation/detail/${violationId}`)}>Violation Details</a>
+            <span> / </span>
+            <a onClick={() => navigate(`/complaint/general/${complaintId}`)}>Complaint Details</a>
+        </>
+    )}
+        {from === 'driverslist' && ( // Adjusted case for Reckless Drivers List
+        <>
+            <a onClick={() => navigate("/driverslist")}>Driver List</a>
+            <span> / </span>
+            <a onClick={() => navigate(`/driver-details/${driverId}`)}>
+              Drivers Details
+            </a>           
+            <span> / </span>
+            <a
+          onClick={() =>
+            navigate(`/drivers/${driverId}/violations`, {
+              state: { breadcrumbParam: "Driver Violations List" },
+            })
+          }
+        >
+          Driver Violations List
+        </a>
+        <span> / </span>
+            <a onClick={() => navigate(`/violation/detail/${violationId}`)}>Violation Details</a>
+            <span> / </span>
+            <a onClick={() => navigate(`/complaint/general/${complaintId}`)}>Complaint Details</a>
+        </>
+    )}
+            {from === 'motorcycleslist' && (
+        <>
+            <a onClick={() => navigate('/motorcycleslist')}>Motorcycles List</a>
+            <span> / </span>
+            <a onClick={() => navigate(`/motorcycle-details/${motorcycleId}`)}>
+              Motorcycle Details
+            </a>
+            <span> / </span>
+            <a>Violations List</a>
+            <span> / </span>
+            <a>Violation Details</a>
+            <span> / </span>
+            <a>Complaint Details</a>
+          </>
+    )}
+    {!from && (
+        <>
+            <a onClick={() => navigate('/complaints')}>Complaints List</a>
+            <span> / </span>
+            <a onClick={() => navigate(`/complaint/general/${complaintId}`)}>Complaint Details</a>
+        </>
+    )}
+</div>
 
-               <a onClick={() => navigate('/driverslist')}>Driver List</a>
-              <span> / </span>
-                <a onClick={() => navigate(`/driver-details/${driverDetails.DriverID}`)}>Drivers Details</a>
-                <span> / </span>
-                <a onClick={() => navigate(`/drivers/:driverId/violations`)}>Violations List</a>
-               <span> / </span>
-               <a onClick={() => navigate(`/violation/detail/${violationId}`)}>Violation Details</a>
-              <span> / </span>
-              <a onClick={() => navigate(`/complaint/general/${complaintId}`)}>Complaint Details</a>
-                </>
-            )}
-            {!from && (
-                <>
-                    <a onClick={() => navigate('/complaints')}>Complaints List</a>
-                    <span> / </span>
-                    <a onClick={() => navigate(`/complaint/general/${complaintId}`)}>Complaint Details</a>
-                </>
-            )}
-        </div>
     </div>
 
 
@@ -143,7 +239,18 @@ const ComplaintGeneral = () => {
     <path d="M19 17C19 17.8284 18.3284 18.5 17.5 18.5C16.6716 18.5 16 17.8284 16 17C16 16.1716 16.6716 15.5 17.5 15.5C18.3284 15.5 19 16.1716 19 17ZM19 17V17.5C19 18.3284 19.6716 19 20.5 19C21.3284 19 22 18.3284 22 17.5V17C22 14.5147 19.9853 12.5 17.5 12.5C15.0147 12.5 13 14.5147 13 17C13 19.4853 15.0147 21.5 17.5 21.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
 </svg>
 Email</h3>
-                        <p style={{fontSize:'18px', marginLeft:'45px'}}>{driverDetails.Email}</p>
+                        <p style={{fontSize:'18px', marginLeft:'45px'}}> <a
+    href={`mailto:${driverDetails.Email}`}
+    style={{
+      color: 'black', // Default color
+      textDecoration: 'underline', // Underline the text
+      transition: 'color 0.3s', // Smooth transition for color change
+    }}
+    onMouseEnter={(e) => (e.currentTarget.style.color = 'green')} // Change color on hover
+    onMouseLeave={(e) => (e.currentTarget.style.color = 'black')} // Revert color on mouse leave
+  >
+    {driverDetails.Email}
+  </a></p>
 
 
                             <hr  />
@@ -197,21 +304,54 @@ Email</h3>
                         </h3>
                         <p style={{ fontSize: '18px', marginLeft: '45px' }}>{currentComplaint.Status}</p>
 
+ {/* Reason Section */}
+ <h3 style={{ color: "#059855", fontWeight: 'bold', fontSize: '20px' }}> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="35" height="35" style={{marginBottom:'-5px', marginRight:'10px'}} color="#059855"fill="none">
+    <path d="M13 20.8268V22H14.1734C14.5827 22 14.7874 22 14.9715 21.9238C15.1555 21.8475 15.3003 21.7028 15.5897 21.4134L20.4133 16.5894C20.6864 16.3164 20.8229 16.1799 20.8959 16.0327C21.0347 15.7525 21.0347 15.4236 20.8959 15.1434C20.8229 14.9961 20.6864 14.8596 20.4133 14.5866C20.1403 14.3136 20.0038 14.1771 19.8565 14.1041C19.5763 13.9653 19.2473 13.9653 18.9671 14.1041C18.8198 14.1771 18.6833 14.3136 18.4103 14.5866L18.4103 14.5866L13.5867 19.4106C13.2972 19.7 13.1525 19.8447 13.0762 20.0287C13 20.2128 13 20.4174 13 20.8268Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+    <path d="M19 11C19 11 19 9.4306 18.8478 9.06306C18.6955 8.69552 18.4065 8.40649 17.8284 7.82843L13.0919 3.09188C12.593 2.593 12.3436 2.34355 12.0345 2.19575C11.9702 2.165 11.9044 2.13772 11.8372 2.11401C11.5141 2 11.1614 2 10.4558 2C7.21082 2 5.58831 2 4.48933 2.88607C4.26731 3.06508 4.06508 3.26731 3.88607 3.48933C3 4.58831 3 6.21082 3 9.45584V14C3 17.7712 3 19.6569 4.17157 20.8284C5.23467 21.8915 6.8857 21.99 10 21.9991M12 2.5V3C12 5.82843 12 7.24264 12.8787 8.12132C13.7574 9 15.1716 9 18 9H18.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+</svg>Complaint Reason</h3>
+                        <p style={{ fontSize: '18px', marginLeft: '45px' }}>{currentComplaint.Reason}</p>
                         {/* Description Section */}
                         <h3 style={{ color: "#059855", fontWeight: 'bold', fontSize: '20px' }}> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="35" height="35" style={{marginBottom:'-5px', marginRight:'10px'}} color="#059855"fill="none">
     <path d="M13 20.8268V22H14.1734C14.5827 22 14.7874 22 14.9715 21.9238C15.1555 21.8475 15.3003 21.7028 15.5897 21.4134L20.4133 16.5894C20.6864 16.3164 20.8229 16.1799 20.8959 16.0327C21.0347 15.7525 21.0347 15.4236 20.8959 15.1434C20.8229 14.9961 20.6864 14.8596 20.4133 14.5866C20.1403 14.3136 20.0038 14.1771 19.8565 14.1041C19.5763 13.9653 19.2473 13.9653 18.9671 14.1041C18.8198 14.1771 18.6833 14.3136 18.4103 14.5866L18.4103 14.5866L13.5867 19.4106C13.2972 19.7 13.1525 19.8447 13.0762 20.0287C13 20.2128 13 20.4174 13 20.8268Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
     <path d="M19 11C19 11 19 9.4306 18.8478 9.06306C18.6955 8.69552 18.4065 8.40649 17.8284 7.82843L13.0919 3.09188C12.593 2.593 12.3436 2.34355 12.0345 2.19575C11.9702 2.165 11.9044 2.13772 11.8372 2.11401C11.5141 2 11.1614 2 10.4558 2C7.21082 2 5.58831 2 4.48933 2.88607C4.26731 3.06508 4.06508 3.26731 3.88607 3.48933C3 4.58831 3 6.21082 3 9.45584V14C3 17.7712 3 19.6569 4.17157 20.8284C5.23467 21.8915 6.8857 21.99 10 21.9991M12 2.5V3C12 5.82843 12 7.24264 12.8787 8.12132C13.7574 9 15.1716 9 18 9H18.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-</svg>Complaint</h3>
+</svg>Complaint Description</h3>
                         <p style={{ fontSize: '18px', marginLeft: '45px' }}>{currentComplaint.Description}</p>
                         <hr />
                         <div style={{ marginBottom: '90px' }}>
-              <Button onClick={goBack} style={{
-                float: 'right', marginBottom: '100px', width: 'auto',
-                height: '60px', fontSize: '15px', color: '#059855', borderColor: '#059855'
-              }}>
-                <ArrowLeftOutlined style={{ marginRight: '8px' }} /> Go Back
-              </Button>
-            </div>
+                        <div>
+                            <Button onClick={goBack}
+                style={{
+                  float: "left",
+                  marginBottom: "100px",
+                  width: "auto",
+                  height: "60px",
+                  fontSize: "15px",
+                  color: "#059855",
+                  borderColor: "#059855",
+                }}
+              >
+                                <ArrowLeftOutlined style={{ marginRight: '8px' }} /> Go Back
+                            </Button>
+                        </div>
+                            <div>
+                                {/* View Violation Button */}
+                                <Button
+                                    onClick={viewViolation}
+                                    style={{
+                                        float: "right",
+                                        width: "auto",
+                                        height: "60px",
+                                        fontSize: "15px",
+                                        color: "#059855",
+                                        borderColor: "#059855",
+                                      }}
+                                >
+                                    <i className="fas fa-eye" style={{ marginRight: "8px" }}></i>
+                                    View Violation
+                                </Button>
+                            </div>
+                            
+                        </div>
                     </>
                 )}
             </main>
