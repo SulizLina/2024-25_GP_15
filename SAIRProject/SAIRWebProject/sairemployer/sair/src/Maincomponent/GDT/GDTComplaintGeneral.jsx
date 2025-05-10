@@ -88,20 +88,21 @@ const GDTComplaintGeneral = () => {
                 where("ID", "==", complaintData.RespondedBy)
               );
 
-              const violationQuery = query(
-                                      collection(db, "Violation"),
-                                      where("violationID", "==", complaintData.ViolationID) // Querying by the violationID field
-                                    );
+              if (complaintData.ViolationID) {
+                const violationQuery = query(
+                  collection(db, "Violation"),
+                  where("violationID", "==", complaintData.ViolationID)
+                );
 
-              const violationSnapshot = await getDocs(violationQuery);
-                                    if (!violationSnapshot.empty) {
-                                      // Assuming there's only one document with that violationID
-                                      const violationDoc = violationSnapshot.docs[0];
-                                      setViolationDocId(violationDoc.id); // Store the document ID
-                                      console.log("Violation document found:", violationDoc.data());
-                                    } else {
-                                      console.error("Violation document not found for ID:", complaintData.ViolationID);
-                                    }
+                const violationSnapshot = await getDocs(violationQuery);
+                if (!violationSnapshot.empty) {
+                  const violationDoc = violationSnapshot.docs[0];
+                  setViolationDocId(violationDoc.id);
+                  console.log("Violation doc ID set:", violationDoc.id);
+                } else {
+                  console.error("Violation document not found for ID:", complaintData.ViolationID);
+                }
+              }
   
               const gdtSnapshot = await getDocs(gdtQuery);
               if (!gdtSnapshot.empty) {
@@ -269,9 +270,15 @@ const GDTComplaintGeneral = () => {
       
       const violationQuery = query(
         collection(db, "Violation"),
-        where("violationID", "==", violationId)
+        where("violationID", "==", complaintData.ViolationID)
       );
+      
       const violationSnapshot = await getDocs(violationQuery);
+      if (!violationSnapshot.empty) {
+        const violationDoc = violationSnapshot.docs[0];
+        setViolationDocId(violationDoc.id);
+      }
+      
   
       if (violationSnapshot.empty) {
         console.error("No Violation document found with ViolationID:", violationId);
