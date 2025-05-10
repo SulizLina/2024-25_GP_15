@@ -873,7 +873,7 @@ class _ViewcomplaintsState extends State<Viewcomplaints>
                               context: context,
                               builder: (context) => WarningDialog(
                                 message:
-                                    'You currently have no violations eligible for raising complaints. You can raise a complaint when:\n1. The violation is within the past 30 days.\n2. The violation does not already have a complaint.\n\nDrive safely!',
+                                    'You currently have no violations eligible for raising complaints. You can raise a complaint when:\n1. The violation is within the past 30 days.\n2. The violation already have a complaint.\n\nDrive safely!',
                               ),
                             );
                           },
