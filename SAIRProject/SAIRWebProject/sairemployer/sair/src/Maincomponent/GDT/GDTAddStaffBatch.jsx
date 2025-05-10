@@ -275,9 +275,37 @@ const validateStaffMember = async (staff, index, allStaff) => {
       const workbook = XLSX.read(data, { type: 'binary' });
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }); // Get rows as array
 
-      setFileData(jsonData);
+    // Validate the header
+    const headers = jsonData[0]; // First row contains the headers
+    const expectedHeaders = ['First name', 'Last name', 'Mobile Phone Number', 'Email', 'Staff ID'];
+
+    // Check if headers match
+    const isValidTemplate = expectedHeaders.every(header => headers.includes(header));
+    if (!isValidTemplate) {
+      setPopupMessage('The uploaded file does not match the required template.');
+      setPopupImage(errorImage);
+      setPopupVisible(true);
+      setFileData([]); // Clear the previous data
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''; // Clear the file input
+      }
+      return; // Stop further processing
+    }
+
+    // Proceed with the valid data, excluding the headers
+    const dataRows = jsonData.slice(1).map(row => {
+      return {
+        'First name': row[0],
+        'Last name': row[1],
+        'Mobile Phone Number': row[2],
+        'Email': row[3],
+        'Staff ID': row[4],
+      };
+    });
+
+    setFileData(dataRows); // Set the processed data
       const initialErrorData = jsonData.map(() => ({
         Fname: false,
         Lname: false,
@@ -288,7 +316,7 @@ const validateStaffMember = async (staff, index, allStaff) => {
       console.log('Initial error data:', initialErrorData);
       setErrorData(initialErrorData);
 
-      validateAllFields(jsonData);
+      validateAllFields(dataRows);
     };
     reader.readAsBinaryString(file);
   };
@@ -634,10 +662,15 @@ const validateStaffMember = async (staff, index, allStaff) => {
   disabled={isButtonDisabled}
   className={s.editBtn}
   style={{
-    marginBottom: '40px',
+                marginBottom: '40px',
+                borderRadius: '5px',
+                backgroundColor: '#059855',
+                border: 'none',
+                padding: '10px 20px',
+                fontSize: '16px',
   }}
 >
-  Add Staff List
+  Add to Staff List
 </button>
           </div>
         )}
