@@ -1,17 +1,17 @@
-import React, { useEffect, useState, useRef } from 'react';
-import Header from './GDTHeader';
-import d from '../../css/Dashboard.module.css';
-import '../../css/CustomModal.css';
-import { useNavigate, Link } from 'react-router-dom';
-import StaffChart from './DashboardCharts/StaffChart';
-import ViolationCrashGeoChart from './DashboardCharts/ViolationCrashGeoChart';
-import NumberOfViolations from './DashboardCharts/NumberOfViolations';
-import NumberofCrashes from './DashboardCharts/NumberofCrash';
-import TotalDrivers from './DashboardCharts/TotalDrivers';
-import RecklessViolation from './DashboardCharts/RecklessViolation';
-import TotalViolation from './DashboardCharts/TotalViolation';
-import TotalComplaints from './DashboardCharts/TotalComplaints';
-import TotalCrash from './DashboardCharts/TotalCrashes';
+import React, { useEffect, useState, useRef } from "react";
+import Header from "./GDTHeader";
+import d from "../../css/Dashboard.module.css";
+import "../../css/CustomModal.css";
+import { useNavigate, Link } from "react-router-dom";
+import StaffChart from "./DashboardCharts/StaffChart";
+import ViolationCrashGeoChart from "./DashboardCharts/ViolationCrashGeoChart";
+import NumberOfViolations from "./DashboardCharts/NumberOfViolations";
+import NumberofCrashes from "./DashboardCharts/NumberofCrash";
+import TotalDrivers from "./DashboardCharts/TotalDrivers";
+import RecklessViolation from "./DashboardCharts/RecklessViolation";
+import TotalViolation from "./DashboardCharts/TotalViolation";
+import TotalComplaints from "./DashboardCharts/TotalComplaints";
+import TotalCrash from "./DashboardCharts/TotalCrashes";
 import {
   collection,
   getDocs,
@@ -20,18 +20,18 @@ import {
   onSnapshot,
   orderBy,
   limit,
-} from 'firebase/firestore';
-import { db } from '../../firebase';
-import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
+} from "firebase/firestore";
+import { db } from "../../firebase";
+import { FaArrowUp, FaArrowDown, FaArrowRight } from "react-icons/fa";
 const GDTDashBoard = () => {
   const navigate = useNavigate();
-  const [violationFilterType, setViolationFilterType] = useState('All');
-  const [complaintFilterType, setComplaintFilterType] = useState('All');
+  const [violationFilterType, setViolationFilterType] = useState("All");
+  const [complaintFilterType, setComplaintFilterType] = useState("All");
   const [isTypeOpen, setIsTypeOpen] = useState({
     violations: false,
     complaints: false,
   });
-  const [companyOptions, setCompanyOptions] = useState(['All']);
+  const [companyOptions, setCompanyOptions] = useState(["All"]);
   const [data, setData] = useState([]);
   const typeDropdownRef = useRef(null);
   const violationDropdownRef = useRef(null);
@@ -46,8 +46,8 @@ const GDTDashBoard = () => {
     useState(null);
   const [lastCrashTime, setLastCrashTime] = useState(null);
   const [responseBy, setResponseBy] = useState(null);
-  const [filterByDate, setFilterByDate] = useState('week');
-  const [filterByDateCrash, setFilterByDateCrash] = useState('week');
+  const [filterByDate, setFilterByDate] = useState("week");
+  const [filterByDateCrash, setFilterByDateCrash] = useState("week");
   const [lastCrash, setLastCrash] = useState(null);
   useEffect(() => {
     fetchData();
@@ -63,15 +63,15 @@ const GDTDashBoard = () => {
     setFilterByDateCrash(filterByDateCrash); // Update your filter state
   };
   const capitalizeFirstLetter = (string) => {
-    if (!string) return '';
+    if (!string) return "";
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
   const GDTResponse = (RespondedBy, setResponseByName) => {
     try {
       const gdtQuery = query(
-        collection(db, 'GDT'),
-        where('ID', '==', RespondedBy)
+        collection(db, "GDT"),
+        where("ID", "==", RespondedBy)
       );
 
       const unsubscribe = onSnapshot(gdtQuery, (snapshot) => {
@@ -79,27 +79,27 @@ const GDTDashBoard = () => {
           const gdtData = snapshot.docs[0].data();
           setResponseByName(`${gdtData.Fname} ${gdtData.Lname}`);
         } else {
-          console.error('No GDT document found with ID:', RespondedBy);
-          setResponseByName('Unknown');
+          console.error("No GDT document found with ID:", RespondedBy);
+          setResponseByName("Unknown");
         }
       });
 
       return unsubscribe;
     } catch (error) {
-      console.error('Error fetching GDT details:', error);
-      setResponseByName('Error');
+      console.error("Error fetching GDT details:", error);
+      setResponseByName("Error");
     }
   };
   const ResponseBy = ({ respondedBy }) => {
-    const [responseByName, setResponseByName] = useState('');
+    const [responseByName, setResponseByName] = useState("");
 
     useEffect(() => {
-      console.log('RespondedBy ID:', respondedBy);
+      console.log("RespondedBy ID:", respondedBy);
 
       if (respondedBy) {
         const unsubscribe = GDTResponse(respondedBy, setResponseByName);
       } else {
-        setResponseByName('Unknown'); // Reset if no ID
+        setResponseByName("Unknown"); // Reset if no ID
       }
     }, [respondedBy]);
 
@@ -109,7 +109,7 @@ const GDTDashBoard = () => {
     setIsTypeOpen((prev) => ({
       ...prev,
       [type]: !prev[type],
-      ...(type === 'violations'
+      ...(type === "violations"
         ? { complaints: false }
         : { violations: false }),
     }));
@@ -128,7 +128,7 @@ const GDTDashBoard = () => {
 
   const fetchData = async () => {
     try {
-      const violationSnapshot = await getDocs(collection(db, 'Violation'));
+      const violationSnapshot = await getDocs(collection(db, "Violation"));
       const driverIDs = new Set();
 
       violationSnapshot.forEach((doc) => {
@@ -147,8 +147,8 @@ const GDTDashBoard = () => {
       for (let i = 0; i < driverIDList.length; i += 10) {
         const batch = driverIDList.slice(i, i + 10);
         const q = query(
-          collection(db, 'Driver'),
-          where('DriverID', 'in', batch)
+          collection(db, "Driver"),
+          where("DriverID", "in", batch)
         );
         const driverSnapshot = await getDocs(q);
 
@@ -160,7 +160,7 @@ const GDTDashBoard = () => {
         });
       }
 
-      const employerSnapshot = await getDocs(collection(db, 'Employer'));
+      const employerSnapshot = await getDocs(collection(db, "Employer"));
       const employerMap = new Map();
 
       employerSnapshot.forEach((doc) => {
@@ -181,7 +181,7 @@ const GDTDashBoard = () => {
       });
 
       const shortCompanyNames = Array.from(employerMap.values()).sort();
-      setCompanyOptions(['All', ...shortCompanyNames]);
+      setCompanyOptions(["All", ...shortCompanyNames]);
 
       const chartData = Array.from(companyMap, ([shortCompanyName, value]) => ({
         name: shortCompanyName,
@@ -190,7 +190,7 @@ const GDTDashBoard = () => {
 
       setData(chartData);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
   // Function to calculate the last Sunday date
@@ -199,13 +199,13 @@ const GDTDashBoard = () => {
     const lastSunday = new Date(today);
     lastSunday.setDate(today.getDate() - today.getDay()); // Sets to the last Sunday
     lastSunday.setHours(0, 0, 0, 0); // Reset time to the start of the day
-    return lastSunday.toLocaleString('en-US', {
-      weekday: 'long', // Full name of the day
-      year: 'numeric',
-      month: 'long', // Full name of the month
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return lastSunday.toLocaleString("en-US", {
+      weekday: "long", // Full name of the day
+      year: "numeric",
+      month: "long", // Full name of the month
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
       hour12: true, // 12-hour format
     });
   };
@@ -221,8 +221,8 @@ const GDTDashBoard = () => {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   useEffect(() => {
@@ -256,14 +256,14 @@ const GDTDashBoard = () => {
 
       // Queries for this week's and last week's violations
       const thisWeekQuery = query(
-        collection(db, 'Violation'),
-        where('time', '>=', thisWeekStartUnix) // Use 'time' field
+        collection(db, "Violation"),
+        where("time", ">=", thisWeekStartUnix) // Use 'time' field
       );
 
       const lastWeekQuery = query(
-        collection(db, 'Violation'),
-        where('time', '>=', lastWeekStartUnix), // Use 'time' field
-        where('time', '<=', lastWeekEndUnix)
+        collection(db, "Violation"),
+        where("time", ">=", lastWeekStartUnix), // Use 'time' field
+        where("time", "<=", lastWeekEndUnix)
       );
 
       const thisWeekSnapshot = await getDocs(thisWeekQuery);
@@ -283,7 +283,7 @@ const GDTDashBoard = () => {
         setPercentageChange(thisWeekCount > 0 ? 100 : 0);
       }
     } catch (error) {
-      console.error('Error fetching violation data:', error);
+      console.error("Error fetching violation data:", error);
     }
   };
   //To calculate the precentage
@@ -311,14 +311,14 @@ const GDTDashBoard = () => {
 
       // Queries for this week's and last week's violations
       const thisWeekQuery = query(
-        collection(db, 'Complaint'),
-        where('time', '>=', thisWeekStartUnix) // Use 'time' field
+        collection(db, "Complaint"),
+        where("time", ">=", thisWeekStartUnix) // Use 'time' field
       );
 
       const lastWeekQuery = query(
-        collection(db, 'Complaint'),
-        where('time', '>=', lastWeekStartUnix), // Use 'time' field
-        where('time', '<=', lastWeekEndUnix)
+        collection(db, "Complaint"),
+        where("time", ">=", lastWeekStartUnix), // Use 'time' field
+        where("time", "<=", lastWeekEndUnix)
       );
 
       const thisWeekSnapshot = await getDocs(thisWeekQuery);
@@ -338,7 +338,7 @@ const GDTDashBoard = () => {
         setPercentageChangeComplaints(thisWeekCount > 0 ? 100 : 0);
       }
     } catch (error) {
-      console.error('Error fetching violation data:', error);
+      console.error("Error fetching violation data:", error);
     }
   };
   //To calculate the percentage
@@ -366,14 +366,14 @@ const GDTDashBoard = () => {
 
       // Queries for this week's and last week's violations
       const thisWeekQuery = query(
-        collection(db, 'Crash'),
-        where('time', '>=', thisWeekStartUnix) // Use 'time' field
+        collection(db, "Crash"),
+        where("time", ">=", thisWeekStartUnix) // Use 'time' field
       );
 
       const lastWeekQuery = query(
-        collection(db, 'Crash'),
-        where('time', '>=', lastWeekStartUnix), // Use 'time' field
-        where('time', '<=', lastWeekEndUnix)
+        collection(db, "Crash"),
+        where("time", ">=", lastWeekStartUnix), // Use 'time' field
+        where("time", "<=", lastWeekEndUnix)
       );
 
       const thisWeekSnapshot = await getDocs(thisWeekQuery);
@@ -393,13 +393,13 @@ const GDTDashBoard = () => {
         setPercentageChangeCrash(thisWeekCount > 0 ? 100 : 0);
       }
     } catch (error) {
-      console.error('Error fetching Crash data:', error);
+      console.error("Error fetching Crash data:", error);
     }
   };
   useEffect(() => {
     const crashQuery = query(
-      collection(db, 'Crash'),
-      orderBy('time', 'desc'),
+      collection(db, "Crash"),
+      orderBy("time", "desc"),
       limit(1)
     );
 
@@ -418,11 +418,11 @@ const GDTDashBoard = () => {
           setLastCrashTime(new Date(data.time * 1000).toLocaleString());
           setResponseBy(data.RespondedBy); // set responder ID
         } else {
-          console.log('No crashes detected.');
+          console.log("No crashes detected.");
         }
       },
       (error) => {
-        console.error('Error with onSnapshot:', error);
+        console.error("Error with onSnapshot:", error);
       }
     );
 
@@ -432,94 +432,94 @@ const GDTDashBoard = () => {
 
   return (
     <div>
-      <Header active='GDTDashBoard' />
-      <div className='breadcrumb'>
-        <a onClick={() => navigate('/gdthome')} style={{ cursor: 'pointer' }}>
+      <Header active="GDTDashBoard" />
+      <div className="breadcrumb">
+        <a onClick={() => navigate("/gdthome")} style={{ cursor: "pointer" }}>
           Home
         </a>
         <span> / </span>
         <a
-          onClick={() => navigate('/GDTDashBoard')}
-          style={{ cursor: 'pointer' }}
+          onClick={() => navigate("/GDTDashBoard")}
+          style={{ cursor: "pointer" }}
         >
           Dashboard
-        </a>{' '}
+        </a>{" "}
       </div>
 
-      <main class='Dashboard' style={{ padding: '20px', width: '100%' }}>
+      <main class="Dashboard" style={{ padding: "20px", width: "100%" }}>
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            gap: '20px',
-            marginBottom: '20px',
+            display: "flex",
+            justifyContent: "space-between",
+            gap: "20px",
+            marginBottom: "20px",
           }}
         >
           <div
             style={{
-              backgroundColor: '#FFFFFF',
-              padding: '20px',
-              borderRadius: '8px',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+              backgroundColor: "#FFFFFF",
+              padding: "20px",
+              borderRadius: "8px",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
               flex: 1,
-              textAlign: 'center',
-              fontWeight: 'bold',
+              textAlign: "center",
+              fontWeight: "bold",
             }}
           >
-            <div style={{ fontWeight: 'bold', paddingTop: '15px' }}>
+            <div style={{ fontWeight: "bold", paddingTop: "15px" }}>
               Started Streaming at: {getLastSundayDateTime()}
             </div>
           </div>
           <div
             style={{
-              backgroundColor: '#FFFFFF',
-              padding: '20px',
-              borderRadius: '8px',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+              backgroundColor: "#FFFFFF",
+              padding: "20px",
+              borderRadius: "8px",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
               flex: 1,
-              textAlign: 'left',
-              fontWeight: 'bold',
+              textAlign: "left",
+              fontWeight: "bold",
             }}
           >
             <div
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '15px',
-                paddingTop: '15px',
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "15px",
+                paddingTop: "15px",
               }}
             >
               <span>
-                Last Crash Detected:{' '}
-                <strong>{lastCrashTime || 'No data available'}</strong>
+                Last Crash Detected:{" "}
+                <strong>{lastCrashTime || "No data available"}</strong>
               </span>
-              <span style={{ color: responseBy ? 'black' : 'red' }}>
-                {lastCrash?.Status === 'Emergency SOS' && responseBy ? (
+              <span style={{ color: responseBy ? "black" : "red" }}>
+                {lastCrash?.Status === "Emergency SOS" && responseBy ? (
                   <>
-                    Response By:{' '}
+                    Response By:{" "}
                     <strong>
                       <ResponseBy respondedBy={responseBy} />
                     </strong>
                   </>
-                ) : lastCrash?.Status === 'Emergency SOS' && !responseBy ? (
+                ) : lastCrash?.Status === "Emergency SOS" && !responseBy ? (
                   <>
                     <Link
                       to={`/gdtcrash/general/${lastCrash?.id}`}
-                      style={{ color: 'red', textDecoration: 'underline' }}
+                      style={{ color: "red", textDecoration: "underline" }}
                     >
                       Needs Response
                     </Link>
                   </>
-                ) : lastCrash?.Status === 'Denied' && !responseBy ? (
+                ) : lastCrash?.Status === "Denied" && !responseBy ? (
                   <Link
                     to={`/gdtcrash/general/${lastCrash?.id}`}
-                    style={{ color: 'grey', textDecoration: 'underline' }}
+                    style={{ color: "grey", textDecoration: "underline" }}
                   >
                     No Response Needed
                   </Link>
                 ) : (
-                  'null'
+                  "null"
                 )}
               </span>
             </div>
@@ -527,62 +527,76 @@ const GDTDashBoard = () => {
         </div>
         <div
           style={{
-            backgroundColor: '#05b06d',
-            color: '#ffffff',
-            padding: '20px',
-            borderTopLeftRadius: '8px',
-            borderTopRightRadius: '8px',
-            borderBottomLeftRadius: '8px',
-            borderBottomRightRadius: '8px',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+            backgroundColor: "#05b06d",
+            color: "#ffffff",
+            padding: "20px",
+            borderTopLeftRadius: "8px",
+            borderTopRightRadius: "8px",
+            borderBottomLeftRadius: "8px",
+            borderBottomRightRadius: "8px",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             flex: 1,
-            textAlign: 'center',
-            fontWeight: 'bold',
-            animation: 'fadeIn 1s ease-in-out',
-            marginBottom: '20px',
+            textAlign: "center",
+            fontWeight: "bold",
+            animation: "fadeIn 1s ease-in-out",
+            marginBottom: "20px",
           }}
         >
           Delivery Companies Statistics
-        </div>{' '}
+        </div>{" "}
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'space-between', // Use space-between to distribute space
-            gap: '20px',
-            flexWrap: 'wrap', // Allows wrapping to the next line if necessary
-            width: '100%',
+            display: "flex",
+            justifyContent: "space-between", // Use space-between to distribute space
+            gap: "20px",
+            flexWrap: "wrap", // Allows wrapping to the next line if necessary
+            width: "100%",
           }}
         >
           {[
-            { title: 'Total Drivers', component: <TotalDrivers /> },
+            { title: "Total Drivers", component: <TotalDrivers /> },
             {
-              title: 'Total Crash',
+              title: "Total Crash",
               component: (
                 <div
                   style={{
-                    position: 'relative',
-                    display: 'flex',
-                    alignItems: 'center',
+                    position: "relative",
+                    display: "flex",
+                    alignItems: "center",
                   }}
                 >
                   <TotalCrash />
                   {percentageChangeCrash !== null && (
                     <span
                       style={{
-                        position: 'absolute',
-                        top: '-15px',
-                        left: '0',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        color: percentageChangeCrash >= 0 ? 'green' : 'red',
-                        fontWeight: 'bold',
+                        position: "absolute",
+                        top: "-15px",
+                        left: "0",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                        color:
+                          percentageChangeCrash > 0
+                            ? "green"
+                            : percentageChangeCrash < 0
+                            ? "red"
+                            : "grey",
+                        fontWeight: "bold",
                       }}
                     >
-                      {percentageChangeCrash >= 0 ? (
+                      {percentageChangeCrash > 0 ? (
                         <FaArrowUp />
-                      ) : (
+                      ) : percentageChangeCrash < 0 ? (
                         <FaArrowDown />
+                      ) : (
+                        <div
+                          style={{
+                            width: "16px",
+                            height: "3px",
+                            backgroundColor: "grey",
+                            borderRadius: "2px",
+                          }}
+                        />
                       )}
                       {percentageChangeCrash}% this week
                     </span>
@@ -591,30 +605,49 @@ const GDTDashBoard = () => {
               ),
             },
             {
-              title: 'Total Violation',
+              title: "Total Violation",
               component: (
                 <div
                   style={{
-                    position: 'relative',
-                    display: 'flex',
-                    alignItems: 'center',
+                    position: "relative",
+                    display: "flex",
+                    alignItems: "center",
                   }}
                 >
                   <TotalViolation />
                   {percentageChange !== null && (
                     <span
                       style={{
-                        position: 'absolute',
-                        top: '-15px',
-                        left: '0',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        color: percentageChange >= 0 ? 'green' : 'red',
-                        fontWeight: 'bold',
+                        position: "absolute",
+                        top: "-15px",
+                        left: "0",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                        color:
+                          percentageChange > 0
+                            ? "green"
+                            : percentageChange < 0
+                            ? "red"
+                            : "grey",
+
+                        fontWeight: "bold",
                       }}
                     >
-                      {percentageChange >= 0 ? <FaArrowUp /> : <FaArrowDown />}
+                      {percentageChange > 0 ? (
+                        <FaArrowUp />
+                      ) : percentageChange < 0 ? (
+                        <FaArrowDown />
+                      ) : (
+                        <div
+                          style={{
+                            width: "16px",
+                            height: "3px",
+                            backgroundColor: "grey",
+                            borderRadius: "2px",
+                          }}
+                        />
+                      )}
                       {percentageChange}% this week
                     </span>
                   )}
@@ -622,34 +655,48 @@ const GDTDashBoard = () => {
               ),
             },
             {
-              title: 'Total Complaints',
+              title: "Total Complaints",
               component: (
                 <div
                   style={{
-                    position: 'relative',
-                    display: 'flex',
-                    alignItems: 'center',
+                    position: "relative",
+                    display: "flex",
+                    alignItems: "center",
                   }}
                 >
                   <TotalComplaints />
                   {percentageChangeComplaints !== null && (
                     <span
                       style={{
-                        position: 'absolute',
-                        top: '-15px',
-                        left: '0',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
+                        position: "absolute",
+                        top: "-15px",
+                        left: "0",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
                         color:
-                          percentageChangeComplaints >= 0 ? 'green' : 'red',
-                        fontWeight: 'bold',
+                          percentageChangeComplaints > 0
+                            ? "green"
+                            : percentageChangeComplaints < 0
+                            ? "red"
+                            : "grey",
+
+                        fontWeight: "bold",
                       }}
                     >
-                      {percentageChangeComplaints >= 0 ? (
+                      {percentageChangeComplaints > 0 ? (
                         <FaArrowUp />
-                      ) : (
+                      ) : percentageChangeComplaints < 0 ? (
                         <FaArrowDown />
+                      ) : (
+                        <div
+                          style={{
+                            width: "16px",
+                            height: "3px",
+                            backgroundColor: "grey",
+                            borderRadius: "2px",
+                          }}
+                        />
                       )}
                       {percentageChangeComplaints}% this week
                     </span>
@@ -665,10 +712,10 @@ const GDTDashBoard = () => {
         </div>
         <div
           style={{
-            display: 'flex',
-            gap: '20px',
-            marginTop: '20px',
-            width: '100%',
+            display: "flex",
+            gap: "20px",
+            marginTop: "20px",
+            width: "100%",
           }}
         ></div>
         {/* <div
@@ -692,42 +739,42 @@ const GDTDashBoard = () => {
         </div> */}
         <div
           style={{
-            display: 'flex',
-            gap: '20px',
-            marginTop: '10px',
-            width: '100%',
+            display: "flex",
+            gap: "20px",
+            marginTop: "10px",
+            width: "100%",
           }}
         >
           <div
             style={{
-              backgroundColor: '#05b06d',
-              color: '#ffffff',
-              padding: '20px',
-              borderTopLeftRadius: '8px',
-              borderTopRightRadius: '8px',
-              borderBottomLeftRadius: '0',
-              borderBottomRightRadius: '0',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+              backgroundColor: "#05b06d",
+              color: "#ffffff",
+              padding: "20px",
+              borderTopLeftRadius: "8px",
+              borderTopRightRadius: "8px",
+              borderBottomLeftRadius: "0",
+              borderBottomRightRadius: "0",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
               flex: 1,
-              textAlign: 'center',
-              fontWeight: 'bold',
-              marginTop: '20px',
-              animation: 'fadeIn 1s ease-in-out',
+              textAlign: "center",
+              fontWeight: "bold",
+              marginTop: "20px",
+              animation: "fadeIn 1s ease-in-out",
             }}
           >
             <div
               style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                width: '100%', // Ensure the container takes full width
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%", // Ensure the container takes full width
               }}
             >
               <div
                 style={{
-                  textAlign: 'left',
-                  fontWeight: 'bold',
-                  marginRight: '90px',
+                  textAlign: "left",
+                  fontWeight: "bold",
+                  marginRight: "90px",
                 }}
               >
                 Violation Statistics
@@ -736,20 +783,20 @@ const GDTDashBoard = () => {
               <div className={d.radioinputs}>
                 <label className={d.radio}>
                   <input
-                    type='radio'
-                    name='dateFilter1' // Unique name but controlled by state
-                    value='week'
-                    checked={filterByDate === 'week'}
+                    type="radio"
+                    name="dateFilter1" // Unique name but controlled by state
+                    value="week"
+                    checked={filterByDate === "week"}
                     onChange={handleDateFilterChange}
                   />
                   <span className={d.name}>Week</span>
                 </label>
                 <label className={d.radio}>
                   <input
-                    type='radio'
-                    name='dateFilter1'
-                    value='Month'
-                    checked={filterByDate === 'Month'}
+                    type="radio"
+                    name="dateFilter1"
+                    value="Month"
+                    checked={filterByDate === "Month"}
                     onChange={handleDateFilterChange}
                   />
                   <span className={d.name}>Month</span>
@@ -757,96 +804,96 @@ const GDTDashBoard = () => {
               </div>
 
               <div
-                className='searchContainer'
+                className="searchContainer"
                 ref={violationDropdownRef}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  position: 'relative',
+                  display: "flex",
+                  alignItems: "center",
+                  position: "relative",
                 }}
               >
                 <div
-                  className='selectWrapper'
+                  className="selectWrapper"
                   style={{
-                    border: '2px solid #4CAF50',
-                    backgroundColor: '#FFFFFF',
-                    color: 'black',
-                    borderRadius: '5px',
-                    fontWeight: 'normal',
-                    marginLeft: '0px',
-                    width: '220px', // Fixed width
-                    boxSizing: 'border-box', // Prevents expansion
-                    position: 'relative', // For absolute dropdown positioning
-                    marginLeft: '9px',
+                    border: "2px solid #4CAF50",
+                    backgroundColor: "#FFFFFF",
+                    color: "black",
+                    borderRadius: "5px",
+                    fontWeight: "normal",
+                    marginLeft: "0px",
+                    width: "220px", // Fixed width
+                    boxSizing: "border-box", // Prevents expansion
+                    position: "relative", // For absolute dropdown positioning
+                    marginLeft: "9px",
                   }}
                 >
                   <div
-                    className='customSelect'
-                    onClick={() => toggleTypeDropdown('violations')}
+                    className="customSelect"
+                    onClick={() => toggleTypeDropdown("violations")}
                     style={{
-                      cursor: 'pointer',
-                      padding: '8px 12px',
-                      width: '100%', // Prevents expansion
-                      textAlign: 'left',
-                      fontSize: '14px',
-                      position: 'relative',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
+                      cursor: "pointer",
+                      padding: "8px 12px",
+                      width: "100%", // Prevents expansion
+                      textAlign: "left",
+                      fontSize: "14px",
+                      position: "relative",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
                     }}
                   >
                     <span>
-                      {violationFilterType === 'All'
-                        ? 'Filter by Company'
+                      {violationFilterType === "All"
+                        ? "Filter by Company"
                         : violationFilterType}
                     </span>
                     <span
                       style={{
-                        border: 'solid #4CAF50',
-                        borderWidth: '0 2px 2px 0',
-                        display: 'inline-block',
-                        padding: '4px',
+                        border: "solid #4CAF50",
+                        borderWidth: "0 2px 2px 0",
+                        display: "inline-block",
+                        padding: "4px",
                         transform: isTypeOpen.violations
-                          ? 'rotate(-135deg)'
-                          : 'rotate(45deg)',
-                        transition: 'transform 0.2s',
+                          ? "rotate(-135deg)"
+                          : "rotate(45deg)",
+                        transition: "transform 0.2s",
                       }}
                     />
                   </div>
 
                   {isTypeOpen.violations && (
                     <div
-                      className='dropdownMenu'
+                      className="dropdownMenu"
                       style={{
-                        position: 'absolute',
+                        position: "absolute",
                         zIndex: 1000,
-                        backgroundColor: '#fff',
-                        border: '1px solid #ddd',
-                        borderRadius: '5px',
-                        width: '100%', // Matches select width
-                        top: '100%', // Positions below the select
+                        backgroundColor: "#fff",
+                        border: "1px solid #ddd",
+                        borderRadius: "5px",
+                        width: "100%", // Matches select width
+                        top: "100%", // Positions below the select
                         left: 0, // Ensures alignment
-                        boxSizing: 'border-box',
-                        boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+                        boxSizing: "border-box",
+                        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
                       }}
                     >
                       {companyOptions.map((option) => (
                         <div
                           key={option}
-                          className='dropdownOption'
+                          className="dropdownOption"
                           onClick={() => handleViolationOptionClick(option)}
                           style={{
-                            padding: '12px',
-                            cursor: 'pointer',
-                            transition: 'background-color 0.3s',
-                            fontSize: '14px',
+                            padding: "12px",
+                            cursor: "pointer",
+                            transition: "background-color 0.3s",
+                            fontSize: "14px",
                           }}
                           onMouseEnter={(e) =>
-                            (e.currentTarget.style.backgroundColor = '#f0f0f0')
+                            (e.currentTarget.style.backgroundColor = "#f0f0f0")
                           }
                           onMouseLeave={(e) =>
                             (e.currentTarget.style.backgroundColor =
-                              'transparent')
+                              "transparent")
                           }
                         >
                           {capitalizeFirstLetter(option)}
@@ -861,144 +908,144 @@ const GDTDashBoard = () => {
 
           <div
             style={{
-              backgroundColor: '#05b06d',
-              color: '#ffffff',
-              padding: '20px',
-              borderTopLeftRadius: '8px',
-              borderTopRightRadius: '8px',
-              borderBottomLeftRadius: '0',
-              borderBottomRightRadius: '0',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+              backgroundColor: "#05b06d",
+              color: "#ffffff",
+              padding: "20px",
+              borderTopLeftRadius: "8px",
+              borderTopRightRadius: "8px",
+              borderBottomLeftRadius: "0",
+              borderBottomRightRadius: "0",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
               flex: 1,
-              textAlign: 'center',
-              fontWeight: 'bold',
-              marginTop: '20px',
-              animation: 'fadeIn 1s ease-in-out',
+              textAlign: "center",
+              fontWeight: "bold",
+              marginTop: "20px",
+              animation: "fadeIn 1s ease-in-out",
             }}
           >
             <div
               style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
             >
-              <div style={{ fontWeight: 'bold', marginRight: '110px' }}>
+              <div style={{ fontWeight: "bold", marginRight: "110px" }}>
                 Crash Statistics
               </div>
               <div className={d.radioinputs2}>
                 <label className={d.radio2}>
                   <input
-                    type='radio'
-                    name='dateFilter2' // Different name but still controlled by state
-                    value='week'
-                    checked={filterByDateCrash === 'week'}
+                    type="radio"
+                    name="dateFilter2" // Different name but still controlled by state
+                    value="week"
+                    checked={filterByDateCrash === "week"}
                     onChange={handleDateFilterChangeCarsh}
                   />
                   <span className={d.name2}>Week</span>
                 </label>
                 <label className={d.radio2}>
                   <input
-                    type='radio'
-                    name={'dateFilter2'}
-                    value='Month'
-                    checked={filterByDateCrash === 'Month'}
+                    type="radio"
+                    name={"dateFilter2"}
+                    value="Month"
+                    checked={filterByDateCrash === "Month"}
                     onChange={handleDateFilterChangeCarsh}
                   />
                   <span className={d.name2}>Month</span>
                 </label>
               </div>
               <div
-                className='searchContainer'
+                className="searchContainer"
                 ref={complaintDropdownRef}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  position: 'relative',
+                  display: "flex",
+                  alignItems: "center",
+                  position: "relative",
                 }}
               >
                 <div
-                  className='selectWrapper'
+                  className="selectWrapper"
                   style={{
-                    border: '2px solid #4CAF50',
-                    backgroundColor: '#FFFFFF',
-                    color: 'black',
-                    borderRadius: '5px',
-                    fontWeight: 'normal',
-                    width: '220px', // Fixed width
-                    boxSizing: 'border-box', // Prevents expansion
-                    position: 'relative', // For absolute dropdown positioning
-                    marginLeft: '9px',
+                    border: "2px solid #4CAF50",
+                    backgroundColor: "#FFFFFF",
+                    color: "black",
+                    borderRadius: "5px",
+                    fontWeight: "normal",
+                    width: "220px", // Fixed width
+                    boxSizing: "border-box", // Prevents expansion
+                    position: "relative", // For absolute dropdown positioning
+                    marginLeft: "9px",
                   }}
                 >
                   <div
                     className={`customSelect ${
-                      isTypeOpen.complaints ? 'open' : ''
+                      isTypeOpen.complaints ? "open" : ""
                     }`}
-                    onClick={() => toggleTypeDropdown('complaints')}
+                    onClick={() => toggleTypeDropdown("complaints")}
                     style={{
-                      cursor: 'pointer',
-                      padding: '8px 12px',
-                      width: '100%', // Prevents expansion
-                      textAlign: 'left',
-                      fontSize: '14px',
-                      position: 'relative',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
+                      cursor: "pointer",
+                      padding: "8px 12px",
+                      width: "100%", // Prevents expansion
+                      textAlign: "left",
+                      fontSize: "14px",
+                      position: "relative",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
                     }}
                   >
-                    {complaintFilterType === 'All' ? (
+                    {complaintFilterType === "All" ? (
                       <span>Filter by Company</span>
                     ) : (
                       complaintFilterType
                     )}
                     <span
                       style={{
-                        border: 'solid #4CAF50',
-                        borderWidth: '0 2px 2px 0',
-                        display: 'inline-block',
-                        padding: '4px',
+                        border: "solid #4CAF50",
+                        borderWidth: "0 2px 2px 0",
+                        display: "inline-block",
+                        padding: "4px",
                         transform: isTypeOpen.complaints
-                          ? 'rotate(-135deg)'
-                          : 'rotate(45deg)',
-                        transition: 'transform 0.2s',
+                          ? "rotate(-135deg)"
+                          : "rotate(45deg)",
+                        transition: "transform 0.2s",
                       }}
                     />
                   </div>
                   {isTypeOpen.complaints && (
                     <div
-                      className='dropdownMenu'
+                      className="dropdownMenu"
                       style={{
-                        position: 'absolute',
+                        position: "absolute",
                         zIndex: 1000,
-                        backgroundColor: '#fff',
-                        border: '1px solid #ddd',
-                        borderRadius: '5px',
-                        width: '100%', // Matches select width
-                        top: '100%', // Positions below the select
+                        backgroundColor: "#fff",
+                        border: "1px solid #ddd",
+                        borderRadius: "5px",
+                        width: "100%", // Matches select width
+                        top: "100%", // Positions below the select
                         left: 0, // Ensures alignment
-                        boxSizing: 'border-box',
-                        boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+                        boxSizing: "border-box",
+                        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
                       }}
                     >
                       {companyOptions.map((option) => (
                         <div
                           key={option}
-                          className='dropdownOption'
+                          className="dropdownOption"
                           onClick={() => handleComplaintOptionClick(option)}
                           style={{
-                            padding: '10px',
-                            cursor: 'pointer',
-                            transition: 'background-color 0.3s',
-                            fontSize: '14px',
+                            padding: "10px",
+                            cursor: "pointer",
+                            transition: "background-color 0.3s",
+                            fontSize: "14px",
                           }}
                           onMouseEnter={(e) =>
-                            (e.currentTarget.style.backgroundColor = '#f0f0f0')
+                            (e.currentTarget.style.backgroundColor = "#f0f0f0")
                           }
                           onMouseLeave={(e) =>
                             (e.currentTarget.style.backgroundColor =
-                              'transparent')
+                              "transparent")
                           }
                         >
                           {capitalizeFirstLetter(option)}
@@ -1014,14 +1061,14 @@ const GDTDashBoard = () => {
         {/* Bottom Section: Charts */}
         <div
           style={{
-            display: 'flex',
-            gap: '20px',
-            width: '100%',
+            display: "flex",
+            gap: "20px",
+            width: "100%",
           }}
         >
           {/* Row: Violations and Crashes side-by-side */}
           <div style={{ flex: 1 }}>
-            <GridItem title='Number of Violations'>
+            <GridItem title="Number of Violations">
               <NumberOfViolations
                 dateType={filterByDate}
                 companyName={violationFilterType}
@@ -1030,7 +1077,7 @@ const GDTDashBoard = () => {
           </div>
 
           <div style={{ flex: 1 }}>
-            <GridItem title='Number of Crashes'>
+            <GridItem title="Number of Crashes">
               <NumberofCrashes
                 dateType={filterByDateCrash}
                 companyName={complaintFilterType}
@@ -1041,32 +1088,32 @@ const GDTDashBoard = () => {
         {/* Row: Reckless Violations and Staff Response side-by-side */}
         <div
           style={{
-            display: 'flex',
-            gap: '20px',
-            width: '100%',
-            marginTop: '50px',
-            marginBottom: '50px',
+            display: "flex",
+            gap: "20px",
+            width: "100%",
+            marginTop: "50px",
+            marginBottom: "50px",
           }}
         >
           {/* Reckless Violations Section */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
             <div
               style={{
-                backgroundColor: '#05b06d',
-                color: '#ffffff',
-                padding: '20px',
-                borderTopLeftRadius: '8px',
-                borderTopRightRadius: '8px',
-                borderBottomLeftRadius: '0',
-                borderBottomRightRadius: '0',
-                textAlign: 'center',
-                fontWeight: 'bold',
-                animation: 'fadeIn 1s ease-in-out',
+                backgroundColor: "#05b06d",
+                color: "#ffffff",
+                padding: "20px",
+                borderTopLeftRadius: "8px",
+                borderTopRightRadius: "8px",
+                borderBottomLeftRadius: "0",
+                borderBottomRightRadius: "0",
+                textAlign: "center",
+                fontWeight: "bold",
+                animation: "fadeIn 1s ease-in-out",
               }}
             >
               Reckless Violation Statistics
             </div>
-            <GridItem title='Reckless Violations'>
+            <GridItem title="Reckless Violations">
               <RecklessViolation
                 dateType={filterByDate}
                 companyName={violationFilterType}
@@ -1075,24 +1122,24 @@ const GDTDashBoard = () => {
           </div>
 
           {/* Staff Response Section */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
             <div
               style={{
-                backgroundColor: '#05b06d',
-                color: '#ffffff',
-                padding: '20px',
-                borderTopLeftRadius: '8px',
-                borderTopRightRadius: '8px',
-                borderBottomLeftRadius: '0',
-                borderBottomRightRadius: '0',
-                textAlign: 'center',
-                fontWeight: 'bold',
-                animation: 'fadeIn 1s ease-in-out',
+                backgroundColor: "#05b06d",
+                color: "#ffffff",
+                padding: "20px",
+                borderTopLeftRadius: "8px",
+                borderTopRightRadius: "8px",
+                borderBottomLeftRadius: "0",
+                borderBottomRightRadius: "0",
+                textAlign: "center",
+                fontWeight: "bold",
+                animation: "fadeIn 1s ease-in-out",
               }}
             >
               Staff Response Statistics
             </div>
-            <GridItem title='Staff Response Chart'>
+            <GridItem title="Staff Response Chart">
               <StaffChart />
             </GridItem>
           </div>
@@ -1100,41 +1147,41 @@ const GDTDashBoard = () => {
         {/* Geo Charts */}
         <div
           style={{
-            backgroundColor: '#05b06d',
-            color: '#ffffff',
-            padding: '20px',
-            borderTopLeftRadius: '8px',
-            borderTopRightRadius: '8px',
-            borderBottomLeftRadius: '0',
-            borderBottomRightRadius: '0',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+            backgroundColor: "#05b06d",
+            color: "#ffffff",
+            padding: "20px",
+            borderTopLeftRadius: "8px",
+            borderTopRightRadius: "8px",
+            borderBottomLeftRadius: "0",
+            borderBottomRightRadius: "0",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             flex: 1,
-            textAlign: 'center',
-            fontWeight: 'bold',
-            marginTop: '20px',
-            animation: 'fadeIn 1s ease-in-out',
+            textAlign: "center",
+            fontWeight: "bold",
+            marginTop: "20px",
+            animation: "fadeIn 1s ease-in-out",
           }}
         >
-          <div style={{ fontWeight: 'bold' }}>
+          <div style={{ fontWeight: "bold" }}>
             Riyadh Violation and Crash Distribution
           </div>
         </div>
         <div
           style={{
-            display: 'flex',
-            gap: '20px',
-            width: '100%',
+            display: "flex",
+            gap: "20px",
+            width: "100%",
           }}
         >
           <div
             style={{
               flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '20px',
+              display: "flex",
+              flexDirection: "column",
+              gap: "20px",
             }}
           >
-            <GridItem title=''>
+            <GridItem title="">
               <ViolationCrashGeoChart />
             </GridItem>
           </div>
@@ -1149,18 +1196,18 @@ export default GDTDashBoard;
 const GridItem = ({ title, children }) => (
   <div
     style={{
-      backgroundColor: '#FFFFFF',
-      padding: '20px',
-      borderTopLeftRadius: '0',
-      borderTopRightRadius: '0',
-      borderBottomLeftRadius: '8px',
-      borderBottomRightRadius: '8px',
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      backgroundColor: "#FFFFFF",
+      padding: "20px",
+      borderTopLeftRadius: "0",
+      borderTopRightRadius: "0",
+      borderBottomLeftRadius: "8px",
+      borderBottomRightRadius: "8px",
+      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
       flex: 1,
-      minWidth: '550px',
+      minWidth: "550px",
     }}
   >
-    <h3 style={{ marginBottom: '15px', textAlign: 'center', color: '#059855' }}>
+    <h3 style={{ marginBottom: "15px", textAlign: "center", color: "#059855" }}>
       {title}
     </h3>
     {children}

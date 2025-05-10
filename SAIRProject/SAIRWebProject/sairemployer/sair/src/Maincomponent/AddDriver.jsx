@@ -720,10 +720,9 @@ const sendEmail = (email, driverName, password) => {
         available: GPSnumber === null,
         UID: user.uid
       };
-  
+  //
       // Add the driver to Firestore
-      await addDoc(collection(db, 'Driver'), newDriver);
-      sessionStorage.setItem(`driver_${newDriver.id}`, newDriver.id); // Store in sessionStorage
+      const docRef = await addDoc(collection(db, 'Driver'), newDriver);
       // Update motorcycle availability if GPSnumber is assigned
       if (GPSnumber) {
         const q = query(
@@ -754,7 +753,8 @@ const sendEmail = (email, driverName, password) => {
         templateParams,
         '6NEdVNsgOnsmX-H4s'
       );
-  
+      sessionStorage.setItem(`driver_${docRef.id}`, docRef.id);
+
       if (response.status === 200) {
         setPopupMessage('Driver added successfully!');
         setPopupImage(successImage);

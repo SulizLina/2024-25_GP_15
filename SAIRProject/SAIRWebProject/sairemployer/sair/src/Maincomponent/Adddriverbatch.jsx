@@ -519,33 +519,66 @@ setSelectedGPSNumbers(selectedGPSNumbers);
       );
   };
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-    setFileName(file.name);
-    setIsUploadBoxVisible(false);
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const data = e.target.result;
-      const workbook = XLSX.read(data, { type: 'binary' });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+const handleFileUpload = (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  setFileName(file.name);
+  setIsUploadBoxVisible(false);
+  
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const data = e.target.result;
+    const workbook = XLSX.read(data, { type: 'binary' });
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    
+    // Convert the sheet to JSON, using the first row as headers
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }); // Get rows as an array
 
-      setFileData(jsonData);
-      const initialErrorData = jsonData.map(() => ({
-        Fname: false,
-        Lname: false,
-        PhoneNumber: false,
-        Email: false,
-        ID: false,
-      }));
-      setErrorData(initialErrorData);
-      validateAllFields(jsonData);
-    };
+    // Validate the header
+    const headers = jsonData[0]; // First row contains the headers
+    const expectedHeaders = ['First name', 'Last name', 'Mobile Phone Number', 'Email', 'Driver ID'];
 
-    reader.readAsBinaryString(file);
+    // Check if headers match
+    const isValidTemplate = expectedHeaders.every(header => headers.includes(header));
+    if (!isValidTemplate) {
+      setPopupMessage('The uploaded file does not match the required template.');
+      setPopupImage(errorImage);
+      setPopupVisible(true);
+      setFileData([]); // Clear the previous data
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''; // Clear the file input
+      }
+      return; // Stop further processing
+    }
+
+    // Proceed with the valid data, excluding the headers
+    const dataRows = jsonData.slice(1).map(row => {
+      return {
+        'First name': row[0],
+        'Last name': row[1],
+        'Mobile Phone Number': row[2],
+        'Email': row[3],
+        'Driver ID': row[4],
+        'GPSnumber': row[5],
+      };
+    });
+
+    setFileData(dataRows); // Set the processed data
+    const initialErrorData = dataRows.map(() => ({
+      Fname: false,
+      Lname: false,
+      PhoneNumber: false,
+      Email: false,
+      ID: false,
+    }));
+    setErrorData(initialErrorData);
+    validateAllFields(dataRows); // Validate data excluding headers
   };
+
+  reader.readAsBinaryString(file);
+};
+
 
   const handleRemoveFile = () => {
     setFileName('');

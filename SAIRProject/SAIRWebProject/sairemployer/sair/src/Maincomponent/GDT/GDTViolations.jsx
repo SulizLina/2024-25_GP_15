@@ -448,7 +448,11 @@ const paginatedData = filteredViolations.slice((currentPage - 1) * 5, currentPag
     <>
       <Header active="gdtviolations" />
       <div className="breadcrumb">
-        <a onClick={() => navigate("/gdthome")}>Home</a>
+            {company ? (
+          <a onClick={() => navigate("/GDTDashBoard")}>Dashboard</a>
+        ) : (
+          <a onClick={() => navigate("/gdthome")}>Home</a>
+        )}
         <span> / </span>
         <a onClick={() => navigate("/GDTviolations")}>Violations List</a>
       </div>

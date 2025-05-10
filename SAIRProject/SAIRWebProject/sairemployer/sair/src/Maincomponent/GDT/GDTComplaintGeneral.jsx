@@ -88,7 +88,18 @@ const GDTComplaintGeneral = () => {
                 where("ID", "==", complaintData.RespondedBy)
               );
 
-              if (complaintData.ViolationID) {
+            
+  
+              const gdtSnapshot = await getDocs(gdtQuery);
+              if (!gdtSnapshot.empty) {
+                const gdtData = gdtSnapshot.docs[0].data();
+                setRespondingGDT(gdtData);
+              } else {
+                console.error("No GDT document found with ID:", complaintData.RespondedBy);
+              }
+            }
+
+            if (complaintData.ViolationID) {
                 const violationQuery = query(
                   collection(db, "Violation"),
                   where("violationID", "==", complaintData.ViolationID)
@@ -103,15 +114,6 @@ const GDTComplaintGeneral = () => {
                   console.error("Violation document not found for ID:", complaintData.ViolationID);
                 }
               }
-  
-              const gdtSnapshot = await getDocs(gdtQuery);
-              if (!gdtSnapshot.empty) {
-                const gdtData = gdtSnapshot.docs[0].data();
-                setRespondingGDT(gdtData);
-              } else {
-                console.error("No GDT document found with ID:", complaintData.RespondedBy);
-              }
-            }
   
             // Fetch driver details
             const driverCollection = query(

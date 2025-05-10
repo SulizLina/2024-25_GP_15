@@ -494,7 +494,7 @@ const paginatedData = filteredComplaints.slice((currentPage - 1) * 5, currentPag
       <Header active="gdtcomplaints" />
       <div className="breadcrumb">
       {(GDTID || company) ? (
-          <a onClick={() => navigate("/GDTDashBoard")}>Dash Board</a>
+          <a onClick={() => navigate("/GDTDashBoard")}>Dashboard</a>
         ) : (
           <a onClick={() => navigate("/gdthome")}>Home</a>
         )}

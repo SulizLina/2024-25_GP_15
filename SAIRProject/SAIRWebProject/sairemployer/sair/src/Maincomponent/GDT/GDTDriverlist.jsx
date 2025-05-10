@@ -213,7 +213,7 @@ const DriverList = () => {
 
       <div className="breadcrumb" style={{ marginRight: '100px' }}>
       {company ? (
-          <a onClick={() => navigate("/GDTDashBoard")}>Dash Board</a>
+          <a onClick={() => navigate("/GDTDashBoard")}>Dashboard</a>
         ) : (
           <a onClick={() => navigate("/gdthome")}>Home</a>
         )}
