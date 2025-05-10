@@ -19,6 +19,23 @@ export const CrashNotification = () => {
   const [companyDrivers, setCompanyDrivers] = useState({}); // Store drivers for all employers
   const [employerUID, setEmployerUID] = useState(sessionStorage.getItem('employerUID')); // Track employerUID dynamically
   const crashListeners = useRef({}); // Store listeners for each company
+  const violationListeners = useRef({}); // Store listeners for each company
+  const complaintListeners = useRef({}); // Store listeners for each company
+
+ 
+// Cleanup all listeners
+const cleanupAllListeners = () => {
+  Object.values(crashListeners.current).forEach((unsubscribe) => unsubscribe());
+  crashListeners.current = {};
+};
+const cleanupvioListeners = () => {
+  Object.values(violationListeners.current).forEach((unsubscribe) => unsubscribe());
+  violationListeners.current = {};
+};
+const cleanupcomplaintListeners = () => {
+  Object.values(complaintListeners.current).forEach((unsubscribe) => unsubscribe());
+  complaintListeners.current = {};
+};
 
   // Track changes to `sessionStorage` for employerUID
   useEffect(() => {
@@ -84,13 +101,21 @@ export const CrashNotification = () => {
             if (currentEmployerCompanyName === companyName) {
               console.log('inside employer found');
               setupCrashListeners(updatedDrivers[companyName], companyName, true); // Show notifications for current employer
+              setupViolationListeners(updatedDrivers[companyName], companyName, true); 
+              setupComplaintListeners(updatedDrivers[companyName], companyName, true); 
             } else {
               console.log('inside else under employer found');
               setupCrashListeners(updatedDrivers[companyName], companyName, false); // Silent processing for other employers
+              setupViolationListeners(updatedDrivers[companyName], companyName, false); // Silent processing for other employers
+              setupComplaintListeners(updatedDrivers[companyName], companyName, false); // Silent processing for other employers
+
             }
           } else {
             console.log('inside else');
             setupCrashListeners(updatedDrivers[companyName], companyName, false); // Silent processing globally
+            setupViolationListeners(updatedDrivers[companyName], companyName, false); // Silent processing globally
+            setupComplaintListeners(updatedDrivers[companyName], companyName, false); // Silent processing globally
+
           }
         });
         }
@@ -100,6 +125,8 @@ export const CrashNotification = () => {
   
       return () => {
         cleanupAllListeners();
+        cleanupvioListeners();
+        cleanupcomplaintListeners();
         unsubscribeEmployers();
       };
     }, [employerUID]);
@@ -151,9 +178,10 @@ export const CrashNotification = () => {
       const chunk = driverIds.slice(i, i + chunkSize);
       const crashQuery = query(
         collection(db, 'Crash'),
-        where('driverID', 'in', chunk),
-        where('Status', '==', 'Confirmed'),
-        where('Flag', '==', false)
+        where('driverID', 'in', driverIds),
+        where('Status', '==', 'Emergency SOS'),
+        where('RespondedBy', '==', null),
+
       );
       console.log('hfhfhfhfh');
 
@@ -164,6 +192,25 @@ export const CrashNotification = () => {
           const date=formatDate(crash.time);
           const time= new Date(crash.time * 1000).toLocaleTimeString();
           console.log('crash:',crash);
+
+
+// Check if the crash has already been notified
+const notifiedCrashesEmployer = JSON.parse(localStorage.getItem("notifiedCrashesEmployer")) || {};
+if (notifiedCrashesEmployer[crash.id]) return; // Skip if already notified
+
+console.log('local storage:',notifiedCrashesEmployer);
+console.log('helo');
+// Save the crash ID to localStorage
+notifiedCrashesEmployer[crash.id] = true;
+localStorage.setItem("notifiedCrashesEmployer", JSON.stringify(notifiedCrashesEmployer));
+
+
+
+
+
+
+
+
           // Show notification only if employer is logged in
           if (showNotifications && employerUID) {
             notification.open({
@@ -183,8 +230,8 @@ export const CrashNotification = () => {
           
 
           // Mark crash as handled globally
-          const crashDocRef = doc(db, 'Crash', crash.id);
-          await updateDoc(crashDocRef, { Flag: true });
+          // const crashDocRef = doc(db, 'Crash', crash.id);
+          // await updateDoc(crashDocRef, { Flag: true });
         });
       });
 
@@ -192,11 +239,162 @@ export const CrashNotification = () => {
     }
   };
 
-  // Cleanup all listeners
-  const cleanupAllListeners = () => {
-    Object.values(crashListeners.current).forEach((unsubscribe) => unsubscribe());
-    crashListeners.current = {};
+  
+
+
+  // Setup violation listeners
+  const setupViolationListeners = (drivers, companyName, showNotifications) => {
+    console.log('data1: ',drivers);
+    console.log('data1: ',companyName);
+    console.log('data1: ',showNotifications);
+    if (!drivers || Object.keys(drivers).length === 0) return;
+    console.log('data: ',drivers);
+    console.log('data: ',companyName);
+    console.log('data: ',showNotifications);
+
+
+    if (violationListeners.current[companyName]) {
+      violationListeners.current[companyName](); // Cleanup existing listener
+      delete violationListeners.current[companyName];
+    }
+
+    const driverIds = Object.keys(drivers);
+    const chunkSize = 10;
+
+    for (let i = 0; i < driverIds.length; i += chunkSize) {
+      const chunk = driverIds.slice(i, i + chunkSize);
+      const violationQuery = query(
+        collection(db, "Violation"),
+        where("driverID", "in", driverIds),
+        where('Status','==','Active')
+      );
+
+      const unsubscribeViolation = onSnapshot(violationQuery, (snapshot) => {
+        snapshot.docs.forEach(async (violationdoc) => {
+          const violation = { id: violationdoc.id, ...violationdoc.data() };
+          const driver = drivers[violation.driverID] || { name: 'Unknown', phoneNumber: 'Unavailable' };
+          const date=formatDate(violation.time);
+          const time= new Date(violation.time * 1000).toLocaleTimeString();
+          console.log('violation:',violation);
+
+
+// Check if the crash has already been notified
+const notifiedViolationEmployer = JSON.parse(localStorage.getItem("notifiedViolationEmployer")) || {};
+if (notifiedViolationEmployer[violation.id]) return; // Skip if already notified
+
+console.log('local storage:',notifiedViolationEmployer);
+console.log('helo');
+// Save the crash ID to localStorage
+notifiedViolationEmployer[violation.id] = true;
+localStorage.setItem("notifiedViolationEmployer", JSON.stringify(notifiedViolationEmployer));
+
+          // Show notification only if employer is logged in
+          if (showNotifications && employerUID) {
+            notification.open({
+              message: <strong>Violation Alert</strong>,
+              description: `Violation detected for driver ${driver.name} on ${date} at ${time} Phone: ${driver.PhoneNumber}.`,
+              placement: "topRight",
+              closeIcon: null,
+              duration: 20,
+              className: "custom-notification",
+              style: {
+                width: 450,
+                backgroundColor: "rgba(75, 75, 75,0.25)",
+                color: "#ffffff",
+                borderRadius: "10px",
+              },
+            });
+          }
+          
+
+          // Mark crash as handled globally
+          // const crashDocRef = doc(db, 'Crash', crash.id);
+          // await updateDoc(crashDocRef, { Flag: true });
+        });
+      });
+
+      violationListeners.current[companyName] = unsubscribeViolation; // Track listener for cleanup
+    }
   };
+
+  
+    // Setup complaint listeners
+    const setupComplaintListeners = (drivers, companyName, showNotifications) => {
+      console.log('data1: ',drivers);
+      console.log('data1: ',companyName);
+      console.log('data1: ',showNotifications);
+      if (!drivers || Object.keys(drivers).length === 0) return;
+      console.log('data: ',drivers);
+      console.log('data: ',companyName);
+      console.log('data: ',showNotifications);
+  
+  
+      if (complaintListeners.current[companyName]) {
+        complaintListeners.current[companyName](); // Cleanup existing listener
+        delete complaintListeners.current[companyName];
+      }
+  
+      const driverIds = Object.keys(drivers);
+      const chunkSize = 10;
+  
+      for (let i = 0; i < driverIds.length; i += chunkSize) {
+        const chunk = driverIds.slice(i, i + chunkSize);
+        const complaintQuery = query(
+         collection(db, 'Complaint'),
+                 where('driverID', 'in', driverIds),
+                 where('RespondedBy', '==', null),
+        );
+  
+        const unsubscribeComplaint = onSnapshot(complaintQuery, (snapshot) => {
+          snapshot.docs.forEach(async (complaintdoc) => {
+            const complaint = { id: complaintdoc.id, ...complaintdoc.data() };
+            const driver = drivers[complaint.driverID] || { name: 'Unknown', phoneNumber: 'Unavailable' };
+            const dateTime = new Date(complaint.DateTime.seconds * 1000); // Convert seconds to milliseconds
+            const date = dateTime.toLocaleDateString();
+            const time = dateTime.toLocaleTimeString();
+            console.log('complaint:',complaint);
+  
+  
+  // Check if the crash has already been notified
+  const notifiedComplaintEmployer = JSON.parse(localStorage.getItem("notifiedComplaintEmployer")) || {};
+  if (notifiedComplaintEmployer[complaint.id]) return; // Skip if already notified
+  
+  console.log('local storage:',notifiedComplaintEmployer);
+  console.log('helo');
+  // Save the crash ID to localStorage
+  notifiedComplaintEmployer[complaint.id] = true;
+  localStorage.setItem("notifiedComplaintEmployer", JSON.stringify(notifiedComplaintEmployer));
+  
+            // Show notification only if employer is logged in
+            if (showNotifications && employerUID) {
+              notification.open({
+                message: <strong>Complaint Alert</strong>,
+                description: `Complaint raised by driver ${driver.name} on ${date} at ${time} Phone: ${driver.PhoneNumber}.`,
+                placement: "topRight",
+                closeIcon: null,
+                duration: 20,
+                className: "custom-notification",
+                style: {
+                  width: 450,
+                  backgroundColor: "rgba(75, 75, 75,0.25)",
+                  color: "#ffffff",
+                  borderRadius: "10px",
+                },
+              });
+            }
+            
+  
+            // Mark crash as handled globally
+            // const crashDocRef = doc(db, 'Crash', crash.id);
+            // await updateDoc(crashDocRef, { Flag: true });
+          });
+        });
+  
+        complaintListeners.current[companyName] = unsubscribeComplaint; // Track listener for cleanup
+      }
+    };
+  
+
 
   const formatDate = (time) => {
     const date = new Date(time * 1000);

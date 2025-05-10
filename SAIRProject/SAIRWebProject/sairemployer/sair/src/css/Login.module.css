@@ -137,7 +137,7 @@
  
 .forget {
   color: #059855;
-  margin-left: 103px;
+  margin-left: 100px;
   text-decoration: underline;
   font-family: 'Open Sans';
   cursor: pointer;
@@ -157,3 +157,19 @@
   .signupLink:hover {
     text-decoration: underline !important;
   }
+
+  .customSteps .ant-steps-item-icon {
+    color: #ccc; /* Default color for all icons */
+  }
+  
+  
+  .customSteps .ant-steps-item-tail {
+    width: 60px !important;
+    height: 2px;
+    background-color: #d9d9d9;
+}
+
+.customSteps .ant-steps-item-tail::after {
+    display: none; /* Remove the default resizing behavior, if any */
+}
+

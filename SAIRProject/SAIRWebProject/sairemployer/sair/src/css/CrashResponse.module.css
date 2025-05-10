@@ -3,23 +3,6 @@
     font-size: 32px;
     margin-right: auto;
   }
-  .subtitle {
-    font-size: 18px;
-    font-weight: 500;
-    color: #555;
-    margin-top: 8px;
-  }
-  .subtitleDashboard {
-    font-size: 18px;
-    font-weight: 500;
-    color: #f9f9f9;
-    text-align: center;
-    padding: 10px 0;
-    background-color: #059855;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    width: 100%;
-  }  
   .container {
     max-width: 1140px; 
     margin: 0 auto;
@@ -30,10 +13,6 @@
     align-items: center;
     margin: 20px 0;
   }
-  .searchRightGroup {
-    display: flex;
-    align-items: center;
-  }  
   
   .searchInputs {
     display: flex;

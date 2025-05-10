@@ -92,6 +92,13 @@
   background-color: #1c7a50;
   font-family: 'Open Sans';
 }
+.editBtn:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+  opacity: 0.6;
+  margin: 10px 0 30px;
+}
+
 .profileLabel {
   color: #059855;
 }
@@ -135,3 +142,361 @@
   transition: border-color 0.3s ease-in-out;
   font-family: 'Open Sans';
 }
+
+/*Banner*/
+.banner {
+  background: linear-gradient(90deg, #059855, #05b06d); /* Gradient background */
+  color: #ffffff; 
+  font-size: 1.2rem; 
+  font-weight: bold;
+  text-align: center; 
+  padding: 15px 20px; 
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
+  margin: 20px auto; 
+  /* max-width: 90%; Ensure it doesn’t get too wide */
+  animation: fadeIn 1s ease-in-out; /* Smooth fade-in animation WE DONT NEED IT*/
+}
+.bannerDetails {
+  background: linear-gradient(90deg, #059855, #05b06d); /* Gradient background */
+  color: #ffffff; 
+  font-size: 1.5rem; 
+  font-weight: bold;
+  text-align: center; 
+  padding: 15px 20px; 
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
+  margin: 20px auto; 
+  /* max-width: 90%; Ensure it doesn’t get too wide */
+  animation: fadeIn 1s ease-in-out; /* Smooth fade-in animation WE DONT NEED IT*/
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Make it responsive */
+@media (max-width: 600px) {
+  .banner {
+    font-size: 1rem; /* Smaller text size on small screens */
+    padding: 10px 15px;
+  }
+}
+
+.underline {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/*=====================GDT pop up css=====================*/
+
+.GDTcontainer form {
+  display: flex;
+  flex-direction: column;
+  font-family: 'Open Sans';
+}
+
+.GDTcontainer form {
+  display: flex;
+  flex-direction: column;
+  font-family: 'Open Sans';
+}
+
+/* Profile Form Styling */
+.GDTcontainer label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #333;
+  margin-left: 0; /* Remove custom left margin */
+  margin-top: 20px; 
+  font-family: 'Open Sans';
+}
+
+.GDTcontainer input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Open Sans';
+  border: none;
+}
+
+/* Form Layout Styling */
+.formRow {
+  display: flex;
+  /* justify-content: space-between; */
+  gap: 40px; /* Space between the columns */
+  font-family: 'Open Sans';
+}
+
+.formRow div {
+  flex: 1;
+  font-family: 'Open Sans';
+}
+
+.GDTcontainer input:focus {
+  outline: none;
+  border: none;
+  font-family: 'Open Sans';
+}
+
+.editBtn,
+.profileCancel,
+.profilesave,
+.profileVerify {
+  border-radius: 5px;
+  background-color: #059855;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+  color: white;
+  margin-right: 10px;
+  font-family: 'Open Sans';
+}
+.editBtn:hover,
+.profilesave:hover,
+.profileCancel:hover,
+.profileVerify.profileVerify:hover {
+  background-color: #1c7a50;
+  font-family: 'Open Sans';
+}
+.profileLabel {
+  color: #059855;
+}
+.GDTLabel {
+  color: #059855;
+  font-size: 25px;
+  margin-bottom: 20px;
+}
+.GDTcontainer label {
+  color: #059855;
+  font-family: 'Open Sans';
+}
+
+.togglePasswordVisibility {
+  position: absolute;
+  top: 45px;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  color: gray;
+}
+
+.passwordRequirements {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  margin: 0;
+  padding-left: 18px; /* Adjust this value to align with the input field */
+  font-size: 12px; /* Make the font size smaller */
+  list-style-type: none;
+}
+
+.valdationMessage {
+  color: red; 
+  margin-top: 3px; 
+}
+
+.GDTcontainer input, 
+.GDTcontainer select {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  font-family: 'Open Sans';
+}
+
+.customModal {
+  width: 80% !important; /* Adjust the percentage as needed */
+  max-width: 800px; /* Set a maximum width */
+}
+
+/* ----------------------------------------------------------------- */
+/* .container input[type="file"] {
+  width: 100%;
+  padding: 90px;
+  border: 2px dashed #059855;
+  text-align: center;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.3s ease-in-out;
+  font-family: 'Open Sans';
+}
+ */
+/* ------------------------------------------------------------------ */
+
+.fileUploadContainer {
+  text-align: center;
+  border-radius: 16px;
+  padding: 20px;
+  /* max-width: 400px; */
+  margin: 0 auto;
+  gap: 20px; 
+  margin-bottom: 20px;
+  font-family: 'Open Sans';
+}
+
+.fileUploadBox {
+  display: block;
+  border: 2px dashed #059855;
+  border-radius: 12px;
+  padding: 50px;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+  font-family: 'Open Sans';
+}
+
+.fileUploadBox:hover {
+  border-color: #059855;
+}
+
+.fileUploadContent {
+  color: #6c757d;
+  font-size: 14px;
+  font-family: 'Open Sans';
+}
+
+.uploadIcon {
+  font-size: 24px;
+  color: #059855;
+}
+
+.browseText {
+  color: #059855;
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: 'Open Sans';
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.uploadButton {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #059855;
+  color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.uploadButton:hover {
+  background-color: #059855;
+}
+
+.uploadIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  color: #059855; 
+}
+
+
+
+
+
+
+/* ----------------------------------------------------------------- */
+/* .container input[type="file"] {
+  width: 100%;
+  padding: 90px;
+  border: 2px dashed #059855;
+  text-align: center;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.3s ease-in-out;
+  font-family: 'Open Sans';
+}
+ */
+/* ------------------------------------------------------------------ */
+
+.fileUploadContainer {
+  text-align: center;
+  border-radius: 16px;
+  padding: 20px;
+  /* max-width: 400px; */
+  margin: 0 auto;
+  gap: 20px; 
+  margin-bottom: 20px;
+  font-family: 'Open Sans';
+}
+
+.fileUploadBox {
+  display: block;
+  border: 2px dashed #059855;
+  border-radius: 12px;
+  padding: 50px;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+  font-family: 'Open Sans';
+}
+
+.fileUploadBox:hover {
+  border-color: #059855;
+}
+
+.fileUploadContent {
+  color: #6c757d;
+  font-size: 14px;
+  font-family: 'Open Sans';
+}
+
+.uploadIcon {
+  font-size: 24px;
+  color: #059855;
+}
+
+.browseText {
+  color: #059855;
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: 'Open Sans';
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.uploadButton {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #059855;
+  color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.uploadButton:hover {
+  background-color: #059855;
+}
+
+.uploadIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  color: #059855; 
+}
+
+
+

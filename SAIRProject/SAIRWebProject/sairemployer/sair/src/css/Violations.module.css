@@ -3,8 +3,19 @@
   font-size: 32px;
   margin-right: auto;
 }
+.subtitleDashboard {
+  font-size: 18px;
+  font-weight: 500;
+  color: #f9f9f9;
+  text-align: center;
+  padding: 10px 0;
+  background-color: #059855;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
 .container {
-  max-width: 1100px;
+  max-width: 1140px;
   margin: 0 auto;
 }
 .searchHeader {
@@ -65,4 +76,218 @@ input[type='date']::-webkit-calendar-picker-indicator {
 .searchContainer input[type='text'] {
   padding: 0;
   margin: 0;
+}
+.customSelect {
+  width: 200px;
+  margin-right: 16px;
+  border: none;
+  background-color: transparent;
+  padding: 8px;
+  font-size: 16px;
+  /* Optional: Add more styling here as needed */
+  appearance: none; /* Removes default dropdown arrow in some browsers */
+}
+
+/* Add focus style if needed */
+.customSelect:focus {
+  outline: none; /* Removes the default focus outline */
+  box-shadow: none;
+}
+
+.selectWrapper {
+  position: relative;
+  width: 215px; 
+  height: 24px;
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+}
+
+.filterIcon {
+  color: #1c7a50; /* Green color */
+  margin-right: 8px; /* Space between icon and select */
+}
+
+
+.customSelect {
+  flex-grow: 1; /* Takes up remaining space */
+  border: none;
+  background-color: transparent;
+  font-size: 16px;
+  appearance: none; /* Removes default dropdown arrow */
+  padding: 8px;
+  outline: none;
+}
+/* Custom arrow icon for dropdown */
+.selectWrapper::after {
+  content: '▼'; /* Unicode arrow or use a custom icon */
+  position: absolute;
+  right: 10px;
+  font-size: 12px;
+  color: #1c7a50;
+  pointer-events: none; /* Prevents arrow from blocking clicks */
+}
+
+/*=================== Date bar */
+.searchDate {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.searchDate {
+  /* padding: 3px 3px;
+  font-family: 'Open Sans';
+  display: flex;
+  align-items: center;
+  justify-content: center; */
+
+  position: relative;
+  outline: none;
+  width: 40px;
+  font-size: 14px;
+}
+
+/* .searchDate svg {
+  height: 1.5rem;
+  width: 1.5rem;
+  margin-right: 10px;
+} */
+
+.searchDate input {
+  /* transition: border-color 0.3s ease-in-out; */
+  /* font-family: 'Open Sans'; */
+  outline: none;
+  border: none;
+}
+
+.searchDate input:focus {
+  outline: none;
+}
+
+.searchDate input[type='date'] {
+  outline: none;
+  border: none;
+}
+
+/* changing the color of the calendar icon */
+.searchDate input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(0.5) sepia(1) saturate(5) hue-rotate(120deg) brightness(0.7);
+
+  font-size: 0;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+  position: absolute;
+  top: 2;
+  right: 0;
+}
+
+/* Update the color of the calendar icon to green */
+.searchDate input[type='date']::-webkit-calendar-picker-indicator {
+  /* filter: invert(0.5) sepia(1) saturate(5) hue-rotate(120deg) brightness(0.7); */
+  filter: invert(0.5) sepia(1) saturate(5) hue-rotate(120deg) brightness(0.6);
+}
+
+/* Hide the complete "dd/mm/yyyy" placeholder text */
+.searchDate input[type='date']::-webkit-datetime-edit {
+  color: transparent;
+}
+
+.searchContainerdate {
+  position: relative;
+  outline: none;
+  width: 40px;
+  font-size: 14px;
+}
+
+.searchContainerdate input[type='date']::-webkit-calendar-picker-indicator {
+  background: none;
+  color: transparent;
+  font-size: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.searchContainerdate input[type='date']::-webkit-inner-spin-button {
+  display: none;
+}
+
+.searchContainerdate input[type='date']::-webkit-clear-button {
+  display: none;
+}
+
+.searchContainerdate input[type='date']::-webkit-datetime-edit {
+  display: none; 
+  outline: none; 
+  border: none; 
+}
+
+.searchContainerdate input[type='date'] {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background-color: transparent;
+  color: inherit;
+  font-size: 16px;
+  /* -webkit-appearance: none; */
+}
+
+.searchContainerdate input[type='date']::-moz-placeholder {
+  /* Hide the placeholder (dd/mm/yyyy) */
+  color: transparent;
+  outline: none; 
+}
+
+.searchContainerdate input[type='date']::-moz-focus-inner {
+  /* Remove focus outline */
+  border: 0;
+  outline: none; 
+}
+
+.searchContainerdate input[type='date']::-moz-datetime-edit {
+  display: none;
+  outline: none; 
+}
+
+.searchContainerdate input[type='date']::-moz-calendar-picker-indicator {
+  display: none;
+  outline: none; 
+}
+.highlightRow {
+  background-color: #d0e0d0
+}
+
+.custom-select .ant-select-selector {
+  border: none !important; /* Remove border */
+  box-shadow: none !important; /* Remove shadow */
+}
+
+.custom-select .ant-select-selector:focus {
+  border: none !important; /* Remove border on focus */
+  box-shadow: none !important; /* Remove shadow on focus */
+}
+
+/* Optional: Add any other styles you want for the dropdown */
+.custom-select .ant-select {
+  border-radius: 4px; /* Adjust border radius if desired */
+}
+
+.custom-select .ant-select-selector {
+  border: none !important; /* Remove the border */
+  box-shadow: none !important; /* Remove shadow */
+}
+
+.custom-select .ant-select-selector:focus {
+  border: none !important; /* Ensure no border on focus */
+  box-shadow: none !important; /* Ensure no shadow on focus */
+}
+
+.custom-select .ant-select-arrow {
+  color: inherit; /* Keep arrow color as per the theme */
 }

@@ -44,6 +44,7 @@ h2 {
   font-size: 1rem;
   text-decoration: underline;
   font-family: 'Open Sans';
+  cursor: pointer;
 }
 
 /* Popup styling */
@@ -238,7 +239,7 @@ h2 {
   font-family: 'Open Sans';
 }
 
-main {
+main:not(.Dashboard) {
   padding: 0 20px;
   max-width: 1180px;
   margin: 0 auto;

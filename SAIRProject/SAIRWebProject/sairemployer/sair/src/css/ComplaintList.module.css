@@ -3,6 +3,17 @@
     font-size: 32px;
     margin-right: auto;
   }
+.subtitleDashboard {
+  font-size: 18px;
+  font-weight: 500;
+  color: #f9f9f9;
+  text-align: center;
+  padding: 10px 0;
+  background-color: #059855;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}  
   .container {
     max-width: 1100px;
     margin: 0 auto;
@@ -106,17 +117,6 @@
     padding: 8px;
     outline: none;
   }
-  
-  /* Custom arrow icon for dropdown */
-  .selectWrapper::after {
-    content: '▼'; /* Unicode arrow or use a custom icon */
-    position: absolute;
-    right: 10px;
-    font-size: 12px;
-    color: #1c7a50;
-    pointer-events: none; /* Prevents arrow from blocking clicks */
-  }
-
 
   .dateInputWrapper {
     position: relative;
@@ -152,4 +152,37 @@
     opacity: 0;
   }
   
+  .dropdownMenu {
+    position: absolute;
+    top: 100%; /* Position below the select */
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    z-index: 1000; /* Ensure it's above other content */
+  }
   
+  .dropdownOption {
+    padding: 8px;
+    cursor: pointer;
+  }
+  
+  .dropdownOption:hover {
+    background-color: #f0f0f0; /* Highlight on hover */
+  }
+  
+  .customSelect {
+    padding: 8px 0px 8px 8px; /* Add extra padding to the right */
+    border-radius: 5px;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .customArrow {
+    margin-left: 15px; /* Increase margin to move the arrow further to the right */
+    color: #1c7a50;
+  }
