@@ -1670,7 +1670,7 @@ const center = lastKnownLocations.length > 0
               style={{ marginRight: '8px' }}
             />
             <span style={{ color: '#059855', fontWeight: '500' }}>
-              Show Heatmap
+              Show Heat Map Spots
             </span>
           </label>
         </div>
